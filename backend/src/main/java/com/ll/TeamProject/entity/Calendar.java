@@ -25,6 +25,6 @@ public class Calendar extends BaseTime {
     @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SharedCalendar> sharedUsers = new ArrayList<>(); // 공유된 사용자 정보
 
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
 }
