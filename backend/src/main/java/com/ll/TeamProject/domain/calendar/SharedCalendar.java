@@ -1,5 +1,6 @@
-package com.ll.TeamProject.entity;
+package com.ll.TeamProject.domain.calendar;
 
+import com.ll.TeamProject.domain.user.User;
 import com.ll.TeamProject.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

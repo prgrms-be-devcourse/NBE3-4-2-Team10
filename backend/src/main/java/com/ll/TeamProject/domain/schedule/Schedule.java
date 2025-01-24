@@ -1,6 +1,7 @@
-package com.ll.TeamProject.entity;
+package com.ll.TeamProject.domain.schedule;
 
 
+import com.ll.TeamProject.domain.calendar.Calendar;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
