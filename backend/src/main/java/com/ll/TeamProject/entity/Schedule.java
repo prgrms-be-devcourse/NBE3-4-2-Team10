@@ -18,8 +18,8 @@ public class Schedule extends BaseTime {
     // BaseTime : id (BaseEntity, no setter), 생성/수정일
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 사용자 ID (FK)
+    @JoinColumn(name = "calendar_id", nullable = false)
+    private Calendar calendar; // 일정이 속한 캘린더
 
     private String title; // 일정 제목
 
