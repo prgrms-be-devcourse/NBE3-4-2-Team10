@@ -35,6 +35,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 //	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("com.google.api-client:google-api-client:1.34.1")
+	implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+	implementation("com.google.apis:google-api-services-calendar:v3-rev305-1.25.0")
 }
 
 tasks.withType<Test> {
