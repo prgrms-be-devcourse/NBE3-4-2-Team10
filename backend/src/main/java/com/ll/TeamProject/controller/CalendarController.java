@@ -4,17 +4,17 @@ import com.ll.TeamProject.domain.calendar.Calendar;
 import com.ll.TeamProject.service.CalendarService;
 import com.ll.TeamProject.service.dto.CalendarCreateDto;
 import com.ll.TeamProject.service.dto.CalendarUpdateDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/calendars")
+@RequiredArgsConstructor
 public class CalendarController {
 
-    @Autowired
-    private CalendarService calendarService;
+    private final CalendarService calendarService;
 
     // 캘린더 생성
     @PostMapping

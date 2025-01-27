@@ -4,22 +4,22 @@ import com.ll.TeamProject.domain.calendar.Calendar;
 import com.ll.TeamProject.repository.CalendarRepository;
 import com.ll.TeamProject.service.dto.CalendarCreateDto;
 import com.ll.TeamProject.service.dto.CalendarUpdateDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CalendarService {
 
-    @Autowired
-    private CalendarRepository calendarRepository;
+    private final CalendarRepository calendarRepository;
 
     // 캘린더 생성
     public Calendar createCalendar(CalendarCreateDto createDto) {
         Calendar calendar = new Calendar();
-        calendar.setName(createDto.getTitle());
-        calendar.setDescription(createDto.getDescription());
+        calendar.updateName(createDto.getTitle()); // 커스텀 메서드 호출
+        calendar.updateDescription(createDto.getDescription());
         // 추가적인 로직 필요 (예: 멤버 설정)
         return calendarRepository.save(calendar);
     }
@@ -28,8 +28,8 @@ public class CalendarService {
     public Calendar updateCalendar(Long calendarId, CalendarUpdateDto updateDto) {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new IllegalArgumentException("캘린더가 존재하지 않습니다."));
-        calendar.setName(updateDto.getTitle());
-        calendar.setDescription(updateDto.getDescription());
+        calendar.updateName(updateDto.getTitle()); // 커스텀 메서드 호출
+        calendar.updateDescription(updateDto.getDescription());
         // 추가적인 로직 필요 (예: 멤버 수정)
         return calendarRepository.save(calendar);
     }
