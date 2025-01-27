@@ -16,4 +16,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                                             @Param("startTime") LocalDateTime startTime,
                                             @Param("endTime") LocalDateTime endTime);
 
+    // JPQL을 사용한 날짜 범위 조회
+    @Query("SELECT s FROM Schedule s WHERE s.startTime >= :startDate AND s.endTime <= :endDate")
+    List<Schedule> findSchedulesWithinDateRange(@Param("startDate") LocalDateTime startDate,
+                                                @Param("endDate") LocalDateTime endDate);
+
+
 }

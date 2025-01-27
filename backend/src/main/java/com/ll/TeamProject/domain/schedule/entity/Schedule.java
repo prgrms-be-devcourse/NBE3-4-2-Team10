@@ -33,7 +33,7 @@ public class Schedule extends BaseTime {
 
     private LocalDateTime endTime; // 일정 종료 시간
 
-    private Location location; // 일정 위치
+    private Location location; // 일정 위치 정보
 
 
     public void update(String title, String description,

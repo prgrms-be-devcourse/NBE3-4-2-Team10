@@ -5,14 +5,16 @@ import com.ll.TeamProject.domain.schedule.dto.ScheduleResponseDto;
 import com.ll.TeamProject.domain.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/schedule")
+@RequestMapping("/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -38,12 +40,16 @@ public class ScheduleController {
         return ResponseEntity.noContent().build();
     }
 
-    //일정 리스트 조회
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> getSchedules(@PathVariable Long calendarId){
-        List<ScheduleResponseDto> schedules = scheduleService.getSchedules();
+    public ResponseEntity<List<ScheduleResponseDto>> getSchedules(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        // 날짜 범위로 일정 조회
+        List<ScheduleResponseDto> schedules = scheduleService.getSchedules(startDate, endDate);
         return ResponseEntity.ok(schedules);
     }
+
 
     //특정 일정 조회
     @GetMapping("/{id}")

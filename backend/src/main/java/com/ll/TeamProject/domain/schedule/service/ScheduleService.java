@@ -9,6 +9,9 @@ import com.ll.TeamProject.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +22,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final CalendarRepository calendarRepository;
 
-    //일정생성
+    //일정 생성
     public ScheduleResponseDto createSchedule(Long calendarId, ScheduleRequestDto scheduleRequestDto){
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new ServiceException("404","해당 캘린더를 찾을 수 없습니다."));
@@ -49,7 +52,7 @@ public class ScheduleService {
         return mapToDto(saveSchedule);
     }
 
-    //일정수정
+    //일정 수정
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
         // 캘린더 조회
         Calendar calendar = calendarRepository.findById(scheduleRequestDto.calendarId())
@@ -76,21 +79,29 @@ public class ScheduleService {
         return mapToDto(schedule);
     }
 
-    //일정삭제
+    //일정 삭제
     public void deleteSchedule(Long scheduleId){
         Schedule schedule=scheduleRepository.findById(scheduleId)
                 .orElseThrow(()-> new ServiceException("404","해당 일정을 찾을 수 없습니다."));
         scheduleRepository.delete(schedule);
     }
 
-    //일정목록조회
-    public List<ScheduleResponseDto> getSchedules(){
-        return scheduleRepository.findAll().stream()
+    //일정 목록 조회
+    public List<ScheduleResponseDto> getSchedules(LocalDate startDate, LocalDate endDate) {
+        // 범위의 시작과 끝 계산
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+        // 일정 조회
+        List<Schedule> schedules = scheduleRepository.findSchedulesWithinDateRange(startDateTime, endDateTime);
+
+        // DTO로 변환 후 반환
+        return schedules.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    //특정일정조회
+    //특정 일정 조회
     public ScheduleResponseDto getScheduleById(Long id) {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new ServiceException("404","해당 일정을 찾을 수 없습니다."));
