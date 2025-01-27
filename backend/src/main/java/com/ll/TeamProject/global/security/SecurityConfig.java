@@ -26,6 +26,12 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/admin")
                                 .hasAuthority("ROLE_ADMIN")
+                                .requestMatchers("/login","/index")
+                                .permitAll()
+                                .requestMatchers("/google/login","/google/index")
+                                .permitAll()
+                                .requestMatchers("/static/**", "/images/**", "/css/**", "/js/**") // 정적 자원 예외 추가
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

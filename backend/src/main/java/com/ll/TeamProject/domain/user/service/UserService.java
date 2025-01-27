@@ -1,5 +1,6 @@
 package com.ll.TeamProject.domain.user.service;
 
+import com.ll.TeamProject.domain.user.dto.KakaoUserInfo;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.domain.user.entity.Role;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+
+import static com.ll.TeamProject.domain.user.enums.Role.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +53,7 @@ public class UserService {
     ) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
 
-        if (searchKeyword.isBlank()) return findUsersNoKeyword(page, pageSize); // 키원드 없는 유저 목록
+        if (searchKeyword.isBlank()) return findUsersNoKeyword(page, pageSize); // 키워드 없는 유저 목록
 
         searchKeyword = "%" + searchKeyword + "%"; // 일부만 입력해도 조회되도록
 
@@ -64,5 +68,24 @@ public class UserService {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
 
         return userRepository.findByRoleNot(Role.ADMIN, pageRequest);
+    }
+
+    public SiteUser socialLogin(KakaoUserInfo userInfo, String type) {
+        Optional<SiteUser> siteUserOptional = userRepository.findByUsername(type + userInfo.getId());
+
+        if (siteUserOptional.isPresent()) {
+            return siteUserOptional.get();
+        } else {
+            SiteUser user = SiteUser.builder()
+                    .username(type + userInfo.getId())
+                    .password("")
+                    // nickname 추가 가능
+                    .role(USER)
+                    .email(userInfo.getEmail())
+                    .apiKey(UUID.randomUUID().toString())
+                    .build();
+            userRepository.save(user);
+            return user;
+        }
     }
 }
