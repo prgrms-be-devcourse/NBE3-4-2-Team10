@@ -62,10 +62,17 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new ServiceException("404","해당 일정을 찾을 수 없습니다."));
 
-        // 캘린더 조회
-        Calendar calendar = calendarRepository.findById(scheduleRequestDto.calendarId())
-                .orElseThrow(() -> new ServiceException("404","해당 캘린더를 찾을 수 없습니다."));
-        
+        // 충돌 검사 (자기 자신 제외)
+        List<Schedule> overlappingSchedules = scheduleRepository.findOverlappingSchedules(
+                scheduleRequestDto.calendarId(),
+                scheduleRequestDto.startTime(),
+                scheduleRequestDto.endTime()
+        ).stream().filter(s -> !s.getId().equals(schedule.getId())).toList();
+
+        if(!overlappingSchedules.isEmpty()){
+            throw new ServiceException("400", "해당 시간에 이미 일정이 존재합니다.");
+        }
+
 
         // 스케줄 정보 업데이트
         schedule.update(
