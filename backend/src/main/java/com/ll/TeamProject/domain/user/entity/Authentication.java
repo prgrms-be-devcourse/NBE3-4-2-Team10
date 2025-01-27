@@ -1,4 +1,4 @@
-package com.ll.TeamProject.domain.user;
+package com.ll.TeamProject.domain.user.entity;
 
 import com.ll.TeamProject.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;

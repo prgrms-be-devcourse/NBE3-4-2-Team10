@@ -1,13 +1,13 @@
 package com.ll.TeamProject.domain.schedule.entity;
 
 
-import com.ll.TeamProject.domain.calendar.Calendar;
+import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import com.ll.TeamProject.global.jpa.entity.Location;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Schedule extends BaseTime {
     // BaseTime : id (BaseEntity, no setter), 생성/수정일
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id", nullable = false)
