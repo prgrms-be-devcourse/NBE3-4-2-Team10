@@ -6,6 +6,7 @@ import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.rq.Rq;
 import com.ll.TeamProject.global.rsData.RsData;
+import com.ll.TeamProject.standard.page.dto.PageDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,10 +58,20 @@ public class AdminController {
     }
 
     @GetMapping
-    public RsData<Void> getUser() {
+    public RsData<PageDto<UserDto>> users(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "username") String searchKeywordType,
+            @RequestParam(defaultValue = "") String searchKeyword
+    ) {
+
         return new RsData<>(
                 "200-1",
-                ""
+                "",
+                new PageDto<>(
+                    userService.findUsers(searchKeywordType, searchKeyword, page, pageSize)
+                            .map(UserDto::new)
+                )
         );
     }
 }

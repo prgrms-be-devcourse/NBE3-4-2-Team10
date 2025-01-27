@@ -11,11 +11,13 @@ public class UserDto {
     private String username;
     private LocalDateTime createDate;
     private LocalDateTime modifyDate;
+    private String email;
 
     public UserDto(SiteUser siteUser) {
         this.id = siteUser.getId();
         this.username = siteUser.getUsername();
         this.createDate = siteUser.getCreateDate();
         this.modifyDate = siteUser.getModifyDate();
+        this.email = siteUser.getEmail();
     }
 }
