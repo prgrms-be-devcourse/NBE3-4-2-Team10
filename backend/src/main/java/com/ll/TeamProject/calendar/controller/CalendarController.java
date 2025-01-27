@@ -1,20 +1,26 @@
 package com.ll.TeamProject.calendar.controller;
 
-import com.ll.TeamProject.calendar.entity.Calendar;
-import com.ll.TeamProject.calendar.service.CalendarService;
 import com.ll.TeamProject.calendar.dto.CalendarCreateDto;
 import com.ll.TeamProject.calendar.dto.CalendarUpdateDto;
+import com.ll.TeamProject.calendar.entity.Calendar;
+import com.ll.TeamProject.calendar.service.CalendarService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/calendars")
-@RequiredArgsConstructor
+@Controller  // @RestController에서 @Controller로 변경
+@RequiredArgsConstructor  // 생성자 주입을 자동으로 처리해줌
 public class CalendarController {
 
-    private final CalendarService calendarService;
+    private final CalendarService calendarService;  // 의존성 주입
+
+    // 캘린더 페이지 TEST용?
+    @GetMapping("/calendar")
+    public String showCalendarPage() {
+        return "calendar";
+    }
 
     // 캘린더 생성
     @PostMapping
