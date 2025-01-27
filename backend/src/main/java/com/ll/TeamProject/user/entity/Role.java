@@ -1,4 +1,4 @@
-package com.ll.TeamProject.domain.user;
+package com.ll.TeamProject.user.entity;
 
 public enum Role {
     ADMIN, // 관리자

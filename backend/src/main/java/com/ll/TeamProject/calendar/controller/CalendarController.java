@@ -1,9 +1,9 @@
-package com.ll.TeamProject.controller;
+package com.ll.TeamProject.calendar.controller;
 
-import com.ll.TeamProject.domain.calendar.Calendar;
-import com.ll.TeamProject.service.CalendarService;
-import com.ll.TeamProject.service.dto.CalendarCreateDto;
-import com.ll.TeamProject.service.dto.CalendarUpdateDto;
+import com.ll.TeamProject.calendar.entity.Calendar;
+import com.ll.TeamProject.calendar.service.CalendarService;
+import com.ll.TeamProject.calendar.dto.CalendarCreateDto;
+import com.ll.TeamProject.calendar.dto.CalendarUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
