@@ -1,9 +1,9 @@
-package com.ll.TeamProject.calendar.service;
+package com.ll.TeamProject.domain.calendar.service;
 
-import com.ll.TeamProject.calendar.entity.Calendar;
-import com.ll.TeamProject.calendar.repository.CalendarRepository;
-import com.ll.TeamProject.calendar.dto.CalendarCreateDto;
-import com.ll.TeamProject.calendar.dto.CalendarUpdateDto;
+import com.ll.TeamProject.domain.calendar.entity.Calendar;
+import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
+import com.ll.TeamProject.domain.calendar.dto.CalendarCreateDto;
+import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

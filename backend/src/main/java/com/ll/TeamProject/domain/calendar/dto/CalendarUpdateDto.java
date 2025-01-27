@@ -1,4 +1,4 @@
-package com.ll.TeamProject.calendar.dto;
+package com.ll.TeamProject.domain.calendar.dto;
 
 import lombok.Getter;
 import lombok.Setter;

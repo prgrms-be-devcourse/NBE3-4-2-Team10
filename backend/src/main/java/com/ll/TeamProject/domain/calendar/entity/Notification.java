@@ -1,4 +1,4 @@
-package com.ll.TeamProject.calendar.entity;
+package com.ll.TeamProject.domain.calendar.entity;
 
 import com.ll.TeamProject.user.entity.User;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
