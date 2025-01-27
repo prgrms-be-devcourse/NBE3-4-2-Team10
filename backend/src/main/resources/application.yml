@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: dev
+  config:
+    import: "classpath:secret.yml"
   datasource:
     url: jdbc:h2:./db_dev;MODE=MySQL
     username: sa
