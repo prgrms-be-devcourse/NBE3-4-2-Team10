@@ -1,17 +1,15 @@
-package com.ll.TeamProject.domain.calendar;
+package com.ll.TeamProject.domain.calendar.entity;
 
-import com.ll.TeamProject.domain.user.User;
+import com.ll.TeamProject.domain.user.entity.User;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class Message extends BaseTime {
     // BaseTime : id (BaseEntity, no setter), 생성/수정일
 

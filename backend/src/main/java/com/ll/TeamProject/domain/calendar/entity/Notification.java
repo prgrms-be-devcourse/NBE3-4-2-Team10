@@ -1,6 +1,6 @@
-package com.ll.TeamProject.domain.notification;
+package com.ll.TeamProject.domain.calendar.entity;
 
-import com.ll.TeamProject.domain.user.User;
+import com.ll.TeamProject.domain.user.entity.User;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
