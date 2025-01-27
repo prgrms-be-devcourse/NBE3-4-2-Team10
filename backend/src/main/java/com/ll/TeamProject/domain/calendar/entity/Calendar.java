@@ -1,6 +1,6 @@
 package com.ll.TeamProject.domain.calendar.entity;
 
-import com.ll.TeamProject.user.entity.User;
+import com.ll.TeamProject.domain.user.entity.User;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
 import lombok.Getter;

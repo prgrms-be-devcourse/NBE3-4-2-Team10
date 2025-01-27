@@ -1,4 +1,4 @@
-package com.ll.TeamProject.schedule.entity;
+package com.ll.TeamProject.domain.schedule.entity;
 
 
 import com.ll.TeamProject.domain.calendar.entity.Calendar;

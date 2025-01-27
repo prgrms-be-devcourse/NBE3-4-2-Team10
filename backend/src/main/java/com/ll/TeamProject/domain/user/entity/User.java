@@ -1,4 +1,4 @@
-package com.ll.TeamProject.user.entity;
+package com.ll.TeamProject.domain.user.entity;
 
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.Entity;
