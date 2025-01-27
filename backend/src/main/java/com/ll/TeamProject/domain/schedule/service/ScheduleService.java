@@ -5,11 +5,9 @@ import com.ll.TeamProject.domain.schedule.dto.ScheduleRequestDto;
 import com.ll.TeamProject.domain.schedule.dto.ScheduleResponseDto;
 import com.ll.TeamProject.domain.schedule.entity.Schedule;
 import com.ll.TeamProject.domain.schedule.repository.ScheduleRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.ll.TeamProject.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +22,7 @@ public class ScheduleService {
     //일정생성
     public ScheduleResponseDto createSchedule(Long calendarId, ScheduleRequestDto scheduleRequestDto){
         Calendar calendar = calendarRepository.findById(calendarId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Calendar not found"));
+                .orElseThrow(() -> new ServiceException("404","해당 캘린더를 찾을 수 없습니다."));
 
         Schedule schedule=new Schedule(
                 calendar,
@@ -43,11 +41,12 @@ public class ScheduleService {
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
         // 기존 스케줄 조회
         Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new ServiceException("404","해당 일정을 찾을 수 없습니다."));
 
         // 캘린더 조회
         Calendar calendar = calendarRepository.findById(scheduleRequestDto.calendarId())
-                .orElseThrow(() -> new EntityNotFoundException("Calendar not found"));
+                .orElseThrow(() -> new ServiceException("404","해당 캘린더를 찾을 수 없습니다."));
+        
 
         // 스케줄 정보 업데이트
         schedule.update(
@@ -64,7 +63,7 @@ public class ScheduleService {
     //일정삭제
     public void deleteSchedule(Long scheduleId){
         Schedule schedule=scheduleRepository.findById(scheduleId)
-                .orElseThrow(()->new EntityNotFoundException("Schedule not found"));
+                .orElseThrow(()-> new ServiceException("404","해당 일정을 찾을 수 없습니다."));
         scheduleRepository.delete(schedule);
     }
 
@@ -78,7 +77,7 @@ public class ScheduleService {
     //특정일정조회
     public ScheduleResponseDto getScheduleById(Long id) {
         Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new ServiceException("404","해당 일정을 찾을 수 없습니다."));
         return mapToDto(schedule);
     }
 
