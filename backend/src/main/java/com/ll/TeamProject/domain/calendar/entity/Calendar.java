@@ -33,4 +33,9 @@ public class Calendar extends BaseTime {
     public void updateDescription(String description) {
         this.description = description;
     }
+
+    // setUser 메서드 추가
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

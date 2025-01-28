@@ -1,54 +1,44 @@
 package com.ll.TeamProject.domain.calendar.controller;
 
-import com.ll.TeamProject.domain.calendar.dto.CalendarCreateDto;
-import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.service.CalendarService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller  // @RestController에서 @Controller로 변경
-@RequiredArgsConstructor  // 생성자 주입을 자동으로 처리해줌
+@RestController
+@RequestMapping("/api/calendars")
+@RequiredArgsConstructor
 public class CalendarController {
 
-    private final CalendarService calendarService;  // 의존성 주입
+    private final CalendarService calendarService;
 
-    // 캘린더 페이지 TEST용?
-    @GetMapping("/calendar")
-    public String showCalendarPage() {
-        return "calendar";
+    // 모든 캘린더 조회
+    @GetMapping
+    public ResponseEntity<List<Calendar>> getAllCalendars() {
+        return ResponseEntity.ok(calendarService.getAllCalendars());
     }
 
-    // 캘린더 생성
-    @PostMapping
-    public Calendar createCalendar(@RequestBody CalendarCreateDto createDto) {
-        return calendarService.createCalendar(createDto);
-    }
-
-    // 캘린더 수정
-    @PutMapping("/{calendarId}")
-    public Calendar updateCalendar(@PathVariable Long calendarId, @RequestBody CalendarUpdateDto updateDto) {
-        return calendarService.updateCalendar(calendarId, updateDto);
+    // 특정 캘린더 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<Calendar> getCalendarById(@PathVariable Long id) {
+        Calendar calendar = calendarService.getCalendarById(id);
+        if (calendar == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(calendar);
     }
 
     // 캘린더 삭제
-    @DeleteMapping("/{calendarId}")
-    public void deleteCalendar(@PathVariable Long calendarId) {
-        calendarService.deleteCalendar(calendarId);
-    }
-
-    // 캘린더 조회
-    @GetMapping("/{calendarId}")
-    public Calendar getCalendar(@PathVariable Long calendarId) {
-        return calendarService.getCalendar(calendarId);
-    }
-
-    // 캘린더 리스트 조회
-    @GetMapping
-    public List<Calendar> getAllCalendars() {
-        return calendarService.getAllCalendars();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCalendar(@PathVariable Long id) {
+        boolean deleted = calendarService.deleteCalendar(id);
+        if (!deleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("캘린더를 찾을 수 없습니다.");
+        }
+        return ResponseEntity.ok("캘린더가 성공적으로 삭제되었습니다.");
     }
 }
