@@ -9,6 +9,7 @@ import com.ll.TeamProject.global.rsData.RsData;
 import com.ll.TeamProject.standard.page.dto.PageDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class AdminController {
 
     private final UserService userService;
     private final Rq rq;
+    private final PasswordEncoder passwordEncoder;
 
     record UserLoginReqBody(
             String username,
@@ -38,7 +40,7 @@ public class AdminController {
                 .findByUsername(req.username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
-        if (!user.getPassword().equals(req.password))
+        if (!passwordEncoder.matches(req.password, user.getPassword()))
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
 
         String accessToken =  userService.genAccessToken(user);
@@ -72,6 +74,18 @@ public class AdminController {
                     userService.findUsers(searchKeywordType, searchKeyword, page, pageSize)
                             .map(UserDto::new)
                 )
+        );
+    }
+
+    @DeleteMapping("/logout")
+    public RsData<Void> logout() {
+
+        rq.deleteCookie("accessToken");
+        rq.deleteCookie("apiKey");
+
+        return new RsData<>(
+                "200-1",
+                "로그아웃 되었습니다."
         );
     }
 }

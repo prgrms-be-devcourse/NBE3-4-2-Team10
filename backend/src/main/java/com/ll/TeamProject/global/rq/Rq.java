@@ -75,4 +75,17 @@ public class Rq {
         // 인증 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+    public void deleteCookie(String name) {
+        ResponseCookie cookie = ResponseCookie.from(name, null)
+                .path("/")
+                .domain("localhost")
+                .sameSite("Strict")
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+
+        resp.addHeader("Set-Cookie", cookie.toString());
+    }
 }

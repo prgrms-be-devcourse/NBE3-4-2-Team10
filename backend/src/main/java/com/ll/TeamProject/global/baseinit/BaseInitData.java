@@ -9,6 +9,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ import static com.ll.TeamProject.domain.user.entity.Role.USER;
 @RequiredArgsConstructor
 public class BaseInitData {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     @Lazy
@@ -38,7 +40,7 @@ public class BaseInitData {
             SiteUser admin = SiteUser
                     .builder()
                     .username("admin")
-                    .password("admin")
+                    .password(passwordEncoder.encode("admin"))
                     .role(ADMIN)
                     .email("admin@ll.com")
                     .apiKey(UUID.randomUUID().toString())
@@ -48,7 +50,7 @@ public class BaseInitData {
             for (int i = 1; i <= 100; i++) {
                 SiteUser user = SiteUser.builder()
                         .username("user" + i)
-                        .password("password" + i)
+                        .password(passwordEncoder.encode("password" + i))
                         .role(USER)
                         .email("user" + i + "@ll.com")
                         .apiKey(UUID.randomUUID().toString())
