@@ -7,19 +7,24 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
+    // 특정 캘린더에서 겹치는 일정 조회
     @Query("SELECT s FROM Schedule s WHERE s.calendar.id = :calendarId AND " +
             "(s.startTime < :endTime AND s.endTime > :startTime)")
     List<Schedule> findOverlappingSchedules(@Param("calendarId") Long calendarId,
                                             @Param("startTime") LocalDateTime startTime,
                                             @Param("endTime") LocalDateTime endTime);
 
-    // JPQL을 사용한 날짜 범위 조회
-    @Query("SELECT s FROM Schedule s WHERE s.startTime >= :startDate AND s.endTime <= :endDate")
-    List<Schedule> findSchedulesWithinDateRange(@Param("startDate") LocalDateTime startDate,
-                                                @Param("endDate") LocalDateTime endDate);
+    // 특정 캘린더 내 일정 조회 (기존 쿼리에서 calendarId 추가)
+    @Query("SELECT s FROM Schedule s WHERE s.calendar.id = :calendarId AND " +
+            "s.startTime >= :startDate AND s.endTime <= :endDate")
+    List<Schedule> findSchedulesByCalendarAndDateRange(@Param("calendarId") Long calendarId,
+                                                       @Param("startDate") LocalDateTime startDate,
+                                                       @Param("endDate") LocalDateTime endDate);
 
-
+    // 특정 캘린더에서 특정 일정 조회
+    Optional<Schedule> findByIdAndCalendarId(Long scheduleId, Long calendarId);
 }

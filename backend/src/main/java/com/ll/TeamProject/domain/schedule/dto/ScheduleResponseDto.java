@@ -12,6 +12,22 @@ public record ScheduleResponseDto(
         LocalDateTime startTime,
         LocalDateTime endTime,
         Location location,
-        LocalDateTime createDate, // BaseTime의 createDate
-        LocalDateTime modifyDate  // BaseTime의 modifyDate
-) {}
+        LocalDateTime createDate,
+        LocalDateTime modifyDate
+) {
+    public ScheduleResponseDto(
+            Long id, Long calendarId, String title, String description,
+            LocalDateTime startTime, LocalDateTime endTime, Location location,
+            LocalDateTime createDate, LocalDateTime modifyDate
+    ) {
+        this.id = id;
+        this.calendarId = calendarId;
+        this.title = title;
+        this.description = (description != null) ? description : ""; // null이면 빈 문자열 처리
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.location = location;
+        this.createDate = createDate;
+        this.modifyDate = (modifyDate != null) ? modifyDate : createDate; // null이면 createDate와 동일하게 설정
+    }
+}
