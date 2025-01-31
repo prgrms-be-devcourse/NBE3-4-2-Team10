@@ -67,6 +67,9 @@ public class AdminController {
             @RequestParam(defaultValue = "") String searchKeyword
     ) {
 
+        if (page < 1)
+            throw new ServiceException("400-1", "페이지 번호는 1 이상이어야 합니다.");
+
         return new RsData<>(
                 "200-1",
                 "",

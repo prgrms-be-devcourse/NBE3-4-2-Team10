@@ -47,7 +47,7 @@ public class BaseInitData {
                     .build();
             userRepository.save(admin);
 
-            for (int i = 1; i <= 100; i++) {
+            for (int i = 1; i <= 13; i++) {
                 SiteUser user = SiteUser.builder()
                         .username("user" + i)
                         .password(passwordEncoder.encode("password" + i))
