@@ -1,4 +1,4 @@
-"use client";
+// components/calendar/calendar/CalendarSidebar/CalendarSidebar.tsx
 import React from "react";
 import {
   CalendarIcon,
@@ -6,7 +6,7 @@ import {
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import type { Calendar } from "@/lib/calendar/types/calendarTypes";
+import type { Calendar } from "../../../../lib/calendar/types/calendarTypes";
 
 interface CalendarSidebarProps {
   onCreateClick: () => void;
@@ -24,78 +24,50 @@ export const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
   selectedCalendar,
 }) => {
   return (
-    <div className="h-full bg-white shadow-lg">
-      <div className="p-4">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          캘린더 관리
-        </h2>
-        <nav className="flex flex-col items-center space-y-8">
-          <button
-            onClick={onViewClick}
-            className="flex flex-col items-center w-full"
-          >
-            <CalendarIcon className="w-8 h-8 mb-2" />
-            <span className="text-sm">캘린더 조회</span>
-          </button>
-
-          <button
-            onClick={onCreateClick}
-            className="flex flex-col items-center w-full"
-          >
-            <PlusIcon className="w-8 h-8 mb-2" />
-            <span className="text-sm">캘린더 생성</span>
-          </button>
-
-          <button
-            onClick={onUpdateClick}
-            disabled={!selectedCalendar}
-            className="flex flex-col items-center w-full"
-          >
-            <PencilIcon className="w-8 h-8 mb-2" />
-            <span className="text-sm">캘린더 수정</span>
-          </button>
-
-          <button
-            onClick={onDeleteClick}
-            disabled={!selectedCalendar}
-            className="flex flex-col items-center w-full"
-          >
-            <TrashIcon className="w-8 h-8 mb-2" />
-            <span className="text-sm">캘린더 삭제</span>
-          </button>
-        </nav>
+    <div className="h-screen bg-white p-4">
+      <div className="mb-8">
+        <h1 className="text-xl font-semibold text-gray-800">캘린더 관리</h1>
       </div>
+
+      <nav className="flex flex-col space-y-4">
+        <button
+          onClick={onViewClick}
+          className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 p-2 rounded-lg"
+        >
+          <CalendarIcon className="h-6 w-6" />
+          <span>캘린더 조회</span>
+        </button>
+
+        <button
+          onClick={onCreateClick}
+          className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 p-2 rounded-lg"
+        >
+          <PlusIcon className="h-6 w-6" />
+          <span>캘린더 생성</span>
+        </button>
+
+        <button
+          onClick={onUpdateClick}
+          className={`flex items-center space-x-2 text-gray-700 hover:bg-gray-100 p-2 rounded-lg ${
+            !selectedCalendar && "opacity-50 cursor-not-allowed"
+          }`}
+          disabled={!selectedCalendar}
+        >
+          <PencilIcon className="h-6 w-6" />
+          <span>캘린더 수정</span>
+        </button>
+
+        <button
+          onClick={onDeleteClick}
+          className={`flex items-center space-x-2 text-gray-700 hover:bg-gray-100 p-2 rounded-lg ${
+            !selectedCalendar && "opacity-50 cursor-not-allowed"
+          }`}
+          disabled={!selectedCalendar}
+        >
+          <TrashIcon className="h-6 w-6" />
+          <span>캘린더 삭제</span>
+        </button>
+      </nav>
     </div>
-  );
-};
-
-interface SidebarButtonProps {
-  icon: React.ElementType;
-  text: string;
-  onClick: () => void;
-  disabled?: boolean;
-}
-
-const SidebarButton: React.FC<SidebarButtonProps> = ({
-  icon: Icon,
-  text,
-  onClick,
-  disabled = false,
-}) => {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`
-       flex flex-col items-center justify-center 
-       w-full p-4 mb-4
-       text-gray-700 hover:bg-gray-100
-       rounded-lg transition-colors
-       ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-     `}
-    >
-      <Icon className="w-8 h-8" />
-      <span className="mt-2 text-sm">{text}</span>
-    </button>
   );
 };

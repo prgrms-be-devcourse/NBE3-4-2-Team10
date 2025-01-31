@@ -1,9 +1,12 @@
+// components/calendar/calendar/CalendarView/CalendarView.tsx
 "use client";
 import React from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { Calendar } from "@/lib/calendar/types/calendarTypes";
+import type { Calendar } from "../../../../lib/calendar/types/calendarTypes";
+import { useCalendar } from "../../../../lib/calendar/hooks/useCalendar";
+import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 
 interface CalendarViewProps {
   calendars: Calendar[];
@@ -16,57 +19,82 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   selectedCalendar,
   onCalendarSelect,
 }) => {
-  // 캘린더 목록을 사이드 패널로 표시
-  const renderCalendarList = () => {
-    return (
-      <div className="mb-6">
-        <h3 className="font-semibold mb-2">내 캘린더 목록</h3>
-        <div className="space-y-2">
-          {calendars.map((calendar) => (
-            <div
-              key={calendar.id}
-              className={`p-2 rounded cursor-pointer ${
-                selectedCalendar?.id === calendar.id
-                  ? "bg-blue-100 text-blue-800"
-                  : "hover:bg-gray-100"
-              }`}
-              onClick={() => onCalendarSelect(calendar)}
-            >
-              <div className="font-medium">{calendar.name}</div>
-              {calendar.description && (
-                <div className="text-sm text-gray-600">
-                  {calendar.description}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+  const { createCalendar, deleteCalendar } = useCalendar();
+
+  const handleDateSelect = async (selectInfo: DateSelectArg) => {
+    const title = prompt("일정 제목을 입력하세요:");
+    if (title) {
+      const calendarName = title;
+      const description = prompt("일정 설명을 입력하세요:") || "";
+
+      try {
+        await createCalendar({ name: calendarName, description });
+        selectInfo.view.calendar.unselect();
+      } catch (err) {
+        alert("일정 생성에 실패했습니다.");
+        console.error(err);
+      }
+    }
+  };
+
+  const handleEventClick = async (clickInfo: EventClickArg) => {
+    if (
+      selectedCalendar &&
+      confirm(`'${clickInfo.event.title}' 일정을 삭제하시겠습니까?`)
+    ) {
+      try {
+        await deleteCalendar(selectedCalendar.id);
+      } catch (err) {
+        alert("일정 삭제에 실패했습니다.");
+        console.error(err);
+      }
+    }
   };
 
   return (
-    <div className="flex-1 p-8">
-      <div className="flex space-x-6">
-        {/* 캘린더 목록 */}
-        <div className="w-64 bg-white rounded-lg shadow p-4">
-          {renderCalendarList()}
-        </div>
-
-        {/* 캘린더 뷰 */}
-        <div className="flex-1 bg-white rounded-lg shadow p-6">
-          <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,dayGridWeek",
-            }}
-            height="80vh"
-            // 추가적인 FullCalendar 설정들을 여기에 추가할 수 있습니다
-          />
-        </div>
+    <div className="w-full p-4 bg-white">
+      <div style={{ height: "calc(100vh - 2rem)" }}>
+        <FullCalendar
+          plugins={[dayGridPlugin, interactionPlugin]}
+          initialView="dayGridMonth"
+          headerToolbar={{
+            left: "prev,today,next",
+            center: "title",
+            right: "dayGridMonth,dayGridWeek",
+          }}
+          events={calendars.map((calendar) => ({
+            id: String(calendar.id),
+            title: calendar.name,
+            description: calendar.description,
+          }))}
+          selectable={true}
+          select={handleDateSelect}
+          eventClick={handleEventClick}
+          handleWindowResize={true}
+          dayCellContent={(e) => {
+            return e.dayNumberText;
+          }}
+          views={{
+            dayGridMonth: {
+              titleFormat: { year: "numeric", month: "long" },
+              dayHeaderFormat: { weekday: "short" },
+              dayPopoverFormat: {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              },
+            },
+          }}
+          // 달력 크기 관련 설정
+          height="100%"
+          aspectRatio={1.5}
+          // 스타일 관련 설정
+          contentHeight="auto"
+          dayMaxEventRows={true}
+          fixedWeekCount={false}
+          // 달력 셀 스타일을 위한 추가 설정
+          dayCellClassNames="min-h-[100px] p-2"
+        />
       </div>
     </div>
   );

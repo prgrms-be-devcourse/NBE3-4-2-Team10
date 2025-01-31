@@ -1,7 +1,6 @@
 // components/calendar/calendar/CalendarLayout/CalendarLayout.tsx
 "use client";
 import React, { useState } from "react";
-// 추가된 import
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { CalendarSidebar } from "../CalendarSidebar";
 import { CalendarView } from "../CalendarView";
@@ -81,14 +80,13 @@ export const CalendarLayout = () => {
       return;
     }
   };
-
   return (
     <PanelGroup direction="horizontal" className="min-h-screen">
       <Panel
-        defaultSize={20}
-        minSize={15}
-        maxSize={40}
-        className="overflow-y-auto"
+        defaultSize={10}
+        minSize={8}
+        maxSize={30}
+        className="bg-gray-100 border-r-2 border-gray-300 p-2"
       >
         <CalendarSidebar
           onCreateClick={handleCreateCalendar}
@@ -99,11 +97,11 @@ export const CalendarLayout = () => {
         />
       </Panel>
 
-      <PanelResizeHandle className="w-2 bg-gray-200 hover:bg-gray-300 transition-colors">
-        <div className="w-1 h-full mx-auto bg-gray-300" />
+      <PanelResizeHandle className="w-1 bg-gray-400 hover:bg-gray-500 transition-colors cursor-col-resize">
+        <div className="w-[1px] h-full bg-gray-400" />
       </PanelResizeHandle>
 
-      <Panel className="w-full">
+      <Panel className="bg-white p-4">
         <CalendarView
           calendars={calendars}
           selectedCalendar={selectedCalendar}

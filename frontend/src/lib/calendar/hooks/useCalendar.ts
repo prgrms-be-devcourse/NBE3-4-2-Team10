@@ -1,10 +1,11 @@
+// lib/calendar/hooks/useCalendar.ts
 import { useState, useEffect } from "react";
-import { calendarApi } from "@/lib/calendar/api/calendarApi";
+import { calendarApi } from "../api/calendarApi";
 import type {
   Calendar,
   CalendarCreateDto,
   CalendarUpdateDto,
-} from "@/lib/calendar/types/calendarTypes";
+} from "../types/calendarTypes";
 
 export const useCalendar = () => {
   const [calendars, setCalendars] = useState<Calendar[]>([]);

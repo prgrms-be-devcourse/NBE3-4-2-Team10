@@ -1,9 +1,21 @@
-import React from "react";
+import Script from "next/script";
 
-interface CalendarLayoutProps {
+export default function CalendarLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
-
-export default function CalendarRootLayout({ children }: CalendarLayoutProps) {
-  return <div className="min-h-screen bg-gray-100">{children}</div>;
+}) {
+  return (
+    <div>
+      <Script
+        src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"
+        strategy="afterInteractive"
+      />
+      <link
+        href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css"
+        rel="stylesheet"
+      />
+      {children}
+    </div>
+  );
 }
