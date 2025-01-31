@@ -1,5 +1,7 @@
 package com.ll.TeamProject.domain.calendar.controller;
 
+import com.ll.TeamProject.domain.calendar.dto.CalendarCreateDto;
+import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.service.CalendarService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,13 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
+    // 캘린더 생성
+    @PostMapping
+    public ResponseEntity<Calendar> createCalendar(@RequestBody CalendarCreateDto dto) {
+        Calendar calendar = calendarService.createCalendar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(calendar);
+    }
+
     // 모든 캘린더 조회
     @GetMapping
     public ResponseEntity<List<Calendar>> getAllCalendars() {
@@ -29,6 +38,15 @@ public class CalendarController {
         if (calendar == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+        return ResponseEntity.ok(calendar);
+    }
+
+    // 캘린더 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<Calendar> updateCalendar(
+            @PathVariable Long id,
+            @RequestBody CalendarUpdateDto dto) {
+        Calendar calendar = calendarService.updateCalendar(id, dto);
         return ResponseEntity.ok(calendar);
     }
 

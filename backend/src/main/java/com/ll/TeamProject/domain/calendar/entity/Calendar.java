@@ -1,5 +1,6 @@
 package com.ll.TeamProject.domain.calendar.entity;
 
+import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.user.entity.User;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
@@ -34,8 +35,18 @@ public class Calendar extends BaseTime {
         this.description = description;
     }
 
-    // setUser 메서드 추가
-    public void setUser(User user) {
+    protected Calendar() {
+    }
+
+    // 비즈니스 생성자
+    public Calendar(User user, String name, String description) {
         this.user = user;
+        this.name = name;
+        this.description = description;
+    }
+
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 }

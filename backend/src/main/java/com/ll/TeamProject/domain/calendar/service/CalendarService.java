@@ -1,7 +1,13 @@
 package com.ll.TeamProject.domain.calendar.service;
 
+import com.ll.TeamProject.domain.calendar.dto.CalendarCreateDto;
+import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
+import com.ll.TeamProject.domain.user.entity.User;
+import com.ll.TeamProject.domain.user.repository.UserRepository;
+import com.ll.TeamProject.global.exceptions.ServiceException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +19,17 @@ import java.util.Optional;
 public class CalendarService {
 
     private final CalendarRepository calendarRepository;
+    private final UserRepository userRepository;
+
+    // 캘린더 생성
+    @Transactional
+    public Calendar createCalendar(CalendarCreateDto dto) {
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new ServiceException("404", "사용자를 찾을 수 없습니다."));
+
+        Calendar calendar = new Calendar(user, dto.getName(), dto.getDescription());
+        return calendarRepository.save(calendar);
+    }
 
     // 모든 캘린더 조회
     public List<Calendar> getAllCalendars() {
@@ -23,6 +40,14 @@ public class CalendarService {
     public Calendar getCalendarById(Long id) {
         Optional<Calendar> optionalCalendar = calendarRepository.findById(id);
         return optionalCalendar.orElse(null); // 없으면 null 반환
+    }
+
+    // 캘린더 수정
+    @Transactional
+    public Calendar updateCalendar(Long id, CalendarUpdateDto dto) {
+        Calendar calendar = getCalendarById(id);
+        calendar.update(dto.getName(), dto.getDescription());
+        return calendarRepository.save(calendar);
     }
 
     // 캘린더 삭제
