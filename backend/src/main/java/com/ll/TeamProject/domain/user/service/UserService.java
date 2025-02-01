@@ -1,9 +1,11 @@
 package com.ll.TeamProject.domain.user.service;
 
-import com.ll.TeamProject.domain.user.dto.KakaoUserInfo;
+import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.enums.Role;
+import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
-import com.ll.TeamProject.domain.user.entity.Role;
+import com.ll.TeamProject.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ll.TeamProject.domain.user.enums.AuthType.KAKAO;
 import static com.ll.TeamProject.domain.user.enums.Role.USER;
 
 @Service
@@ -21,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AuthTokenService authTokenService;
+    private final AuthenticationRepository authenticationRepository;
 
     public Optional<SiteUser> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -36,6 +40,7 @@ public class UserService {
 
     public SiteUser getUserFromAccessToken(String accessToken) {
         Map<String, Object> payload = authTokenService.payload(accessToken);
+
         if (payload == null) return null;
 
         long id = (long) payload.get("id");
@@ -47,6 +52,10 @@ public class UserService {
 
     public Optional<SiteUser> findByApiKey(String apiKey) {
         return userRepository.findByApiKey(apiKey);
+    }
+
+    public Optional<SiteUser> findById(long id) {
+        return userRepository.findById(id);
     }
 
     public Page<SiteUser> findUsers(
@@ -74,22 +83,50 @@ public class UserService {
         return userRepository.findByRoleNot(Role.ADMIN, pageRequest);
     }
 
-    public SiteUser socialLogin(KakaoUserInfo userInfo, String type) {
-        Optional<SiteUser> siteUserOptional = userRepository.findByUsername(type + userInfo.getId());
+    public SiteUser modifyOrJoin(String username, String nickname, String email) {
+        Optional<SiteUser> opUser = findByUsername(username);
 
-        if (siteUserOptional.isPresent()) {
-            return siteUserOptional.get();
-        } else {
-            SiteUser user = SiteUser.builder()
-                    .username(type + userInfo.getId())
-                    .password("")
-                    // nickname 추가 가능
-                    .role(USER)
-                    .email(userInfo.getEmail())
-                    .apiKey(UUID.randomUUID().toString())
-                    .build();
-            userRepository.save(user);
+        if (opUser.isPresent()) {
+            SiteUser user = opUser.get();
+            modify(user);
             return user;
         }
+
+        return join(username, nickname, "", "");
+    }
+
+    public void modify(SiteUser user) {
+
+    }
+
+    public SiteUser join(String username, String nickname, String password, String email) {
+        userRepository
+                .findByUsername(username)
+                .ifPresent(user -> {
+                    throw new ServiceException("409-1", "해당 username은 이미 사용중입니다.");
+                });
+
+        SiteUser user = SiteUser.builder()
+                .username(username)
+                .password(password)
+                .nickname(nickname)
+                .email(email)
+                .role(USER)
+                .apiKey(UUID.randomUUID().toString())
+                .build();
+
+        user = userRepository.save(user);
+
+        Authentication authentication = Authentication
+                .builder()
+                .userId(user.getId())
+                .authType(KAKAO)
+                .failedAttempts(0)
+                .isLocked(false)
+                .build();
+
+        authenticationRepository.save(authentication);
+
+        return user;
     }
 }

@@ -28,6 +28,8 @@ public class SiteUser extends BaseTime {
     private String username; // 사용자 이름
 
     @Column
+    private String nickname;
+    @Column
     private String password; // 암호화된 비밀번호
 
     @Column(unique = true)
@@ -37,8 +39,16 @@ public class SiteUser extends BaseTime {
     @Enumerated(EnumType.STRING)
     private Role role; // 사용자 역할 (관리자/일반 사용자)
 
-    @Column
+    @Column(unique = true)
     private String apiKey;
+
+    public SiteUser(long id, String username, String nickname, Role role) {
+        super();
+        this.setId(id);
+        this.username = username;
+        this.nickname = nickname;
+        this.role = role;
+    }
 
     public SiteUser(long id, String username, Role role) {
         super();

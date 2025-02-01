@@ -1,6 +1,9 @@
 package com.ll.TeamProject.domain.user.controller;
 
+import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.enums.AuthType;
+import com.ll.TeamProject.domain.user.service.AuthenticationService;
 import com.ll.TeamProject.domain.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import org.hamcrest.Matchers;
@@ -34,6 +37,8 @@ class AdminControllerTest {
     private MockMvc mvc;
     @Autowired
     private UserService userService;
+    @Autowired
+    AuthenticationService authenticationService;
 
     @Test
     @DisplayName("관리자 로그인")
@@ -55,6 +60,12 @@ class AdminControllerTest {
                 .andDo(print());
 
         SiteUser actor = userService.findByUsername("admin").get();
+        Authentication authentication = authenticationService.findByUserId(actor.getId()).get();
+
+        assertThat(authentication).isNotNull();
+        assertThat(authentication.getUserId()).isEqualTo(actor.getId());
+        assertThat(authentication.getAuthType()).isEqualTo(AuthType.LOCAL);
+        assertThat(authentication.getLastLogin()).isNotNull();
 
         resultActions
                 .andExpect(handler().handlerType(AdminController.class))
@@ -89,7 +100,7 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 - 없는 사용자")
+    @DisplayName("로그인 - 잘못된 사용자이름")
     void t2() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
@@ -131,6 +142,8 @@ class AdminControllerTest {
                                 )
                 )
                 .andDo(print());
+
+        // authentication 비밀번호 실패 테스트 필요
 
         resultActions
                 .andExpect(handler().handlerType(AdminController.class))
@@ -255,7 +268,7 @@ class AdminControllerTest {
                 )
                 .andDo(print());
 
-        Page<SiteUser> userPage = userService.findUsers("", "user2", 1, 3);
+        Page<SiteUser> userPage = userService.findUsers("email", "user2", 1, 3);
 
         resultActions
                 .andExpect(handler().handlerType(AdminController.class))
@@ -280,7 +293,7 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("회원 목록 조회 - 페이지 번호 잘못된 요청")
+    @DisplayName("회원 목록 조회 - 잘못된 페이지 번호 요청")
     void t8() throws Exception {
         SiteUser actor = userService.findByUsername("admin").get();
         String actorAuthToken = userService.genAuthToken(actor);
@@ -301,7 +314,7 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("logout")
+    @DisplayName("로그아웃")
     void t9() throws Exception {
         ResultActions resultActions = mvc
                 .perform(

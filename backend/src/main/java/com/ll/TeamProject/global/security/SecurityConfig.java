@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final CustomAuthenticationFilter customAuthenticationFilter;
+    private final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -33,9 +34,7 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/admin")
                                 .hasAuthority("ROLE_ADMIN")
-                                .requestMatchers("/login","/index")
-                                .permitAll()
-                                .requestMatchers("/google/login","/google/index")
+                                .requestMatchers("/login", "/index")
                                 .permitAll()
                                 .requestMatchers("/static/**", "/images/**", "/css/**", "/js/**") // 정적 자원 예외 추가
                                 .permitAll()
@@ -52,6 +51,11 @@ public class SecurityConfig {
                 .csrf(
                         csrf ->
                                 csrf.disable()
+                )
+                .oauth2Login(
+                        oauth2 -> {
+                            oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
+                        }
                 )
                 .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(

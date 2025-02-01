@@ -11,10 +11,10 @@ import java.util.Map;
 @Service
 public class AuthTokenService {
 
-    @Value("${jwt.secretKey}")
+    @Value("${custom.jwt.secretKey}")
     private String secretKey;
 
-    @Value("${accessToken.expirationSeconds}")
+    @Value("${custom.accessToken.expirationSeconds}")
     private long accessTokenExpirationSeconds;
 
     String genAccessToken(SiteUser user) {

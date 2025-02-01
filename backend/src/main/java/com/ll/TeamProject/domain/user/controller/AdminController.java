@@ -2,6 +2,7 @@ package com.ll.TeamProject.domain.user.controller;
 
 import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.service.AuthenticationService;
 import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.rq.Rq;
@@ -21,6 +22,7 @@ public class AdminController {
     private final UserService userService;
     private final Rq rq;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationService authenticationService;
 
     record UserLoginReqBody(
             String username,
@@ -34,19 +36,21 @@ public class AdminController {
     ) {}
 
     @PostMapping("/login")
-    @Transactional(readOnly = true)
+    @Transactional
     public RsData<UserLoginResBody> login(@RequestBody @Valid UserLoginReqBody req) {
         SiteUser user = userService
                 .findByUsername(req.username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
-        if (!passwordEncoder.matches(req.password, user.getPassword()))
+        if (!passwordEncoder.matches(req.password, user.getPassword())) {
+            authenticationService.handleLoginFailure(user); // db 적용 안됨 수정 필요
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
+        }
 
         String accessToken =  userService.genAccessToken(user);
+        rq.makeAuthCookies(user);
 
-        rq.setCookie("accessToken", accessToken);
-        rq.setCookie("apiKey", user.getApiKey());
+        authenticationService.modifyLastLogin(user);
 
         return new RsData<>(
                 "200-1",

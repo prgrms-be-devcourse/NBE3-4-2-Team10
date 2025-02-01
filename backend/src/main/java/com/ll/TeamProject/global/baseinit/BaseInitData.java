@@ -1,6 +1,8 @@
 package com.ll.TeamProject.global.baseinit;
 
+import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +15,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
+import static com.ll.TeamProject.domain.user.enums.AuthType.LOCAL;
+import static com.ll.TeamProject.domain.user.enums.Role.ADMIN;
+import static com.ll.TeamProject.domain.user.enums.Role.USER;
 import static com.ll.TeamProject.domain.user.entity.Role.ADMIN;
 import static com.ll.TeamProject.domain.user.entity.Role.USER;
 
 @Configuration
 @RequiredArgsConstructor
 public class BaseInitData {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationRepository authenticationRepository;
 
     @Autowired
     @Lazy
@@ -40,22 +47,44 @@ public class BaseInitData {
             SiteUser admin = SiteUser
                     .builder()
                     .username("admin")
+                    .nickname("관리자")
                     .password(passwordEncoder.encode("admin"))
                     .role(ADMIN)
                     .email("admin@ll.com")
                     .apiKey(UUID.randomUUID().toString())
                     .build();
-            userRepository.save(admin);
+            admin = userRepository.save(admin);
+
+            Authentication authentication = Authentication
+                    .builder()
+                    .userId(admin.getId())
+                    .authType(LOCAL)
+                    .failedAttempts(0)
+                    .isLocked(false)
+                    .build();
+
+            authenticationRepository.save(authentication);
 
             for (int i = 1; i <= 13; i++) {
                 SiteUser user = SiteUser.builder()
                         .username("user" + i)
-                        .password(passwordEncoder.encode("password" + i))
+                        .nickname("테스트 회원" + i)
+                        .password(passwordEncoder.encode("1234"))
                         .role(USER)
-                        .email("user" + i + "@ll.com")
+                        .email("user" + i + "@test.com")
                         .apiKey(UUID.randomUUID().toString())
                         .build();
-                userRepository.save(user);
+                user = userRepository.save(user);
+
+                Authentication userAuthentication = Authentication
+                        .builder()
+                        .userId(user.getId())
+                        .authType(LOCAL)
+                        .failedAttempts(0)
+                        .isLocked(false)
+                        .build();
+
+                authenticationRepository.save(userAuthentication);
             }
         }
     }

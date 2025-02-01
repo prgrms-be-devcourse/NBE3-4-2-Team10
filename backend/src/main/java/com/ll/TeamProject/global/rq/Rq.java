@@ -1,6 +1,8 @@
 package com.ll.TeamProject.global.rq;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.enums.Role;
+import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.security.SecurityUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ public class Rq {
 
     private final HttpServletResponse resp;
     private final HttpServletRequest req;
+    private final UserService userService;
 
     public void setCookie(String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
@@ -56,12 +59,12 @@ public class Rq {
     }
 
     public void setLogin(SiteUser user) {
-        // 현재 user -> id, username
         // 스프링 시큐리티가 이해하는 user로 변경
         UserDetails userDetails = new SecurityUser(
                 user.getId(),
                 user.getUsername(),
                 "",
+                user.getNickname(),
                 user.getAuthorities()
         );
 
@@ -87,5 +90,27 @@ public class Rq {
                 .build();
 
         resp.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    public SiteUser getActor() {
+        return Optional.ofNullable(
+                        SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                )
+                .map(Authentication::getPrincipal)
+                .filter(principal -> principal instanceof SecurityUser)
+                .map(principal -> (SecurityUser) principal)
+                .map(securityUser -> new SiteUser(securityUser.getId(), securityUser.getUsername(), Role.USER))
+                .orElse(null);
+    }
+
+    public String makeAuthCookies(SiteUser user) {
+        String accessToken = userService.genAccessToken(user);
+
+        setCookie("apiKey", user.getApiKey());
+        setCookie("accessToken", accessToken);
+
+        return accessToken;
     }
 }
