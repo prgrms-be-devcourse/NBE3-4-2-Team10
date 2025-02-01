@@ -32,7 +32,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // /admin 으로 시작 하지 않으면 건너뜀
-        if (!request.getRequestURI().startsWith("/admin")) {
+        if (!request.getRequestURI().startsWith("/admin") && !request.getRequestURI().startsWith("/user")) {
             filterChain.doFilter(request, response);
             return;
         }

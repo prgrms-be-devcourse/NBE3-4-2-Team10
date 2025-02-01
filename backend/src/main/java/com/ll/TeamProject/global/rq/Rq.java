@@ -70,9 +70,9 @@ public class Rq {
 
         // 인증
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user,
-                user.getPassword(),
-                user.getAuthorities()
+                userDetails,
+                userDetails.getPassword(),
+                userDetails.getAuthorities()
         );
 
         // 인증 저장
@@ -112,5 +112,15 @@ public class Rq {
         setCookie("accessToken", accessToken);
 
         return accessToken;
+    }
+
+    public Optional<SiteUser> findByActor() {
+        SiteUser actor = getActor();
+
+        if (actor == null) {
+            return Optional.empty();
+        }
+
+        return userService.findById(actor.getId());
     }
 }
