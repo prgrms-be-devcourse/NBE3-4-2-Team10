@@ -48,6 +48,8 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
         highlight-sql: true
+springdoc:
+  default-produces-media-type: application/json;charset=UTF-8
 logging:
   level:
     org.hibernate.SQL: DEBUG

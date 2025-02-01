@@ -1,4 +1,4 @@
-package com.ll.TeamProject.global.baseinit;
+package com.ll.TeamProject.global.initData;
 
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;

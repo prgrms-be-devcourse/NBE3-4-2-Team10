@@ -44,6 +44,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
 	implementation("org.json:json:20250107")
+
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1")
+
 }
 
 tasks.withType<Test> {

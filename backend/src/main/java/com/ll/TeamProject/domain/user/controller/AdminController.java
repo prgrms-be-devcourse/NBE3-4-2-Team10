@@ -8,6 +8,9 @@ import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.rq.Rq;
 import com.ll.TeamProject.global.rsData.RsData;
 import com.ll.TeamProject.standard.page.dto.PageDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin")
+@Tag(name = "AdminController", description = "관리자 컨트롤러")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminController {
 
     private final UserService userService;
@@ -37,6 +42,7 @@ public class AdminController {
 
     @PostMapping("/login")
     @Transactional
+    @Operation(summary = "관리자 로그인")
     public RsData<UserLoginResBody> login(@RequestBody @Valid UserLoginReqBody req) {
         SiteUser user = userService
                 .findByUsername(req.username)
@@ -64,6 +70,7 @@ public class AdminController {
     }
 
     @GetMapping
+    @Operation(summary = "회원 명단 조회 (페이징, 검색)")
     public RsData<PageDto<UserDto>> users(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
@@ -85,6 +92,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/logout")
+    @Operation(summary = "로그아웃")
     public RsData<Void> logout() {
 
         rq.deleteCookie("accessToken");

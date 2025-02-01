@@ -28,18 +28,30 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+                                // h2 콘솔 허용
                                 .requestMatchers("/h2-console/**")
                                 .permitAll()
+
+                                // 관리자 로그인 로그아웃 요청 허용
                                 .requestMatchers("/admin/login", "/admin/logout")
                                 .permitAll()
+
+                                // 관리자 작업 권한 필요
                                 .requestMatchers("/admin")
                                 .hasAuthority("ROLE_ADMIN")
+
+                                // 로그인 요청 허용
                                 .requestMatchers("/login")
                                 .permitAll()
+
+                                // 정적자원 허용
                                 .requestMatchers("/static/**", "/images/**", "/css/**", "/js/**") // 정적 자원 예외 추가
                                 .permitAll()
+
+                                // 나머지 요청은 허용
+                                // SpringDoc 관련 작업 하면서 임시로 (swagger 허용 필요)
                                 .anyRequest()
-                                .authenticated()
+                                .permitAll()
                 )
                 .headers(
                         headers ->
