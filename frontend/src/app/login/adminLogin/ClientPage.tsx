@@ -2,6 +2,8 @@
 
 "use client";
 
+import client from "@/lib/backend/client";
+
 export default function ClientPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,26 +24,19 @@ export default function ClientPage() {
       return;
     }
 
-    // 나중에 openapi-fetch로 변경
-    const response = await fetch("/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const response = await client.POST("/admin/login", {
+      body: {
         username: form.username.value,
         password: form.password.value,
-      }),
+      },
     });
 
-    const data = await response.json();
-
-    if (data.error) {
-      alert(data.error.msg);
+    if (response.error) {
+      alert(response.error.msg);
       return;
     }
 
-    alert(data.msg);
+    alert(response.data.msg);
 
     window.location.replace("/");
   };
