@@ -33,7 +33,8 @@ public class Rq {
                 .domain("localhost")
                 .sameSite("Strict")
                 .httpOnly(true)
-                .secure(true)
+                // secure로 설정한 쿠키는 https 에서만 보내지는 것 같아서 프론트 문제 생김, 임시 주석처리
+//                .secure(true)
                 .build();
 
         resp.addHeader("Set-Cookie", cookie.toString());
@@ -84,7 +85,7 @@ public class Rq {
                 .path("/")
                 .domain("localhost")
                 .sameSite("Strict")
-                .secure(true)
+//                .secure(true)
                 .httpOnly(true)
                 .maxAge(0)
                 .build();
