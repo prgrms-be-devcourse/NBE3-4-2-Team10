@@ -32,19 +32,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .toUpperCase(Locale.getDefault());
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
+
+        String username = providerTypeCode + "__" + oauthId;
         String nickname = null;
         String email = null;
 
         if (providerTypeCode.equals("GOOGLE")) {
+
             email = (String) attributes.getOrDefault("email", "");
             nickname = (String) attributes.getOrDefault("name", "");
 
         } else if (providerTypeCode.equals("KAKAO")) {
-            Map<String, Object> properties = (Map<String, Object>) attributes.getOrDefault("properties", Map.of());
-            nickname = (String) properties.getOrDefault("nickname", "");
+
+            Map<String, String> attributesProperties = (Map<String, String>) attributes.get("properties");
+            Map<String, String> accountProperties = (Map<String, String>) attributes.get("kakao_account");
+            nickname = attributesProperties.get("nickname");
+            email = accountProperties.get("email");
         }
 
-        String username = providerTypeCode + "__" + oauthId;
         SiteUser user = userService.modifyOrJoin(username, nickname, email, providerTypeCode);
 
         return new SecurityUser(

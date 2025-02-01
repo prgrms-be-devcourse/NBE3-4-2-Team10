@@ -34,7 +34,7 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/admin")
                                 .hasAuthority("ROLE_ADMIN")
-                                .requestMatchers("/login", "/index")
+                                .requestMatchers("/login")
                                 .permitAll()
                                 .requestMatchers("/static/**", "/images/**", "/css/**", "/js/**") // 정적 자원 예외 추가
                                 .permitAll()

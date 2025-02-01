@@ -15,7 +15,7 @@ spring:
         registration:
           kakao:
             clientId: ON_SECRET
-            scope: profile_nickname, profile_image
+            scope: profile_nickname, profile_image, account_email
             client-name: Kakao
             authorization-grant-type: authorization_code
             redirect-uri: "${custom.dev.backUrl}/{action}/oauth2/code/{registrationId}"
