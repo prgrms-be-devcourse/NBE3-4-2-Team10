@@ -65,10 +65,10 @@ public class AdminController {
 
     @GetMapping
     public RsData<PageDto<UserDto>> users(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "username") String searchKeywordType,
-            @RequestParam(defaultValue = "") String searchKeyword
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+            @RequestParam(name = "searchKeywordType", defaultValue = "username") String searchKeywordType,
+            @RequestParam(name = "searchKeyword", defaultValue = "") String searchKeyword
     ) {
 
         if (page < 1)
