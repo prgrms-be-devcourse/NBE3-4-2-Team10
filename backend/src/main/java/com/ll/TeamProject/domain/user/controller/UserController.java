@@ -18,8 +18,10 @@ public class UserController {
 
     @GetMapping("/login")
     public String login(Model model) {
-        String location = devBackUrl+"/oauth2/authorization/kakao";
-        model.addAttribute("location", location);
+        String kakaoLocation = devBackUrl+"/oauth2/authorization/kakao";
+        String googleLocation = devBackUrl+"/oauth2/authorization/google";
+        model.addAttribute("kakaoLocation", kakaoLocation);
+        model.addAttribute("googleLocation", googleLocation);
         return "login";
     }
 

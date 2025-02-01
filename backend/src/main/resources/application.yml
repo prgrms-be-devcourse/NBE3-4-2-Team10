@@ -15,15 +15,27 @@ spring:
         registration:
           kakao:
             clientId: ON_SECRET
-            scope: profile_nickname, profile_image,
+            scope: profile_nickname, profile_image
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: "${custom.site.backUrl}/{action}/oauth2/code/{registrationId}"
+            redirect-uri: "${custom.dev.backUrl}/{action}/oauth2/code/{registrationId}"
+          google:
+            clientId: ON_SECRET
+            clientSecret: ON_SECRET
+            scope: email, profile
+            client-name: Google
+            authorization-grant-type: authorization_code
+            redirect-uri: "${custom.dev.backUrl}/{action}/oauth2/code/{registrationId}"
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
             user-name-attribute: id
   output:
     ansi:

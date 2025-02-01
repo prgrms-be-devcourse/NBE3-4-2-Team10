@@ -22,7 +22,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         String oauthId = oAuth2User.getName();
@@ -33,13 +32,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .toUpperCase(Locale.getDefault());
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, String> attributesProperties = (Map<String, String>) attributes.get("properties");
+        String nickname = null;
+        String email = null;
 
-        String nickname = attributesProperties.get("nickname");
-        String profileImgUrl = attributesProperties.get("profile_image");
+        if (providerTypeCode.equals("GOOGLE")) {
+            email = (String) attributes.getOrDefault("email", "");
+            nickname = (String) attributes.getOrDefault("name", "");
+
+        } else if (providerTypeCode.equals("KAKAO")) {
+            Map<String, Object> properties = (Map<String, Object>) attributes.getOrDefault("properties", Map.of());
+            nickname = (String) properties.getOrDefault("nickname", "");
+        }
+
         String username = providerTypeCode + "__" + oauthId;
-
-        SiteUser user = userService.modifyOrJoin(username, nickname, "");
+        SiteUser user = userService.modifyOrJoin(username, nickname, email, providerTypeCode);
 
         return new SecurityUser(
                 user.getId(),

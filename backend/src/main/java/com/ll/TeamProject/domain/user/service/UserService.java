@@ -2,6 +2,7 @@ package com.ll.TeamProject.domain.user.service;
 
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.enums.AuthType;
 import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.ll.TeamProject.domain.user.enums.AuthType.KAKAO;
 import static com.ll.TeamProject.domain.user.enums.Role.USER;
 
 @Service
@@ -83,7 +83,7 @@ public class UserService {
         return userRepository.findByRoleNot(Role.ADMIN, pageRequest);
     }
 
-    public SiteUser modifyOrJoin(String username, String nickname, String email) {
+    public SiteUser modifyOrJoin(String username, String nickname, String email, String providerTypeCode) {
         Optional<SiteUser> opUser = findByUsername(username);
 
         if (opUser.isPresent()) {
@@ -92,14 +92,14 @@ public class UserService {
             return user;
         }
 
-        return join(username, nickname, "", "");
+        return join(username, nickname, "", email, providerTypeCode);
     }
 
     public void modify(SiteUser user) {
 
     }
 
-    public SiteUser join(String username, String nickname, String password, String email) {
+    public SiteUser join(String username, String nickname, String password, String email, String providerTypeCode) {
         userRepository
                 .findByUsername(username)
                 .ifPresent(user -> {
@@ -117,10 +117,12 @@ public class UserService {
 
         user = userRepository.save(user);
 
+        AuthType authType = AuthType.valueOf(providerTypeCode);
+
         Authentication authentication = Authentication
                 .builder()
                 .userId(user.getId())
-                .authType(KAKAO)
+                .authType(authType)
                 .failedAttempts(0)
                 .isLocked(false)
                 .build();
