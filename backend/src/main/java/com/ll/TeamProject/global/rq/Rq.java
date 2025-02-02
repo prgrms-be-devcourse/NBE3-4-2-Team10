@@ -31,7 +31,7 @@ public class Rq {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .domain("localhost")
-                .sameSite("Strict")
+                .sameSite("None") // 소셜 로그인 중 오류 생겨서 변경
                 .httpOnly(true)
                 // secure로 설정한 쿠키는 https 에서만 보내지는 것 같아서 프론트 문제 생김, 임시 주석처리
 //                .secure(true)
@@ -84,7 +84,7 @@ public class Rq {
         ResponseCookie cookie = ResponseCookie.from(name, null)
                 .path("/")
                 .domain("localhost")
-                .sameSite("Strict")
+                .sameSite("None") // 소셜 로그인 작업 중 변경
 //                .secure(true)
                 .httpOnly(true)
                 .maxAge(0)
@@ -109,6 +109,7 @@ public class Rq {
     public String makeAuthCookies(SiteUser user) {
         String accessToken = userService.genAccessToken(user);
 
+        System.out.println("쿠키를 설정합니다.");
         setCookie("apiKey", user.getApiKey());
         setCookie("accessToken", accessToken);
 

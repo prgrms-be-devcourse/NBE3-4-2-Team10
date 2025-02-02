@@ -19,8 +19,8 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SavedRequestAwareA
     private final UserService userService;
     private final Rq rq;
 
-    @Value("${custom.dev.backUrl}")
-    private String devBackUrl;
+    @Value("${custom.dev.frontUrl}")
+    private String devFrontUrl;
 
     @SneakyThrows
     @Override
@@ -29,6 +29,6 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SavedRequestAwareA
 
         rq.makeAuthCookies(actor);
 
-        response.sendRedirect(devBackUrl+"/index"); // 프론트 연결시 프론트 url로 변경 필요
+        response.sendRedirect(devFrontUrl); // 프론트 메인 페이지로 연결
     }
 }

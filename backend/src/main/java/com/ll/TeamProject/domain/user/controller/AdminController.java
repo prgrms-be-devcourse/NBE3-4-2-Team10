@@ -53,8 +53,7 @@ public class AdminController {
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken =  userService.genAccessToken(user);
-        rq.makeAuthCookies(user);
+        String accessToken = rq.makeAuthCookies(user);
 
         authenticationService.modifyLastLogin(user);
 

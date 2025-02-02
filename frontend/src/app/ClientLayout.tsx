@@ -5,7 +5,7 @@
 import client from "@/lib/backend/client";
 import { components } from "@/lib/backend/schema";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from "@fortawesome/free-solid-svg-icons/faHouse";
 import {
@@ -25,6 +25,17 @@ export default function ClientLayput({
   isLogin: boolean;
   isAdmin: boolean;
 }>) {
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    // 클라이언트에서만 실행되도록 설정
+    setIsHydrated(true);
+  }, []);
+
+  if (!isHydrated) {
+    return null; // 클라이언트에서만 렌더링 되도록 함
+  }
+
   const logout = async () => {
     const response = await client.DELETE("/admin/logout");
 
@@ -43,6 +54,7 @@ export default function ClientLayput({
           <Link href="/">
             <FontAwesomeIcon icon={faHouse} className="px-2" />홈
           </Link>
+          {isLogin && <div>환영합니다. {me.username}님!</div>}
           {!isLogin && (
             <Link href="/login">
               <FontAwesomeIcon icon={faPowerOff} className="px-2" />
