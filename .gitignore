@@ -43,3 +43,5 @@ out/
 db_dev.mv.db
 db_dev.trace.db
 .env.local
+package.json
+package-lock.json
