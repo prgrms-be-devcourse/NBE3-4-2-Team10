@@ -10,7 +10,7 @@ import { ScheduleDetail } from '@/schedule/components/ScheduleDetail';
 
 export default function CalendarPage() {
     const params = useParams();
-    const calendarId = params.calendarId ? Number(params.calendarId) : null;  // 파라미터에서 calendarId 가져오기
+    const calendarId = params.calendarId ? Number(params.calendarId) : null;
 
     const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
@@ -61,12 +61,12 @@ export default function CalendarPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
+        <div className="max-w-6xl mx-auto px-2 pt-8">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-4xl font-bold">일정 목록</h1>  {/* 글씨 크기 및 스타일 수정 */}
+                <h1 className="text-4xl font-bold">일정 목록</h1>
                 <button
                     onClick={() => setIsFormOpen(true)}
-                    className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-lg font-medium"
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-lg font-medium ml-8"
                 >
                     새 일정
                 </button>
@@ -74,7 +74,7 @@ export default function CalendarPage() {
 
             {calendarId && isFormOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg w-full max-w-md">
+                    <div className="bg-white rounded-lg w-full max-w-6xl">
                         <ScheduleForm
                             calendarId={calendarId}
                             onSubmit={handleCreateSchedule}
@@ -114,6 +114,7 @@ export default function CalendarPage() {
                 <ScheduleList
                     schedules={schedules}
                     onSelectSchedule={setSelectedSchedule}
+                    onCreateSchedule={() => setIsFormOpen(true)}
                 />
             )}
         </div>
