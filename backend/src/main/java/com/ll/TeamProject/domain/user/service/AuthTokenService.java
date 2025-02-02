@@ -20,7 +20,7 @@ public class AuthTokenService {
     String genAccessToken(SiteUser user) {
         long id = user.getId();
         String username = user.getUsername();
-        Role role = user.getRole();
+        String role = user.getRole().name();
 
         return Ut.jwt.toString(
                 secretKey,

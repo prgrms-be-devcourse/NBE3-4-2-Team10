@@ -6,6 +6,7 @@ import "./globals.css";
 import ClientLayout from "./ClientLayout";
 import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
+import { parseAccessToken } from "@/lib/auth/token";
 
 const pretendard = localFont({
   src: "./../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
@@ -24,27 +25,19 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const response = await client.GET("/user/me", {
-    headers: {
-      cookie: (await cookies()).toString(),
-    },
-  });
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  const me = response.data
-    ? response.data
-    : {
-        id: 0,
-        username: "",
-        createDate: "",
-        modifyDate: "",
-      };
+  const { me, isLogin, isAdmin } = parseAccessToken(accessToken);
 
   return (
     <html lang="ko" className={`${pretendard.variable}`}>
       <body
         className={`${pretendard.className} antialiased flex flex-col min-h-[100dvh]`}
       >
-        <ClientLayout me={me}>{children}</ClientLayout>
+        <ClientLayout me={me} isLogin={isLogin} isAdmin={isAdmin}>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

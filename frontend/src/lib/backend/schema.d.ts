@@ -108,14 +108,14 @@ export interface components {
         };
         PageDtoUserDto: {
             /** Format: int32 */
-            currentPageNumber?: number;
+            currentPageNumber: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int64 */
-            totalPages?: number;
+            totalPages: number;
             /** Format: int64 */
-            totalItems?: number;
-            items?: components["schemas"]["UserDto"][];
+            totalItems: number;
+            items: components["schemas"]["UserDto"][];
         };
         RsDataPageDtoUserDto: {
             resultCode: string;
