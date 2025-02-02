@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';  // useParams를 import
+import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Schedule, ScheduleFormData } from '@/schedule/types/schedule';
 import { scheduleApi } from '@/schedule/services/scheduleApi';
@@ -61,7 +61,7 @@ export default function CalendarPage() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto px-2 pt-8">
+        <div className="max-w-6xl mx-auto px-2 pt-8 w-3/4">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-4xl font-bold">일정 목록</h1>
                 <button
@@ -74,7 +74,7 @@ export default function CalendarPage() {
 
             {calendarId && isFormOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg w-full max-w-6xl">
+                    <div className="bg-white rounded-lg w-full max-w-6xl w-3/4">
                         <ScheduleForm
                             calendarId={calendarId}
                             onSubmit={handleCreateSchedule}
@@ -86,7 +86,7 @@ export default function CalendarPage() {
 
             {calendarId && isEditing && selectedSchedule && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg w-full max-w-md">
+                    <div className="bg-white rounded-lg w-full max-w-md w-3/4">
                         <ScheduleForm
                             calendarId={calendarId}
                             initialData={selectedSchedule}
@@ -99,7 +99,7 @@ export default function CalendarPage() {
 
             {calendarId && selectedSchedule && !isEditing && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg w-full max-w-md">
+                    <div className="bg-white rounded-lg w-full max-w-md w-3/4">
                         <ScheduleDetail
                             schedule={selectedSchedule}
                             onEdit={() => setIsEditing(true)}
