@@ -7,6 +7,9 @@ import ClientLayout from "./ClientLayout";
 import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
 import { parseAccessToken } from "@/lib/auth/token";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+config.autoAddCss = false;
 
 const pretendard = localFont({
   src: "./../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
