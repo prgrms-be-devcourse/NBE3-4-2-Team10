@@ -123,3 +123,23 @@ button.new-schedule-button {
 button.new-schedule-button:hover {
   background-color: #003687;
 }
+
+/* 폼 레이블과 입력 필드 스타일 */
+.schedule-form-row {
+  margin-bottom: 24px; /* 각 행 사이의 간격 */
+}
+
+.schedule-form-label {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px; /* 레이블과 입력 필드 사이 간격 */
+}
+
+.schedule-form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+

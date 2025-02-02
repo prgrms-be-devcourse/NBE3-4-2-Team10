@@ -33,44 +33,44 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 className="p-8 space-y-10 bg-white rounded-lg shadow-lg w-full max-w-xl"
             >
                 {/* 제목 */}
-                <div className="py-6">
-                    <label className="block text-3xl font-bold mb-3">제목</label>
+                <div className="schedule-form-row">
+                    <label className="schedule-form-label">제목</label>
                     <input
                         type="text"
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="w-full p-4 border border-gray-300 rounded"
+                        className="schedule-form-input"
                         required
                     />
                 </div>
 
                 {/* 시작 시간 */}
-                <div className="py-6">
-                    <label className="block text-3xl font-bold mb-3">시작 시간</label>
+                <div className="schedule-form-row">
+                    <label className="schedule-form-label">시작 시간</label>
                     <input
                         type="datetime-local"
                         value={formData.startTime}
                         onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                        className="w-full p-4 border border-gray-300 rounded"
+                        className="schedule-form-input"
                         required
                     />
                 </div>
 
                 {/* 종료 시간 */}
-                <div className="py-6">
-                    <label className="block text-3xl font-bold mb-3">종료 시간</label>
+                <div className="schedule-form-row">
+                    <label className="schedule-form-label">종료 시간</label>
                     <input
                         type="datetime-local"
                         value={formData.endTime}
                         onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                        className="w-full p-4 border border-gray-300 rounded"
+                        className="schedule-form-input"
                         required
                     />
                 </div>
 
                 {/* 주소 */}
-                <div className="py-6">
-                    <label className="block text-3xl font-bold mb-3">주소</label>
+                <div className="schedule-form-row">
+                    <label className="schedule-form-label">주소</label>
                     <input
                         type="text"
                         value={formData.location.address}
@@ -80,17 +80,17 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({
                                 location: { ...formData.location, address: e.target.value },
                             })
                         }
-                        className="w-full p-4 border border-gray-300 rounded"
+                        className="schedule-form-input"
                     />
                 </div>
 
                 {/* 설명 */}
-                <div className="py-6">
-                    <label className="block text-3xl font-bold mb-3">설명</label>
+                <div className="schedule-form-row">
+                    <label className="schedule-form-label">설명</label>
                     <textarea
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="w-full p-4 border border-gray-300 rounded"
+                        className="schedule-form-input"
                         rows={8}
                     />
                 </div>
