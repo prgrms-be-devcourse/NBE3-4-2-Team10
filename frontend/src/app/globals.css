@@ -18,15 +18,16 @@ body {
 /* 카드 스타일 */
 .schedule-card {
   width: 1100px;
-  padding: 12px;
-  background-color: #ffffff !important;
-  color: #171717 !important;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  color: #171717;
   border: 1px solid #d1d5db;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  justify-content: center;
 }
 
 /* 스케쥴 디테일 팝업 스타일 */
@@ -43,12 +44,10 @@ body {
   gap: 24px;
 }
 
-
 /* 제목 스타일 */
 .schedule-title {
   font-size: 32px;
   font-weight: bold;
-  margin-bottom: 8px;
 }
 
 /* 내용 행 스타일 */
@@ -56,8 +55,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 20px;
-  padding: 12px 0;
+  font-size: 18px;
+  padding: 4px 0;
 }
 
 /* 버튼 그룹 */
@@ -73,16 +72,42 @@ button {
   padding: 8px 16px;
   font-size: 14px;
   font-weight: bold;
-  background-color: #007bff;
-  color: #ffffff;
+  background-color: #ffffff;  /* 흰색 배경 */
+  color: #171717;             /* 검정색 텍스트 */
+  border: 1px solid #d1d5db;  /* 회색 테두리 */
   border-radius: 8px;
-  border: none;
   cursor: pointer;
 }
 
+/* 버튼 호버 효과 */
 button:hover {
-  background-color: #0056b3;
+  background-color: #f0f0f0;  /* 마우스 오버 시 옅은 회색 */
+  border-color: #a1a1a1;      /* 테두리 색상 변경 */
 }
+
+/* X 버튼 스타일 */
+button.x-button-style {
+  width: 32px;              /* 가로 길이 지정 */
+  height: 32px;             /* 높이 지정 */
+  padding: 0;               /* 내부 여백 제거 */
+  font-size: 18px;          /* 폰트 크기 */
+  font-weight: bold;
+  background-color: #ffffff;
+  color: #171717;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* 텍스트 가운데 정렬 */
+}
+
+/* X 버튼 호버 효과 */
+button.x-button-style:hover {
+  background-color: #f0f0f0;
+  border-color: #a1a1a1;
+}
+
 
 .schedule-list-container {
   display: flex;
@@ -114,11 +139,19 @@ button.new-schedule-button {
   padding: 12px 24px;
   font-size: 16px;
   font-weight: bold;
-  background-color: #004aad;
-  color: #ffffff;
+  background-color: #ffffff;  /* 흰색 배경 */
+  color: #171717;            /* 검정색 텍스트 */
+  border: 1px solid #d1d5db; /* 회색 테두리 */
   border-radius: 8px;
   cursor: pointer;
 }
+
+button.new-schedule-button:hover {
+  background-color: #f0f0f0; /* 마우스 오버 시 옅은 회색 */
+  border-color: #a1a1a1;     /* 테두리 색상 변경 */
+}
+
+
 
 button.new-schedule-button:hover {
   background-color: #003687;
@@ -142,4 +175,3 @@ button.new-schedule-button:hover {
   border: 1px solid #d1d5db;
   border-radius: 8px;
 }
-

@@ -20,7 +20,7 @@ export const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
                 {/* X 버튼 */}
                 <button
                     onClick={onClose}
-                    className="absolute top-2 right-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className="absolute top-2 right-2 x-button-style"
                 >
                     ✕
                 </button>
@@ -46,12 +46,11 @@ export const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
                     </div>
                 </div>
 
-
                 <div className="schedule-detail-buttons flex justify-end mt-4 gap-4">
-                    <button onClick={onEdit} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    <button onClick={onEdit} className="px-4 py-2 button-style">
                         수정
                     </button>
-                    <button onClick={onDelete} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    <button onClick={onDelete} className="px-4 py-2 button-style">
                         삭제
                     </button>
                 </div>

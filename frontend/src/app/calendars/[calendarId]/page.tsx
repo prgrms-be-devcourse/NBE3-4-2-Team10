@@ -66,9 +66,9 @@ export default function CalendarPage() {
                 <h1 className="text-4xl font-bold">일정 목록</h1>
                 <button
                     onClick={() => setIsFormOpen(true)}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-lg font-medium ml-8"
+                    className="px-6 py-3 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-200 text-lg font-bold ml-8"
                 >
-                    새 일정
+                    + 새 일정
                 </button>
             </div>
 
