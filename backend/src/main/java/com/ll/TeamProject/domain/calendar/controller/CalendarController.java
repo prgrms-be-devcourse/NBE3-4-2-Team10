@@ -24,7 +24,6 @@ public class CalendarController {
         Calendar calendar = calendarService.createCalendar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(calendar);
     }
-
     // 모든 캘린더 조회
     @GetMapping
     public ResponseEntity<List<Calendar>> getAllCalendars() {
@@ -49,7 +48,6 @@ public class CalendarController {
         Calendar calendar = calendarService.updateCalendar(id, dto);
         return ResponseEntity.ok(calendar);
     }
-
     // 캘린더 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCalendar(@PathVariable Long id) {

@@ -1,6 +1,5 @@
 package com.ll.TeamProject.domain.calendar.entity;
 
-import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.user.entity.User;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
