@@ -1,5 +1,6 @@
-package com.ll.TeamProject.domain.user;
+package com.ll.TeamProject.domain.user.entity;
 
+import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,11 +17,11 @@ public class Friendship extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 사용자 ID (FK)
+    private SiteUser user; // 사용자 ID (FK)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "friend_id", nullable = false)
-    private User friend; // 친구 사용자 ID (FK)
+    private SiteUser friend; // 친구 사용자 ID (FK)
 
     private Status status; // 친구 상태 (요청, 승인, 차단)
 

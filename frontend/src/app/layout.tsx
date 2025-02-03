@@ -1,6 +1,16 @@
+// 레이아웃 (서버)
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import ClientLayout from "./ClientLayout";
+import client from "@/lib/backend/client";
+import { cookies } from "next/headers";
+import { parseAccessToken } from "@/lib/auth/token";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+config.autoAddCss = false;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -10,6 +20,11 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+const pretendard = localFont({
+  src: "./../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
+  display: "swap",
+  weight: "45 920",
+  variable: "--font-pretendard",
 });
 
 export const metadata: Metadata = {
@@ -18,16 +33,26 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  const { me, isLogin, isAdmin } = parseAccessToken(accessToken);
+
   return (
     <html lang="en">
+    <html lang="ko" className={`${pretendard.variable}`}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${pretendard.className} antialiased flex flex-col min-h-[100dvh]`}
       >
-        {children}
+        <ClientLayout me={me} isLogin={isLogin} isAdmin={isAdmin}>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );
