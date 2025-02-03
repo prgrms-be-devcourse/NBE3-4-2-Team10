@@ -4,7 +4,7 @@ import com.ll.TeamProject.domain.calendar.dto.CalendarCreateDto;
 import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
-import com.ll.TeamProject.domain.user.entity.User;
+import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import jakarta.transaction.Transactional;
@@ -23,7 +23,7 @@ public class CalendarService {
     // 캘린더 생성
     @Transactional
     public Calendar createCalendar(CalendarCreateDto dto) {
-        User user = userRepository.findById(dto.getUserId())
+        SiteUser user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ServiceException("404", "사용자를 찾을 수 없습니다."));
 
         Calendar calendar = new Calendar(user, dto.getName(), dto.getDescription());
