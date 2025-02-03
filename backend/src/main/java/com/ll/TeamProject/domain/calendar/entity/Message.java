@@ -1,6 +1,6 @@
 package com.ll.TeamProject.domain.calendar.entity;
 
-import com.ll.TeamProject.domain.user.entity.User;
+import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +15,7 @@ public class Message extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // 작성자
-    private User user;
+    private SiteUser user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id")

@@ -1,5 +1,6 @@
 package com.ll.TeamProject.domain.user.entity;
 
+import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
