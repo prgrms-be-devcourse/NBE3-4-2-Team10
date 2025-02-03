@@ -107,7 +107,7 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({
                     </button>
                     <button
                         type="submit"
-                        className="px-6 py-3 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-200 font-bold text-lg"
+                        className="px-6 py-3 bg-gray-300 text-gray-800 text-lg font-bold rounded hover:bg-gray-400"
                     >
                         저장
                     </button>

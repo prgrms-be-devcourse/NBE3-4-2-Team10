@@ -66,9 +66,9 @@ export default function CalendarPage() {
                 <h1 className="text-4xl font-bold">일정 목록</h1>
                 <button
                     onClick={() => setIsFormOpen(true)}
-                    className="px-6 py-3 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-200 text-lg font-bold ml-8"
+                    className="px-6 py-3 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 text-lg font-bold ml-8"
                 >
-                    + 새 일정
+                    + 일정 추가
                 </button>
             </div>
 
@@ -114,7 +114,6 @@ export default function CalendarPage() {
                 <ScheduleList
                     schedules={schedules}
                     onSelectSchedule={setSelectedSchedule}
-                    onCreateSchedule={() => setIsFormOpen(true)}
                 />
             )}
         </div>
