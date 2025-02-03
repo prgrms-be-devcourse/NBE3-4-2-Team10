@@ -6,6 +6,8 @@ import com.ll.TeamProject.domain.schedule.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,6 +19,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "ScheduleController", description = "스케줄 컨트롤러")
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/calendars/{calendarId}/schedules")
 public class ScheduleController {
 
