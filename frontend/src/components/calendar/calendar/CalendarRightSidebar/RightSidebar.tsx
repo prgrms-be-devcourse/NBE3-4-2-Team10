@@ -2,7 +2,7 @@ import React from "react";
 
 export const RightSidebar: React.FC = () => {
   return (
-    <div className="h-screen bg-[#FFFDF9] p-4 border-l-2 border-black">
+    <div className="h-screen bg-[#FFFDF9]  border-l-2 border-black">
       <div className="mb-8">
         <h1 className="text-xl font-semibold text-gray-800">친구 & 채팅</h1>
       </div>
