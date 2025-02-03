@@ -1,6 +1,6 @@
 package com.ll.TeamProject.domain.calendar.entity;
 
-import com.ll.TeamProject.domain.user.entity.User;
+import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,5 +19,5 @@ public class SharedCalendar extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 공유받은 사용자 ID
+    private SiteUser user; // 공유받은 사용자 ID
 }
