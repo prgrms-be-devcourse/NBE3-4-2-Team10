@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { CalendarSidebar } from "../CalendarSidebar";
+import { RightSidebar } from "../CalendarRightSidebar";
 import { CalendarView } from "../CalendarView";
 import { useCalendar } from "../../../../lib/calendar/hooks/useCalendar";
 import type { Calendar } from "../../../../lib/calendar/types/calendarTypes";
@@ -82,12 +83,7 @@ export const CalendarLayout = () => {
   };
   return (
     <PanelGroup direction="horizontal" className="min-h-screen">
-      <Panel
-        defaultSize={10}
-        minSize={8}
-        maxSize={30}
-        className="bg-gray-100 border-r-2 border-gray-300 p-2"
-      >
+      <Panel defaultSize={15} minSize={10} maxSize={30}>
         <CalendarSidebar
           onCreateClick={handleCreateCalendar}
           onUpdateClick={handleUpdateCalendar}
@@ -97,16 +93,24 @@ export const CalendarLayout = () => {
         />
       </Panel>
 
-      <PanelResizeHandle className="w-1 bg-gray-400 hover:bg-gray-500 transition-colors cursor-col-resize">
-        <div className="w-[1px] h-full bg-gray-400" />
+      <PanelResizeHandle className="w-1.5 hover:bg-blue-200 transition-colors">
+        <div className="w-full h-full bg-gray-300" />
       </PanelResizeHandle>
 
-      <Panel className="bg-white p-4">
+      <Panel>
         <CalendarView
           calendars={calendars}
           selectedCalendar={selectedCalendar}
           onCalendarSelect={setSelectedCalendar}
         />
+      </Panel>
+
+      <PanelResizeHandle className="w-1.5 hover:bg-blue-200 transition-colors">
+        <div className="w-full h-full bg-gray-300" />
+      </PanelResizeHandle>
+
+      <Panel defaultSize={15} minSize={10} maxSize={30}>
+        <RightSidebar />
       </Panel>
     </PanelGroup>
   );
