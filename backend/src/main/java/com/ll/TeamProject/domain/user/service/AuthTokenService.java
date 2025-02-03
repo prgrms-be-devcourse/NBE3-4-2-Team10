@@ -29,6 +29,7 @@ public class AuthTokenService {
         );
     }
 
+    // JWT 파싱
     public Map<String, Object> payload(String accessToken) {
         Map<String, Object> parsedPayload = Ut.jwt.payload(secretKey, accessToken);
 

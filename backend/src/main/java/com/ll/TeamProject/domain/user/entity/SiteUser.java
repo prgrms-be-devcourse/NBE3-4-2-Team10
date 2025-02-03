@@ -57,6 +57,12 @@ public class SiteUser extends BaseTime {
         this.role = role;
     }
 
+    public SiteUser(long id, String username) {
+        super();
+        this.setId(id);
+        this.username = username;
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getAuthoritiesAsString()
                 .stream()

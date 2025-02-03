@@ -26,6 +26,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String oauthId = oAuth2User.getName();
 
+        // 소셜 로그인 종류
         String providerTypeCode = userRequest
                 .getClientRegistration()
                 .getRegistrationId()
@@ -33,23 +34,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        String username = providerTypeCode + "__" + oauthId;
+        String username = providerTypeCode + "__" + oauthId; // KAKAO__12983719287
         String nickname = null;
         String email = null;
 
         if (providerTypeCode.equals("GOOGLE")) {
 
-            email = (String) attributes.getOrDefault("email", "");
-            nickname = (String) attributes.getOrDefault("name", "");
+            email = (String) attributes.get("email");
+            nickname = (String) attributes.get("name");
 
         } else if (providerTypeCode.equals("KAKAO")) {
 
             Map<String, String> attributesProperties = (Map<String, String>) attributes.get("properties");
-            Map<String, String> accountProperties = (Map<String, String>) attributes.get("kakao_account");
             nickname = attributesProperties.get("nickname");
+
+            Map<String, String> accountProperties = (Map<String, String>) attributes.get("kakao_account");
             email = accountProperties.get("email");
         }
 
+        // 회원이 아니면 회원가입, 회원이면 수정
         SiteUser user = userService.modifyOrJoin(username, nickname, email, providerTypeCode);
 
         return new SecurityUser(

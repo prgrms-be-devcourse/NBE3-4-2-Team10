@@ -55,7 +55,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         String apiKey = authTokens.apiKey;
         String accessToken = authTokens.accessToken;
 
-        // 토큰으로 user 얻기
+        // 토큰으로 user 얻기 -> JWT로 얻은 가짜 user 객체(DB에서 조회한 user 아님) id, username, role 있는 user
         SiteUser user = userService.getUserFromAccessToken(accessToken);
 
         // 토큰이 만료된거면 새로 refresh
@@ -69,14 +69,16 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    // apiKey로 JWT 토큰 재생성
     private SiteUser refreshAccessTokenByApiKey(String apiKey) {
+        // apiKey로 user 찾음
         Optional<SiteUser> opUser = userService.findByApiKey(apiKey);
 
         if (opUser.isEmpty()) return null;
 
         SiteUser user = opUser.get();
 
-        // 토큰 재발급
+        // 토큰 재발급 -> 헤더와 쿠키에 토큰 설정 완료
         refreshAccessToken(user);
 
         return user;
@@ -85,14 +87,17 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     private void refreshAccessToken(SiteUser user) {
         String newAccessToken = userService.genAccessToken(user);
 
+        // 토큰 재발급 후 헤더와 쿠키에 재설정
         rq.setHeader("Authorization", "Bearer " + user.getApiKey() + " " + newAccessToken);
         rq.setCookie("accessToken", newAccessToken);
     }
 
+    // 요청애서 토큰 얻기
     private AuthTokens getAuthTokensFromRequest() {
+        // 요청 헤더에서 Authorization 얻기
         String authorization = rq.getHeader("Authorization");
 
-        // authorization null 아니고 Bearer 시작하면 토큰값 얻기
+        // Authorization null 아니고 Bearer 시작하면 토큰값 얻기
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring("Bearer ".length());
             String[] tokenBits = token.split(" ", 2);
@@ -101,6 +106,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
                 return new AuthTokens(tokenBits[0], tokenBits[1]);
         }
 
+        // 헤더에 토큰이 없다면 쿠키에서 토큰값 얻기
         String apikey = rq.getCookieValue("apiKey");
         String accessToken = rq.getCookieValue("accessToken");
 

@@ -69,11 +69,14 @@ public class SecurityConfig {
                         csrf ->
                                 csrf.disable()
                 )
+                // 소셜 로그인
                 .oauth2Login(
                         oauth2 -> {
+                            // 소셜 로그인 성공시 실행
                             oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                         }
                 )
+                // 시큐리티 필터에 커스텀 필터 추가
                 .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(
                         exceptionHandling -> exceptionHandling

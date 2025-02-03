@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class UserDto {
     private long id;
     private String username;
+    private String nickname;
     private LocalDateTime createDate;
     private LocalDateTime modifyDate;
     private String email;
@@ -16,6 +17,7 @@ public class UserDto {
     public UserDto(SiteUser siteUser) {
         this.id = siteUser.getId();
         this.username = siteUser.getUsername();
+        this.nickname = siteUser.getNickname();
         this.createDate = siteUser.getCreateDate();
         this.modifyDate = siteUser.getModifyDate();
         this.email = siteUser.getEmail();

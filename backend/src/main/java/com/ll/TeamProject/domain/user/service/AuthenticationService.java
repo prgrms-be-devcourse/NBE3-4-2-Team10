@@ -15,12 +15,14 @@ public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
 
+    // 최근 로그인 시간 수정
     public void modifyLastLogin(SiteUser user) {
         authenticationRepository.findByUserId(user.getId()).ifPresent(authentication -> {
             authentication.setLastLogin(LocalDateTime.now());
         });
     }
 
+    // 로그인 실패
     public void handleLoginFailure(SiteUser user) {
         authenticationRepository.findByUserId(user.getId()).ifPresent(authentication -> {
 
