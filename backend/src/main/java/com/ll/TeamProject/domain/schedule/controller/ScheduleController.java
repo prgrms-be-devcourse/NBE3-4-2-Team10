@@ -69,7 +69,7 @@ public class ScheduleController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "일정 목록 조회", description = "지정된 날짜 범위(startDate ~ endDate) 내의 일정을 조회합니다.")
+    @Operation(summary = "일정 목록 조회", description = "지정된 날짜(date)에 해당하는 일정을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "일정 목록 조회 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 날짜 형식"),
@@ -83,6 +83,21 @@ public class ScheduleController {
         List<ScheduleResponseDto> schedules = scheduleService.getSchedules(calendarId, startDate, endDate);
         return ResponseEntity.ok(schedules);
     }
+
+    @Operation(summary = "하루 일정 조회", description = "특정 날짜(24시간)의 일정을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "하루 일정 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 날짜 형식"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/daily")
+    public ResponseEntity<List<ScheduleResponseDto>> getDailySchedules(
+            @PathVariable Long calendarId,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<ScheduleResponseDto> schedules = scheduleService.getDailySchedules(calendarId, date);
+        return ResponseEntity.ok(schedules);
+    }
+
 
     @Operation(summary = "특정 일정 조회", description = "주어진 일정 ID(scheduleId)를 기반으로 특정 일정을 조회합니다.")
     @ApiResponses({

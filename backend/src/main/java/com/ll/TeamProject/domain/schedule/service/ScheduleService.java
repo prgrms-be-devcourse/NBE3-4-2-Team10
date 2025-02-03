@@ -41,7 +41,7 @@ public class ScheduleService {
         return mapToDto(scheduleRepository.save(schedule));
     }
 
-    // 일정 수정 (calendarId 추가)
+    // 일정 수정
     public ScheduleResponseDto updateSchedule(Long calendarId, Long scheduleId, ScheduleRequestDto scheduleRequestDto) {
         Calendar calendar = getCalendarByIdOrThrow(calendarId);
         Schedule schedule = getScheduleByIdAndCalendar(calendarId, scheduleId);
@@ -59,13 +59,13 @@ public class ScheduleService {
         return mapToDto(schedule);
     }
 
-    // 일정 삭제 (calendarId 추가)
+    // 일정 삭제
     public void deleteSchedule(Long calendarId, Long scheduleId) {
         Schedule schedule = getScheduleByIdAndCalendar(calendarId, scheduleId);
         scheduleRepository.delete(schedule);
     }
 
-    // 특정 캘린더의 일정 목록 조회 (calendarId 추가)
+    // 특정 캘린더의 일정 목록 조회
     public List<ScheduleResponseDto> getSchedules(Long calendarId, LocalDate startDate, LocalDate endDate) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
@@ -74,7 +74,18 @@ public class ScheduleService {
                 .stream().map(this::mapToDto).toList();
     }
 
-    // 특정 일정 조회 (calendarId 추가)
+    // 하루 일정 조회 (00:00 ~ 23:59:59)
+    public List<ScheduleResponseDto> getDailySchedules(Long calendarId, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay(); // 00:00:00
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX); // 23:59:59
+
+        return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, startOfDay, endOfDay)
+                .stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+
+    // 특정 일정 조회
     public ScheduleResponseDto getScheduleById(Long calendarId, Long scheduleId) {
         return mapToDto(getScheduleByIdAndCalendar(calendarId, scheduleId));
     }
