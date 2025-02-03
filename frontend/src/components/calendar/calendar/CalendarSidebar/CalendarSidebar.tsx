@@ -17,7 +17,7 @@ export const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
   selectedCalendar,
 }) => {
   return (
-    <div className="h-screen bg-[#FFFDF9] p-4 border-r-2 border-black">
+    <div className="h-screen bg-[#FFFDF9] p-4 border-r-1 border-black">
       <div className="mb-8">
         <h1 className="text-xl font-semibold text-gray-800">캘린더 관리</h1>
       </div>
