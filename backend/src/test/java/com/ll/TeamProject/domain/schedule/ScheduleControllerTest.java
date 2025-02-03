@@ -1,13 +1,15 @@
 package com.ll.TeamProject.domain.schedule;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
-import com.ll.TeamProject.domain.schedule.controller.ScheduleController;
 import com.ll.TeamProject.domain.schedule.repository.ScheduleRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,6 +17,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -24,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@WebMvcTest(ScheduleController.class)
 public class ScheduleControllerTest {
 
     @Autowired
@@ -36,9 +39,17 @@ public class ScheduleControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeAll
+    static void setUpAll() {
+        objectMapper.registerModule(new JavaTimeModule());
+    }
+
     @Test
     @DisplayName("일정 생성 성공")
     void t1() throws Exception {
+        Long calendarId = 1L;
         scheduleRepository.deleteAll();
 
         // 요청 데이터 예시
@@ -72,7 +83,7 @@ public class ScheduleControllerTest {
 
         // Perform POST 요청
         ResultActions resultActions = mvc.perform(
-                        post("/schedules")
+                        post("/calendars/{calendarId}/schedules", calendarId)
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8)
@@ -94,6 +105,8 @@ public class ScheduleControllerTest {
     @Test
     @DisplayName("일정 생성 실패 - 중복 시간")
     void t2() throws Exception {
+        Long calendarId = 1L;
+
         // 중복 시간 요청 데이터
         String requestBody = """
             {
@@ -103,7 +116,7 @@ public class ScheduleControllerTest {
                 "endTime": "2025-02-01T11:30:00",
                 "location": {
                     "latitude": 37.5665,
-                    "longitude": 126.9780
+                    "longitude": 126.9780,
                     "address": "서울특별시 중구 세종대로 110"
                 }
             }
@@ -111,7 +124,7 @@ public class ScheduleControllerTest {
 
         // Perform POST 요청
         ResultActions resultActions = mvc.perform(
-                        post("/schedules")
+                        post("/calendars/{calendarId}/schedules", calendarId)
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8)
@@ -122,173 +135,16 @@ public class ScheduleControllerTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("해당 시간에 이미 일정이 존재합니다."));
-    }
-
-
-
-
-    @Test
-    @DisplayName("일정 수정 성공")
-    void t3() throws Exception {
-        // 수정 요청 데이터 예시
-        String requestBody = """
-                {
-                    "calendarId": 1,
-                    "title": "수정된 일정 제목",
-                    "description": "수정된 일정 설명",
-                    "startTime": "2025-02-01T12:00:00",
-                    "endTime": "2025-02-01T13:00:00",
-                    "location": {
-                        "latitude": 37.5678,
-                        "longitude": 126.9890
-                        "address": "서울특별시 중구 세종대로 110"
-                    }
-                }
-                """;
-
-        // 일정 ID 예시
-        Long scheduleId = 1L;
-
-        // Perform PUT 요청
-        ResultActions resultActions = mvc.perform(
-                        put("/schedules/{scheduleId}", scheduleId)
-                                .content(requestBody)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                )
-                .andDo(print());
-
-        // 기대 응답
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("수정된 일정 제목"))
-                .andExpect(jsonPath("$.description").value("수정된 일정 설명"))
-                .andExpect(jsonPath("$.startTime").value("2025-02-01T12:00:00"))
-                .andExpect(jsonPath("$.endTime").value("2025-02-01T13:00:00"))
-                .andExpect(jsonPath("$.location.latitude").value(37.5678))
-                .andExpect(jsonPath("$.location.longitude").value(126.9890))
-                .andExpect(jsonPath("$.location.address").value("서울특별시 중구 세종대로 110"));
-    }
-
-    @Test
-    @DisplayName("일정 수정 실패 - 일정이 존재하지 않음")
-    void t4() throws Exception {
-        // 요청 데이터 예시
-        String requestBody = """
-            {
-                "calendarId": 1,
-                "title": "수정된 일정 제목",
-                "description": "수정된 일정 설명",
-                "startTime": "2025-02-01T12:00:00",
-                "endTime": "2025-02-01T13:00:00",
-                "location": {
-                    "latitude": 37.5678,
-                    "longitude": 126.9890
-                    "address": "서울특별시 중구 세종대로 110"
-                }
-            }
-            """;
-
-        // 존재하지 않는 일정 ID
-        Long scheduleId = 999L;
-
-        // Perform PUT 요청
-        ResultActions resultActions = mvc.perform(
-                        put("/schedules/{scheduleId}", scheduleId)
-                                .content(requestBody)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                )
-                .andDo(print());
-
-        // 기대 응답
-        resultActions
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("해당 일정을 찾을 수 없습니다."));
-    }
-
-    @Test
-    @DisplayName("일정 수정 실패 - 시간 충돌")
-    void t5() throws Exception {
-        // 요청 데이터 예시
-        String requestBody = """
-            {
-                "calendarId": 1,
-                "title": "겹치는 시간 수정 요청",
-                "description": "겹치는 일정 테스트",
-                "startTime": "2025-02-01T10:00:00",
-                "endTime": "2025-02-01T11:00:00",
-                "location": {
-                    "latitude": 37.5678,
-                    "longitude": 126.9890
-                    "address": "서울특별시 중구 세종대로 110"
-                }
-            }
-            """;
-
-        // 존재하는 일정 ID
-        Long scheduleId = 1L;
-
-        // Perform PUT 요청
-        ResultActions resultActions = mvc.perform(
-                        put("/schedules/{scheduleId}", scheduleId)
-                                .content(requestBody)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                )
-                .andDo(print());
-
-        // 기대 응답
-        resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("해당 시간에 이미 일정이 존재합니다."));
-    }
-
-    @Test
-    @DisplayName("일정 삭제 성공")
-    void t6() throws Exception {
-        // 존재하는 일정 ID 예시
-        Long scheduleId = 1L;
-
-        // Perform DELETE 요청
-        ResultActions resultActions = mvc.perform(
-                        delete("/schedules/{scheduleId}", scheduleId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                )
-                .andDo(print());
-
-        // 기대 응답
-        resultActions
-                .andExpect(status().isNoContent()); // 상태 코드 204 (No Content)
-    }
-
-    @Test
-    @DisplayName("일정 삭제 실패 - 일정이 존재하지 않음")
-    void t7() throws Exception {
-        // 존재하지 않는 일정 ID 예시
-        Long scheduleId = 999L;
-
-        // Perform DELETE 요청
-        ResultActions resultActions = mvc.perform(
-                        delete("/schedules/{scheduleId}", scheduleId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                )
-                .andDo(print());
-
-        // 기대 응답
-        resultActions
-                .andExpect(status().isNotFound()) // 상태 코드 404
-                .andExpect(jsonPath("$.message").value("해당 일정을 찾을 수 없습니다.")); // 예외 메시지 확인
     }
 
     @Test
     @DisplayName("일정 목록 조회 - 성공")
-    void testGetSchedules() throws Exception {
+    void t3() throws Exception {
+        Long calendarId = 1L;
+
         // Perform GET 요청
         ResultActions resultActions = mvc.perform(
-                        get("/schedules")
+                        get("/calendars/{calendarId}/schedules", calendarId)
                                 .param("startDate", "2025-02-01")
                                 .param("endDate", "2025-02-02")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -319,9 +175,11 @@ public class ScheduleControllerTest {
 
     @Test
     @DisplayName("일정 목록 조회 - 일정 없음")
-    void t9() throws Exception {
+    void t4() throws Exception {
+        Long calendarId = 1L;
+
         ResultActions resultActions = mvc.perform(
-                        get("/schedules")
+                        get("/calendars/{calendarId}/schedules", calendarId)
                                 .param("startDate", "2025-03-01")
                                 .param("endDate", "2025-03-02")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -336,14 +194,15 @@ public class ScheduleControllerTest {
 
     @Test
     @DisplayName("특정 일정 조회 성공")
-    void t10() throws Exception{
-        Long scheduleId = scheduleRepository.findAll().getFirst().getId();
+    void t5() throws Exception{
+        Long calendarId = 1L;
+        Long scheduleId = 1L;
 
         ResultActions resultActions = mvc.perform(
-                get("/schedules/{id}", scheduleId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-            )
+                        get("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
                 .andDo(print());
 
         resultActions
@@ -360,11 +219,12 @@ public class ScheduleControllerTest {
 
     @Test
     @DisplayName("특정 일정 조회 실패 - 일정이 존재하지 않음")
-    void t11() throws Exception{
+    void t6() throws Exception{
+        Long calendarId = 1L;
         Long scheduleId=999L;
 
         ResultActions resultActions = mvc.perform(
-                get("/schedules/{id}", scheduleId)
+                get("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
         ).andDo(print());
@@ -373,5 +233,170 @@ public class ScheduleControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("해당 일정을 찾을 수 없습니다."));
     }
+
+
+
+
+    @Test
+    @DisplayName("일정 수정 성공")
+    void t7() throws Exception {
+        Long calendarId = 1L; // 추가
+        Long scheduleId = 1L;
+
+        // 수정 요청 데이터 예시
+        String requestBody = """
+                {
+                    "calendarId": 1,
+                    "title": "수정된 일정 제목",
+                    "description": "수정된 일정 설명",
+                    "startTime": "2025-02-01T12:00:00",
+                    "endTime": "2025-02-01T13:00:00",
+                    "location": {
+                        "latitude": 37.5678,
+                        "longitude": 126.9890,
+                        "address": "서울특별시 중구 세종대로 110"
+                    }
+                }
+                """;
+
+        // 일정 ID 예시
+
+        // Perform PUT 요청
+        ResultActions resultActions = mvc.perform(
+                        put("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                                .content(requestBody)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
+                .andDo(print());
+
+        // 기대 응답
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("수정된 일정 제목"))
+                .andExpect(jsonPath("$.description").value("수정된 일정 설명"))
+                .andExpect(jsonPath("$.startTime").value("2025-02-01T12:00:00"))
+                .andExpect(jsonPath("$.endTime").value("2025-02-01T13:00:00"))
+                .andExpect(jsonPath("$.location.latitude").value(37.5678))
+                .andExpect(jsonPath("$.location.longitude").value(126.9890))
+                .andExpect(jsonPath("$.location.address").value("서울특별시 중구 세종대로 110"));
+    }
+
+    @Test
+    @DisplayName("일정 수정 실패 - 일정이 존재하지 않음")
+    void t8() throws Exception {
+        Long calendarId = 1L;
+        Long scheduleId = 999L;
+
+        // 요청 데이터 예시
+        String requestBody = """
+            {
+                "calendarId": 1,
+                "title": "수정된 일정 제목",
+                "description": "수정된 일정 설명",
+                "startTime": "2025-02-01T12:00:00",
+                "endTime": "2025-02-01T13:00:00",
+                "location": {
+                    "latitude": 37.5678,
+                    "longitude": 126.9890,
+                    "address": "서울특별시 중구 세종대로 110"
+                }
+            }
+            """;
+
+        // Perform PUT 요청
+        ResultActions resultActions = mvc.perform(
+                        put("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                                .content(requestBody)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
+                .andDo(print());
+
+        // 기대 응답
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("해당 일정을 찾을 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("일정 수정 실패 - 시간 충돌")
+    void t9() throws Exception {
+        Long calendarId = 1L;
+        Long scheduleId = 1L;
+
+        // 요청 데이터 예시
+        String requestBody = """
+            {
+                "calendarId": 1,
+                "title": "겹치는 시간 수정 요청",
+                "description": "겹치는 일정 테스트",
+                "startTime": "2025-02-01T10:00:00",
+                "endTime": "2025-02-01T11:00:00",
+                "location": {
+                    "latitude": 37.5678,
+                    "longitude": 126.9890,
+                    "address": "서울특별시 중구 세종대로 110"
+                }
+            }
+            """;
+
+
+
+        // Perform PUT 요청
+        ResultActions resultActions = mvc.perform(
+                        put("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                                .content(requestBody)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
+                .andDo(print());
+
+        // 기대 응답
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("해당 시간에 이미 일정이 존재합니다."));
+    }
+
+    @Test
+    @DisplayName("일정 삭제 성공")
+    void t10() throws Exception {
+        Long calendarId = 1L;
+        Long scheduleId = 1L;
+
+        // Perform DELETE 요청
+        ResultActions resultActions = mvc.perform(
+                        delete("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
+                .andDo(print());
+
+        // 기대 응답
+        resultActions
+                .andExpect(status().isNoContent()); // 상태 코드 204 (No Content)
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - 일정이 존재하지 않음")
+    void t11() throws Exception {
+        Long calendarId = 1L;
+        Long scheduleId = 999L;
+
+        // Perform DELETE 요청
+        ResultActions resultActions = mvc.perform(
+                        delete("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
+                .andDo(print());
+
+        // 기대 응답
+        resultActions
+                .andExpect(status().isNotFound()) // 상태 코드 404
+                .andExpect(jsonPath("$.message").value("해당 일정을 찾을 수 없습니다.")); // 예외 메시지 확인
+    }
+
+
 
 }
