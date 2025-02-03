@@ -1,13 +1,12 @@
-// CalendarCreateDto.java
 package com.ll.TeamProject.domain.calendar.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 public class CalendarCreateDto {
+    private Long userId;  // 사용자의 ID 추가
     private String name;
     private String description;
-    private String owner;
 }

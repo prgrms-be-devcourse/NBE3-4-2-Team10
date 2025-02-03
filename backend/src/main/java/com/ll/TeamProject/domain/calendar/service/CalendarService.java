@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class CalendarService {
     // 캘린더 생성
     @Transactional
     public Calendar createCalendar(CalendarCreateDto dto) {
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ServiceException("404", "사용자를 찾을 수 없습니다."));
 
         Calendar calendar = new Calendar(user, dto.getName(), dto.getDescription());
@@ -38,8 +37,8 @@ public class CalendarService {
 
     // 특정 캘린더 조회
     public Calendar getCalendarById(Long id) {
-        Optional<Calendar> optionalCalendar = calendarRepository.findById(id);
-        return optionalCalendar.orElse(null); // 없으면 null 반환
+        return calendarRepository.findById(id)
+                .orElseThrow(() -> new ServiceException("404", "캘린더를 찾을 수 없습니다."));
     }
 
     // 캘린더 수정
@@ -51,11 +50,12 @@ public class CalendarService {
     }
 
     // 캘린더 삭제
+    @Transactional
     public boolean deleteCalendar(Long id) {
         if (!calendarRepository.existsById(id)) {
-            return false; // 존재하지 않으면 false 반환
+            throw new ServiceException("404", "캘린더를 찾을 수 없습니다.");
         }
         calendarRepository.deleteById(id);
-        return true; // 삭제 성공
+        return true; // 삭제 성공 시 true 반환
     }
 }
