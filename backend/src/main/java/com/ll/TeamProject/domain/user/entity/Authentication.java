@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Authentication extends BaseEntity {
     // BaseEntity : id (no setter)
-    @Column
+    @Column(unique = true, nullable = false)
     private Long userId; // 사용자 ID
 
     @Enumerated(EnumType.STRING)

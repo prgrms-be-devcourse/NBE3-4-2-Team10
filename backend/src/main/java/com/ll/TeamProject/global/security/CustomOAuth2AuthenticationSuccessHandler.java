@@ -25,8 +25,6 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SavedRequestAwareA
     @SneakyThrows
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        // SiteUser actor = userService.findById(rq.getActor().getId()).get();
-
         SiteUser user = rq.findByActor().get();
 
         rq.makeAuthCookies(user);
