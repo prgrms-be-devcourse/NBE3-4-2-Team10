@@ -6,8 +6,8 @@ import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import com.ll.TeamProject.global.jpa.entity.Location;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

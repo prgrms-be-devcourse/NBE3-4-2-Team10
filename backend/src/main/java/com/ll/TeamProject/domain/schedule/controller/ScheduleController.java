@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/calendars/{calendarId}/schedules")  // 모든 API에 calendarId 추가
+@RequestMapping("/calendars/{calendarId}/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;

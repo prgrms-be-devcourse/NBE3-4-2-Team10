@@ -1,7 +1,7 @@
 package com.ll.TeamProject.domain.schedule;
 
+import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
 import com.ll.TeamProject.domain.schedule.controller.ScheduleController;
-import com.ll.TeamProject.domain.schedule.dto.ScheduleResponseDto;
 import com.ll.TeamProject.domain.schedule.repository.ScheduleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,14 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.transform.Result;
 import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -340,7 +337,7 @@ public class ScheduleControllerTest {
     @Test
     @DisplayName("특정 일정 조회 성공")
     void t10() throws Exception{
-        Long scheduleId = scheduleRepository.findAll().get(0).getId();
+        Long scheduleId = scheduleRepository.findAll().getFirst().getId();
 
         ResultActions resultActions = mvc.perform(
                 get("/schedules/{id}", scheduleId)
