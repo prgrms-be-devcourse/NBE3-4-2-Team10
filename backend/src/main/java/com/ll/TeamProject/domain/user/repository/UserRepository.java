@@ -1,9 +1,21 @@
 package com.ll.TeamProject.domain.user.repository;
 
-import com.ll.TeamProject.domain.user.entity.User;
+import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.enums.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    // 필요한 메서드를 임시로 정의 (예: findById)
-    // TEST용으로 추 후에 삭제해도 무방 (250127 캘린더생성)
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<SiteUser, Long> {
+    Optional<SiteUser> findByUsername(String username);
+
+    Optional<SiteUser> findByApiKey(String apiKey);
+
+    Page<SiteUser> findByRoleNot(Role role, PageRequest pageRequest);
+
+    Page<SiteUser> findByRoleAndEmailLike(Role role, String emailLike, PageRequest pageRequest);
+
+    Page<SiteUser> findByRoleAndUsernameLike(Role role, String usernameLike, PageRequest pageRequest);
 }

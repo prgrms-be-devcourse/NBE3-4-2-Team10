@@ -1,6 +1,6 @@
 package com.ll.TeamProject.domain.calendar.entity;
 
-import com.ll.TeamProject.domain.user.entity.User;
+import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.List;
 public class Calendar extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 캘린더 소유 사용자 ID
+    private SiteUser user; // 캘린더 소유 사용자 ID
 
     private String name; // 캘린더 이름
 
