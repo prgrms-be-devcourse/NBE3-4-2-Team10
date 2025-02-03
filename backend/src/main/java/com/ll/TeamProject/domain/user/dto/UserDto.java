@@ -10,9 +10,9 @@ public class UserDto {
     private long id;
     private String username;
     private String nickname;
+    private String email;
     private LocalDateTime createDate;
     private LocalDateTime modifyDate;
-    private String email;
 
     public UserDto(SiteUser siteUser) {
         this.id = siteUser.getId();

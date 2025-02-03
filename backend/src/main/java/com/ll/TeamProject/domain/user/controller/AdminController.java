@@ -50,9 +50,9 @@ public class AdminController {
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
         // 비밀번호 일치하지 않으면 로그인 실패 증가, 5회이상 계정 잠김
-        // 아직 DB 적용안됨 트랜잭션 롤백
+        // 계정 잠김 -> 관련 로직 필요
         if (!passwordEncoder.matches(req.password, user.getPassword())) {
-            authenticationService.handleLoginFailure(user); // db 적용 안됨 수정 필요
+            authenticationService.handleLoginFailure(user);
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
         }
 

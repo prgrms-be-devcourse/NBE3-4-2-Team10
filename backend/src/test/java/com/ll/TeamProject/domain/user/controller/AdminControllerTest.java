@@ -79,6 +79,7 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.data.item.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.username").value(actor.getUsername()))
+                .andExpect(jsonPath("$.data.item.nickname").value(actor.getNickname()))
                 .andExpect(jsonPath("$.data.apiKey").value(actor.getApiKey()))
                 .andExpect(jsonPath("$.data.accessToken").exists());
 
@@ -88,13 +89,13 @@ class AdminControllerTest {
                     assertThat(accessTokenCookie.getValue()).isNotBlank();
                     assertThat(accessTokenCookie.getPath()).isEqualTo("/");
                     assertThat(accessTokenCookie.isHttpOnly()).isTrue();
-//                    assertThat(accessTokenCookie.getSecure()).isTrue();
+                    assertThat(accessTokenCookie.getSecure()).isTrue();
 
                     Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
                     assertThat(apiKeyCookie.getValue()).isEqualTo(actor.getApiKey());
                     assertThat(apiKeyCookie.getPath()).isEqualTo("/");
                     assertThat(apiKeyCookie.isHttpOnly()).isTrue();
-//                    assertThat(apiKeyCookie.getSecure()).isTrue();
+                    assertThat(apiKeyCookie.getSecure()).isTrue();
                 }
         );
     }
@@ -188,7 +189,8 @@ class AdminControllerTest {
                     .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
                     .andExpect(jsonPath("$.data.items[%d].createDate".formatted(i)).value(Matchers.startsWith(user.getCreateDate().toString().substring(0, 25))))
                     .andExpect(jsonPath("$.data.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(user.getModifyDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()));
+                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
+                    .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
         }
     }
 
@@ -247,7 +249,8 @@ class AdminControllerTest {
                     .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
                     .andExpect(jsonPath("$.data.items[%d].createDate".formatted(i)).value(Matchers.startsWith(user.getCreateDate().toString().substring(0, 25))))
                     .andExpect(jsonPath("$.data.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(user.getModifyDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()));
+                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
+                    .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
         }
     }
 
@@ -288,7 +291,8 @@ class AdminControllerTest {
                     .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
                     .andExpect(jsonPath("$.data.items[%d].createDate".formatted(i)).value(Matchers.startsWith(user.getCreateDate().toString().substring(0, 25))))
                     .andExpect(jsonPath("$.data.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(user.getModifyDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()));
+                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
+                    .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
         }
     }
 

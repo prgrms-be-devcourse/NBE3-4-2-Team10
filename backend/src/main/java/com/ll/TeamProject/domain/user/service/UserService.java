@@ -111,13 +111,6 @@ public class UserService {
 
     // user 가입
     public SiteUser join(String username, String nickname, String password, String email, String providerTypeCode) {
-        // 소셜 로그인으로 받아오 고유 번호로 가입하고 이미 user가 없는 것을 확인하는데 필요할까?
-//        userRepository
-//                .findByUsername(username)
-//                .ifPresent(user -> {
-//                    throw new ServiceException("409-1", "해당 username은 이미 사용중입니다.");
-//                });
-
         // 새로운 user 생성
         SiteUser user = SiteUser.builder()
                 .username(username)

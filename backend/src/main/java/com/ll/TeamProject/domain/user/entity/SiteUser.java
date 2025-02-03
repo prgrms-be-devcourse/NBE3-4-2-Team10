@@ -29,6 +29,7 @@ public class SiteUser extends BaseTime {
 
     @Column
     private String nickname;
+
     @Column
     private String password; // 암호화된 비밀번호
 

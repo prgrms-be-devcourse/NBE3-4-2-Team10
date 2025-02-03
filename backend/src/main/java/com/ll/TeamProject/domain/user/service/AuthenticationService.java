@@ -5,8 +5,9 @@ import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -15,20 +16,29 @@ public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
 
-    // 최근 로그인 시간 수정
+    // 최근 로그인 시간 및 로그인 실패 초기화
     public void modifyLastLogin(SiteUser user) {
-        authenticationRepository.findByUserId(user.getId()).ifPresent(authentication -> {
-            authentication.setLastLogin(LocalDateTime.now());
-        });
+        authenticationRepository.findByUserId(user.getId())
+                .ifPresent(authentication -> {
+                    authentication.setLastLogin();  // 최근 로그인 시간 설정
+                    authentication.resetFailedAttempts();              // 실패 횟수 초기화
+                    authenticationRepository.save(authentication);     // 변경 내용 저장
+                });
     }
 
     // 로그인 실패
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLoginFailure(SiteUser user) {
         authenticationRepository.findByUserId(user.getId()).ifPresent(authentication -> {
 
-            int attempts = authentication.getFailedAttempts() + 1;
+            // 현재 실패 횟수
+            int currentFailedAttempts = authentication.getFailedAttempts() + 1;
 
-            authentication.failedLogin(attempts);
+            // 횟수 반영
+            int updatedFailedAttempts = authentication.failedLogin(currentFailedAttempts);
+
+            // 5회 이상 계정 잠김
+            if (updatedFailedAttempts >= 5) authentication.lockAccount();
 
             authenticationRepository.save(authentication);
         });

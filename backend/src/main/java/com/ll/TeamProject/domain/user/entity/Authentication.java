@@ -2,6 +2,7 @@ package com.ll.TeamProject.domain.user.entity;
 
 import com.ll.TeamProject.domain.user.enums.AuthType;
 import com.ll.TeamProject.global.jpa.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,19 +20,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Authentication extends BaseEntity {
     // BaseEntity : id (no setter)
+    @Column
     private Long userId; // 사용자 ID
 
     @Enumerated(EnumType.STRING)
     private AuthType authType; // 인증 유형
 
+    @Column
     private LocalDateTime lastLogin; // 마지막 로그인 시간
 
+    @Column
     private int failedAttempts; // 실패한 로그인 시도 횟수
 
+    @Column
     private boolean isLocked; // 계정 잠금 여부
 
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
+    public void setLastLogin() {
+        this.lastLogin = LocalDateTime.now();
     }
 
     public int failedLogin(int attempts) {
@@ -39,8 +44,12 @@ public class Authentication extends BaseEntity {
         return failedAttempts;
     }
 
-    public void setLocked(boolean isLocked) {
-        this.isLocked = isLocked;
+    public void lockAccount() {
+        this.isLocked = true;
+    }
+
+    public void resetFailedAttempts() {
+        this.failedAttempts = 0;
     }
 
     public enum AuthType {
