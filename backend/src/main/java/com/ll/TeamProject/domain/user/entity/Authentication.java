@@ -51,8 +51,4 @@ public class Authentication extends BaseEntity {
     public void resetFailedAttempts() {
         this.failedAttempts = 0;
     }
-
-    public enum AuthType {
-        KAKAO, GOOGLE, SOCIAL, LOCAL
-    }
 }

@@ -1,7 +1,7 @@
 package com.ll.TeamProject.domain.user.service;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
-import com.ll.TeamProject.domain.user.entity.Role;
+import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.standard.util.Ut;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

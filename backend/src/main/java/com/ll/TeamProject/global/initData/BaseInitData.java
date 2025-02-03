@@ -18,8 +18,6 @@ import java.util.UUID;
 import static com.ll.TeamProject.domain.user.enums.AuthType.LOCAL;
 import static com.ll.TeamProject.domain.user.enums.Role.ADMIN;
 import static com.ll.TeamProject.domain.user.enums.Role.USER;
-import static com.ll.TeamProject.domain.user.entity.Role.ADMIN;
-import static com.ll.TeamProject.domain.user.entity.Role.USER;
 
 @Configuration
 @RequiredArgsConstructor
