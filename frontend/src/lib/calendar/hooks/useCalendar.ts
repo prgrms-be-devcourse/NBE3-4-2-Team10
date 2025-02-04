@@ -1,60 +1,61 @@
 // lib/calendar/hooks/useCalendar.ts
-import { useState, useEffect } from "react";
-import { calendarApi } from "../api/calendarApi";
-import type {
-  Calendar,
-  CalendarCreateDto,
-  CalendarUpdateDto,
-} from "../types/calendarTypes";
+import { useState, useEffect } from 'react';
+import * as api from '../api/calendarApi';  // API 함수 가져오기
 
 export const useCalendar = () => {
-  const [calendars, setCalendars] = useState<Calendar[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [calendars, setCalendars] = useState([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
+  // 캘린더 목록을 가져오는 함수
   const fetchCalendars = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await calendarApi.getAll();
-      setCalendars(response.data);
-    } catch (err: any) {
-      setError(err);
+      const data = await api.getAllCalendars();
+      setCalendars(data);
+    } catch (error) {
+      console.error('Error fetching calendars:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const createCalendar = async (dto: CalendarCreateDto) => {
+  // 캘린더 생성 함수
+  const createCalendar = async (calendarData) => {
     try {
-      const response = await calendarApi.create(dto);
-      setCalendars((prev) => [...prev, response.data]);
-      return response.data;
-    } catch (err) {
-      throw err;
+      const newCalendar = await api.createCalendar(calendarData);
+      setCalendars((prevCalendars) => [...prevCalendars, newCalendar]);
+    } catch (error) {
+      console.error('Error creating calendar:', error);
     }
   };
 
-  const updateCalendar = async (id: number, dto: CalendarUpdateDto) => {
+  // 캘린더 수정 함수
+  const updateCalendar = async (id, calendarData) => {
     try {
-      const response = await calendarApi.update(id, dto);
-      setCalendars((prev) =>
-        prev.map((calendar) => (calendar.id === id ? response.data : calendar))
+      const updatedCalendar = await api.updateCalendar(id, calendarData);
+      setCalendars((prevCalendars) =>
+        prevCalendars.map((calendar) =>
+          calendar.id === id ? updatedCalendar : calendar
+        )
       );
-      return response.data;
-    } catch (err) {
-      throw err;
+    } catch (error) {
+      console.error('Error updating calendar:', error);
     }
   };
 
-  const deleteCalendar = async (id: number) => {
+  // 캘린더 삭제 함수
+  const deleteCalendar = async (id) => {
     try {
-      await calendarApi.delete(id);
-      setCalendars((prev) => prev.filter((calendar) => calendar.id !== id));
-    } catch (err) {
-      throw err;
+      await api.deleteCalendar(id);
+      setCalendars((prevCalendars) =>
+        prevCalendars.filter((calendar) => calendar.id !== id)
+      );
+    } catch (error) {
+      console.error('Error deleting calendar:', error);
     }
   };
 
+  // 컴포넌트가 처음 렌더링될 때 캘린더 목록을 가져옵니다.
   useEffect(() => {
     fetchCalendars();
   }, []);
@@ -62,10 +63,9 @@ export const useCalendar = () => {
   return {
     calendars,
     loading,
-    error,
     createCalendar,
     updateCalendar,
     deleteCalendar,
-    refreshCalendars: fetchCalendars,
+    fetchCalendars,  // 캘린더 목록을 다시 가져오는 함수도 제공
   };
 };

@@ -1,22 +1,24 @@
-// lib/calendar/api/calendarApi.ts
-import axios from "axios";
-import type {
-  Calendar,
-  CalendarCreateDto,
-  CalendarUpdateDto,
-} from "../types/calendarTypes";
+// lib/calendar/api.ts
+import axios from 'axios';
 
-const BASE_URL = "/api/calendars";
+const API_BASE_URL = 'http://localhost:8080/api/calendar'; // 실제 백엔드 URL로 변경
 
-export const calendarApi = {
-  getAll: () => axios.get<Calendar[]>(BASE_URL),
+export const getAllCalendars = async () => {
+  const response = await axios.get(`${API_BASE_URL}`);
+  return response.data;
+};
 
-  getById: (id: number) => axios.get<Calendar>(`${BASE_URL}/${id}`),
+export const createCalendar = async (calendarData) => {
+  const response = await axios.post(`${API_BASE_URL}`, calendarData);
+  return response.data;
+};
 
-  create: (dto: CalendarCreateDto) => axios.post<Calendar>(BASE_URL, dto),
+export const updateCalendar = async (id, calendarData) => {
+  const response = await axios.put(`${API_BASE_URL}/${id}`, calendarData);
+  return response.data;
+};
 
-  update: (id: number, dto: CalendarUpdateDto) =>
-    axios.put<Calendar>(`${BASE_URL}/${id}`, dto),
-
-  delete: (id: number) => axios.delete(`${BASE_URL}/${id}`),
+export const deleteCalendar = async (id) => {
+  const response = await axios.delete(`${API_BASE_URL}/${id}`);
+  return response.data;
 };
