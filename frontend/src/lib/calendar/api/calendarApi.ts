@@ -6,7 +6,7 @@ import type {
   CalendarUpdateDto,
 } from "../types/calendarTypes";
 
-const BASE_URL = "http://localhost:8080/api/calendars";
+const BASE_URL = "/api/calendars";
 
 export const calendarApi = {
   getAll: () => axios.get<Calendar[]>(BASE_URL),

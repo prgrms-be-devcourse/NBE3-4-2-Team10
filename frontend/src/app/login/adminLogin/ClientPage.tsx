@@ -35,9 +35,7 @@ export default function ClientPage() {
       alert(response.error.msg);
       return;
     }
-
     alert(response.data.msg);
-
     window.location.replace("/");
   };
 
