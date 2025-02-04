@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,8 +46,9 @@ public class SiteUser extends BaseTime {
     @Column(unique = true)
     private String apiKey;
 
-    @Column
     private boolean isDeleted;
+
+    private LocalDateTime deletedDate;
 
     public SiteUser(long id, String username, String nickname, Role role) {
         super();
@@ -99,5 +101,6 @@ public class SiteUser extends BaseTime {
 
     public void delete(boolean changed) {
         this.isDeleted = changed;
+        this.deletedDate = LocalDateTime.now();
     }
 }
