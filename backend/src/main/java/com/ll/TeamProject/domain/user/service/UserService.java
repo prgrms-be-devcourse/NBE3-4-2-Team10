@@ -159,7 +159,9 @@ public class UserService {
         }
 
         // 삭제 로직
-        userToDelete.delete();
+        userToDelete.changeNickname("탈퇴한 사용자");
+        userToDelete.deleteUsernameEmail();
+        userToDelete.delete(true);
         userRepository.save(userToDelete);
 
         return userToDelete;

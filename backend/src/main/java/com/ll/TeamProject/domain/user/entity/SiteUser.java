@@ -45,6 +45,9 @@ public class SiteUser extends BaseTime {
     @Column(unique = true)
     private String apiKey;
 
+    @Column
+    private boolean isDeleted;
+
     public SiteUser(long id, String username, String nickname, Role role) {
         super();
         this.setId(id);
@@ -85,9 +88,16 @@ public class SiteUser extends BaseTime {
         return this.role == Role.ADMIN;
     }
 
-    public void delete() {
-        this.nickname = "탈퇴한 사용자";
-        this.username = String.valueOf(UUID.randomUUID());
-        this.email = username + "@deleted";
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    public void deleteUsernameEmail() {
+        this.username = "deleted_" + UUID.randomUUID();
+        this.email = username + "@deleted.com";
+    }
+
+    public void delete(boolean changed) {
+        this.isDeleted = changed;
     }
 }
