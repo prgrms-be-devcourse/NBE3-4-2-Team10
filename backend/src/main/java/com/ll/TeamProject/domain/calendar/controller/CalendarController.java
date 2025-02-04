@@ -29,7 +29,7 @@ public class CalendarController {
         Calendar calendar = calendarService.createCalendar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(calendar);
     }
-    // 모든 캘린더 조회
+    // 모든 캘린더 조회  (사용자의 모든 캘린더 조회)
     @GetMapping
     public ResponseEntity<List<Calendar>> getAllCalendars() {
         SiteUser user = rq.getActor();
@@ -37,7 +37,7 @@ public class CalendarController {
     }
 
 
-    // 특정 캘린더 조회
+    // 특정 캘린더 조회 (사용자의 5개의 캘린더중 3번 캘린더 조회)
     @GetMapping("/{id}")
     public ResponseEntity<Calendar> getCalendarById(@PathVariable Long id) {
         SiteUser user = rq.getActor();
