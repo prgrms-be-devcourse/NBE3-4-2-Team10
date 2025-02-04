@@ -57,8 +57,8 @@ public class UserService {
         searchKeyword = "%" + searchKeyword + "%"; // 일부만 입력해도 조회되도록
 
         return switch (searchKeywordType) {
-            case "email" -> userRepository.findByRoleAndEmailLike(Role.USER, searchKeyword, pageRequest);
-            default -> userRepository.findByRoleAndUsernameLike(Role.USER, searchKeyword, pageRequest);
+            case "email" -> userRepository.findByRoleAndEmailLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
+            default -> userRepository.findByRoleAndUsernameLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
         };
     }
 
