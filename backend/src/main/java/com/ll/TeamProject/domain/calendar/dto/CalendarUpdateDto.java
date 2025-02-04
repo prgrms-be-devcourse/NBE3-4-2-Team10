@@ -1,12 +1,12 @@
+// CalendarUpdateDto.java
 package com.ll.TeamProject.domain.calendar.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class CalendarUpdateDto {
-    private String title;
+    private String name;
     private String description;
-    private Long[] members; // 멤버 IDs
 }

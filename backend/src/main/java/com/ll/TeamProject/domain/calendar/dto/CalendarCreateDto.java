@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CalendarCreateDto {
-    private String title;
+    private Long userId;  // 사용자의 ID 추가
+    private String name;
     private String description;
-    private Long[] members; // 멤버 IDs
 }
