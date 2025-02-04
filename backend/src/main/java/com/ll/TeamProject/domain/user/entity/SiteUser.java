@@ -13,9 +13,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -43,6 +45,10 @@ public class SiteUser extends BaseTime {
 
     @Column(unique = true)
     private String apiKey;
+
+    private boolean isDeleted;
+
+    private LocalDateTime deletedDate;
 
     public SiteUser(long id, String username, String nickname, Role role) {
         super();
@@ -82,5 +88,19 @@ public class SiteUser extends BaseTime {
 
     private boolean isAdmin() {
         return this.role == Role.ADMIN;
+    }
+
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    public void deleteUsernameEmail() {
+        this.username = "deleted_" + UUID.randomUUID();
+        this.email = username + "@deleted.com";
+    }
+
+    public void delete(boolean changed) {
+        this.isDeleted = changed;
+        this.deletedDate = LocalDateTime.now();
     }
 }
