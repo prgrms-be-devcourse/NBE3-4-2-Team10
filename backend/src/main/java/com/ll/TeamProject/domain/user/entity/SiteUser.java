@@ -16,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -82,5 +83,11 @@ public class SiteUser extends BaseTime {
 
     private boolean isAdmin() {
         return this.role == Role.ADMIN;
+    }
+
+    public void delete() {
+        this.nickname = "탈퇴한 사용자";
+        this.username = String.valueOf(UUID.randomUUID());
+        this.email = username + "@deleted";
     }
 }
