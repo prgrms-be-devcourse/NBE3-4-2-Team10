@@ -31,10 +31,7 @@ public class Rq {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .domain("localhost")
-                .sameSite("None") // 소셜 로그인 중 오류 생겨서 변경
                 .httpOnly(true)
-                // secure로 설정한 쿠키는 https 에서만 보내지는 것 같아서 프론트 문제 생김, 임시 주석처리
-                .secure(true)
                 .build();
 
         resp.addHeader("Set-Cookie", cookie.toString());
@@ -89,8 +86,6 @@ public class Rq {
         ResponseCookie cookie = ResponseCookie.from(name, null)
                 .path("/")
                 .domain("localhost")
-                .sameSite("None") // 소셜 로그인 작업 중 변경
-                .secure(true)
                 .httpOnly(true)
                 .maxAge(0)
                 .build();

@@ -1,6 +1,7 @@
 // 레이아웃 (서버)
 
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
@@ -11,10 +12,24 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
 
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 const pretendard = localFont({
-  src: "./../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
-  display: "swap",
-  weight: "45 920",
+  src: [
+    {
+      path: "../../node_modules/pretendard/dist/web/static/woff2/Pretendard-Black.woff2",
+      weight: "45 920",
+      style: "normal",
+    },
+  ],
   variable: "--font-pretendard",
 });
 
@@ -25,22 +40,30 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
   const { me, isLogin, isAdmin } = parseAccessToken(accessToken);
 
   return (
-    <html lang="ko" className={`${pretendard.variable}`}>
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body
-        className={`${pretendard.className} antialiased flex flex-col min-h-[100dvh]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClientLayout me={me} isLogin={isLogin} isAdmin={isAdmin}>
-          {children}
-        </ClientLayout>
+        <div
+          className={`${pretendard.className} antialiased flex flex-col min-h-[100dvh]`}
+        >
+          <ClientLayout me={me} isLogin={isLogin} isAdmin={isAdmin}>
+            {children}
+          </ClientLayout>
+        </div>
       </body>
     </html>
   );

@@ -4,6 +4,38 @@
  */
 
 export interface paths {
+    "/api/calendars/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getCalendarById"];
+        put: operations["updateCalendar"];
+        post?: never;
+        delete: operations["deleteCalendar"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/calendars": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllCalendars"];
+        put?: never;
+        post: operations["createCalendar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/login": {
         parameters: {
             query?: never;
@@ -82,6 +114,66 @@ export interface components {
             msg: string;
             data: components["schemas"]["Empty"];
         };
+        CalendarUpdateDto: {
+            name?: string;
+            description?: string;
+        };
+        Calendar: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: date-time */
+            createDate?: string;
+            /** Format: date-time */
+            modifyDate?: string;
+            user?: components["schemas"]["SiteUser"];
+            name?: string;
+            description?: string;
+            sharedUsers?: components["schemas"]["SharedCalendar"][];
+            messageList?: components["schemas"]["Message"][];
+        };
+        GrantedAuthority: {
+            authority?: string;
+        };
+        Message: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: date-time */
+            createDate?: string;
+            /** Format: date-time */
+            modifyDate?: string;
+            user?: components["schemas"]["SiteUser"];
+            calendar?: components["schemas"]["Calendar"];
+            content?: string;
+            read?: boolean;
+        };
+        SharedCalendar: {
+            /** Format: int64 */
+            id?: number;
+            calendar?: components["schemas"]["Calendar"];
+            user?: components["schemas"]["SiteUser"];
+        };
+        SiteUser: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: date-time */
+            createDate?: string;
+            /** Format: date-time */
+            modifyDate?: string;
+            username?: string;
+            nickname?: string;
+            password?: string;
+            email?: string;
+            /** @enum {string} */
+            role?: "ADMIN" | "USER";
+            apiKey?: string;
+            authorities?: components["schemas"]["GrantedAuthority"][];
+        };
+        CalendarCreateDto: {
+            /** Format: int64 */
+            userId?: number;
+            name?: string;
+            description?: string;
+        };
         UserLoginReqBody: {
             username?: string;
             password?: string;
@@ -95,11 +187,12 @@ export interface components {
             /** Format: int64 */
             id?: number;
             username?: string;
+            nickname?: string;
+            email?: string;
             /** Format: date-time */
             createDate?: string;
             /** Format: date-time */
             modifyDate?: string;
-            email?: string;
         };
         UserLoginResBody: {
             item?: components["schemas"]["UserDto"];
@@ -136,6 +229,159 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getCalendarById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["Calendar"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    updateCalendar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CalendarUpdateDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["Calendar"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deleteCalendar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": string;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getAllCalendars: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["Calendar"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    createCalendar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CalendarCreateDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["Calendar"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;

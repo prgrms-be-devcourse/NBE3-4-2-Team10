@@ -31,6 +31,6 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SavedRequestAwareA
 
         rq.makeAuthCookies(user);
 
-        response.sendRedirect(devFrontUrl); // 프론트 메인 페이지로 연결
+        response.sendRedirect(devFrontUrl + "/calendar/"); // 프론트 메인 페이지로 연결
     }
 }
