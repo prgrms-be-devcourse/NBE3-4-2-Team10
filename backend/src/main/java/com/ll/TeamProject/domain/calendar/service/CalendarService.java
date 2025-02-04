@@ -31,8 +31,8 @@ public class CalendarService {
     }
 
     // 모든 캘린더 조회
-    public List<Calendar> getAllCalendars() {
-        return calendarRepository.findAll();
+    public List<Calendar> getAllCalendars(Long userId) {
+        return calendarRepository.findByUserId(userId);
     }
 
     // 특정 캘린더 조회
