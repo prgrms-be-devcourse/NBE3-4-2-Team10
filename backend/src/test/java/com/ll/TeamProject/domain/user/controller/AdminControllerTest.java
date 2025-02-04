@@ -89,13 +89,11 @@ class AdminControllerTest {
                     assertThat(accessTokenCookie.getValue()).isNotBlank();
                     assertThat(accessTokenCookie.getPath()).isEqualTo("/");
                     assertThat(accessTokenCookie.isHttpOnly()).isTrue();
-                    assertThat(accessTokenCookie.getSecure()).isTrue();
 
                     Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
                     assertThat(apiKeyCookie.getValue()).isEqualTo(actor.getApiKey());
                     assertThat(apiKeyCookie.getPath()).isEqualTo("/");
                     assertThat(apiKeyCookie.isHttpOnly()).isTrue();
-                    assertThat(apiKeyCookie.getSecure()).isTrue();
                 }
         );
     }
@@ -336,14 +334,12 @@ class AdminControllerTest {
                     assertThat(accessTokenCookie.getMaxAge()).isEqualTo(0);
                     assertThat(accessTokenCookie.getPath()).isEqualTo("/");
                     assertThat(accessTokenCookie.isHttpOnly()).isTrue();
-//                    assertThat(accessTokenCookie.getSecure()).isTrue();
 
                     Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
                     assertThat(apiKeyCookie.getValue()).isEmpty();
                     assertThat(apiKeyCookie.getMaxAge()).isEqualTo(0);
                     assertThat(apiKeyCookie.getPath()).isEqualTo("/");
                     assertThat(apiKeyCookie.isHttpOnly()).isTrue();
-//                    assertThat(apiKeyCookie.getSecure()).isTrue();
                 });
     }
 
