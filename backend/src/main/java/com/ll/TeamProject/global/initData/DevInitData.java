@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 
-@Profile("dev")
+@Profile("!test")
 @Configuration
 @RequiredArgsConstructor
 public class DevInitData {
@@ -19,10 +19,14 @@ public class DevInitData {
     @Bean
     public ApplicationRunner devInitDataApplicationRunner() {
         return args -> {
-            Ut.file.downloadByHttp("http://localhost:8080/v3/api-docs", ".");
+            try{
 
-            String cmd = "yes | npx --package typescript --package openapi-typescript openapi-typescript api-docs.json -o ../frontend/src/lib/backend/schema.d.ts";
-            Ut.cmd.runAsync(cmd);
+                Ut.file.downloadByHttp("http://localhost:8080/v3/api-docs", ".");
+
+                String cmd = "yes | npx --package typescript --package openapi-typescript openapi-typescript api-docs.json -o ../frontend/src/lib/backend/schema.d.ts";
+                Ut.cmd.runAsync(cmd);
+            }catch(Exception e){
+            }
         };
     }
 }
