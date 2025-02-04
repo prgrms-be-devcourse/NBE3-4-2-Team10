@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.Map;
@@ -25,6 +26,7 @@ public class CalendarBaseInitData {
     private CalendarBaseInitData self;
 
     @Bean
+    @DependsOn("baseInitDataApplicationRunner")  // BaseInitData 실행 후 실행
     public ApplicationRunner calendarInitDataApplicationRunner() {
         return args -> {
             self.work1();
