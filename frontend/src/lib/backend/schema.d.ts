@@ -95,11 +95,12 @@ export interface components {
             /** Format: int64 */
             id?: number;
             username?: string;
+            nickname?: string;
+            email?: string;
             /** Format: date-time */
             createDate?: string;
             /** Format: date-time */
             modifyDate?: string;
-            email?: string;
         };
         UserLoginResBody: {
             item?: components["schemas"]["UserDto"];
