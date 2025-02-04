@@ -12,11 +12,14 @@ import java.util.Optional;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     // 특정 캘린더에서 겹치는 일정 조회
-    @Query("SELECT s FROM Schedule s WHERE s.calendar.id = :calendarId AND " +
-            "(s.startTime < :endTime AND s.endTime > :startTime)")
+    @Query("""
+    SELECT s FROM Schedule s WHERE s.calendar.id = :calendarId AND\s
+    (s.startTime < :endTime AND s.endTime > :startTime)
+   \s""")
     List<Schedule> findOverlappingSchedules(@Param("calendarId") Long calendarId,
                                             @Param("startTime") LocalDateTime startTime,
                                             @Param("endTime") LocalDateTime endTime);
+
 
     // 특정 캘린더 내 일정 조회 (기존 쿼리에서 calendarId 추가)
     @Query("SELECT s FROM Schedule s WHERE s.calendar.id = :calendarId AND " +
@@ -25,6 +28,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                                                        @Param("startDate") LocalDateTime startDate,
                                                        @Param("endDate") LocalDateTime endDate);
 
-    // 특정 캘린더에서 특정 일정 조회
-    Optional<Schedule> findByIdAndCalendarId(Long scheduleId, Long calendarId);
+
+    Optional<Schedule> findTopByOrderByIdDesc();
 }
