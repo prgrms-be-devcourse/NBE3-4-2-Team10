@@ -1,4 +1,4 @@
-import { Schedule } from '@/types/schedule';
+import { Schedule } from '@/types/schedule/schedule';
 
 interface ScheduleListProps {
     schedules: Schedule[];

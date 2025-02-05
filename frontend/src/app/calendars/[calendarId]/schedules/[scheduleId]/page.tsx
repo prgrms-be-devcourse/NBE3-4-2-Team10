@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Schedule, ScheduleFormData } from '@/types/schedule';
+import { Schedule, ScheduleFormData } from '@/types/schedule/schedule';
 import ScheduleForm from '@/components/ScheduleForm';
 
 export default function ScheduleDetailPage() {

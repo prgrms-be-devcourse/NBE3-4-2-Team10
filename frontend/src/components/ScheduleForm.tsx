@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScheduleFormData } from '@/types/schedule';
+import { ScheduleFormData } from '@/types/schedule/schedule';
 
 interface ScheduleFormProps {
     initialData?: ScheduleFormData;

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Schedule, ScheduleFormData } from '../types/schedule';
+import { Schedule, ScheduleFormData } from '../../../types/schedule/schedule';
 
 const BASE_URL = 'http://localhost:8080/calendars';
 

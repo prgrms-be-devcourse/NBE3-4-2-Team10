@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ScheduleForm from '@/components/ScheduleForm';
-import { Schedule, ScheduleFormData } from '@/types/schedule';
+import { Schedule, ScheduleFormData } from '@/types/schedule/schedule';
 
 export default function SchedulePage() {
     const [schedules, setSchedules] = useState<Schedule[]>([]);
