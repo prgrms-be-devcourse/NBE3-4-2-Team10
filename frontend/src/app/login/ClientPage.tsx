@@ -8,6 +8,7 @@ import Link from "next/link";
 
 export default function ClientPage() {
   const socialLoginForKakaoUrl = `http://localhost:8080/oauth2/authorization/kakao`;
+  const socialLoginForGoogleUrl = `http://localhost:8080/oauth2/authorization/google`;
   const redirectUrlAfterSocialLogin = "http://localhost:3000";
 
   return (
@@ -21,6 +22,17 @@ export default function ClientPage() {
           >
             <MessageCircle />
             <span className="font-bold">카카오 로그인</span>
+          </a>
+        </Button>
+      </div>
+
+      <div className="">
+        <Button variant="outline" asChild>
+          <a
+            href={`${socialLoginForGoogleUrl}?redirectUrl=${redirectUrlAfterSocialLogin}`}
+          >
+            <MessageCircle />
+            <span className="font-bold">구글 로그인</span>
           </a>
         </Button>
       </div>
