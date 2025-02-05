@@ -39,9 +39,9 @@ const DynamicMap = ({ latitude, longitude, onLocationSelect }: DynamicMapProps) 
         const lat = event.coord.y;
         const lng = event.coord.x;
 
-        console.log("🗺️ 지도 클릭 - 좌표:", { lat, lng }); // 디버깅 로그
+        console.log("🗺️ 지도 클릭 - 좌표:", { lat, lng });
 
-        if (marker) marker.setMap(null); // 기존 마커 제거
+        if (marker) marker.setMap(null);
         const newMarker = new naver.maps.Marker({
             position: new naver.maps.LatLng(lat, lng),
             map: map!,
@@ -50,8 +50,8 @@ const DynamicMap = ({ latitude, longitude, onLocationSelect }: DynamicMapProps) 
 
         try {
             const address = await getAddress(lat, lng);
-            console.log("📍 선택한 주소:", address); // 디버깅 로그
-            onLocationSelect(lat, lng, address); // 부모로 전달
+            console.log("📍 선택한 주소:", address);
+            onLocationSelect(lat, lng, address);
         } catch (error) {
             console.error("📛 Reverse Geocoding 요청 실패:", error);
         }
