@@ -8,6 +8,8 @@ import com.ll.TeamProject.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,7 @@ public class UserController {
     @GetMapping("/me")
     @Operation(summary = "내 정보")
     public UserDto me() {
-        SiteUser actor = rq.findByActor().get();
+        SiteUser actor = rq.findActor().get();
 
         return new UserDto(actor);
     }
@@ -35,6 +37,22 @@ public class UserController {
 
         return new RsData<>(
                 "200-1", "회원정보가 삭제되었습니다.", new UserDto(userToDelete)
+        );
+    }
+
+    record modifyUserReqBody(
+            @NotBlank
+            String nickname
+    ) {}
+
+    @PostMapping
+    @Operation(summary = "내정보 수정")
+    public RsData<Void> modifyUser(@RequestBody @Valid modifyUserReqBody reqbody) {
+        userService.modify(reqbody.nickname);
+
+        return new RsData<>(
+                "200-1",
+                "사용자 정보가 수정되었습니다."
         );
     }
 

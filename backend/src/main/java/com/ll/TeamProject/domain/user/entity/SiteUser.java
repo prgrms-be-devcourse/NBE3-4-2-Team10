@@ -30,7 +30,7 @@ public class SiteUser extends BaseTime {
     @Column(unique = true)
     private String username; // 사용자 이름
 
-    @Column
+    @Column(unique = true)
     private String nickname;
 
     @Column
