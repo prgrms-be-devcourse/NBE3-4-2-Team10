@@ -9,6 +9,7 @@ import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.rq.Rq;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -112,10 +113,15 @@ public class UserService {
 
     }
 
+    // 내정보 수정 (닉네임 부분 구현)
     public void modify(String nickname) {
         SiteUser actor = rq.findActor().get();
-        actor.changeNickname(nickname);
-        userRepository.save(actor);
+        try {
+            actor.changeNickname(nickname);
+            userRepository.save(actor);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ServiceException("409-1", "이미 사용중인 닉네임입니다.");
+        }
 
         // 수정된 닉네임 보이게 쿠키 수정
         rq.makeAuthCookies(actor);
