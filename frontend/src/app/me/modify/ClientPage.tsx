@@ -56,7 +56,7 @@ export default function ClientPage({
           />
         </div>
 
-        <Button variant="outline" asChild className="mt-2">
+        <Button variant="outline" asChild className="mt-2 hover:bg-gray-200">
           <input type="submit" value="수정" />
         </Button>
       </form>

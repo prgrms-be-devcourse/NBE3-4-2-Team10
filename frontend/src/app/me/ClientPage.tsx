@@ -15,7 +15,7 @@ export default function ClientPage({
       {/* ( 이메일, 가입일? 필요하면?? ) */}
 
       <div className="">
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild className="hover:bg-gray-200">
           <Link href="/me/modify">내정보 수정</Link>
         </Button>
       </div>

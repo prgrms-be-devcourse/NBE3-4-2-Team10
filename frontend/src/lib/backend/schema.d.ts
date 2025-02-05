@@ -308,8 +308,8 @@ export interface components {
             apiKey?: string;
             /** Format: date-time */
             deletedDate?: string;
-            deleted?: boolean;
             authorities?: components["schemas"]["GrantedAuthority"][];
+            deleted?: boolean;
         };
         modifyUserReqBody: {
             nickname: string;
