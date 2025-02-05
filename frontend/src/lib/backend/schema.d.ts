@@ -48,6 +48,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 내정보 수정 */
+        post: operations["modifyUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/calendars/{calendarId}/schedules": {
         parameters: {
             query?: never;
@@ -291,8 +308,16 @@ export interface components {
             apiKey?: string;
             /** Format: date-time */
             deletedDate?: string;
-            deleted?: boolean;
             authorities?: components["schemas"]["GrantedAuthority"][];
+            deleted?: boolean;
+        };
+        modifyUserReqBody: {
+            nickname: string;
+        };
+        RsDataVoid: {
+            resultCode: string;
+            msg: string;
+            data: Record<string, never>;
         };
         CalendarCreateDto: {
             /** Format: int64 */
@@ -345,11 +370,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["UserDto"];
-        };
-        RsDataVoid: {
-            resultCode: string;
-            msg: string;
-            data: Record<string, never>;
         };
     };
     responses: never;
@@ -577,6 +597,39 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": string;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    modifyUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["modifyUserReqBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */

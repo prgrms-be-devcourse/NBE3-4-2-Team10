@@ -112,6 +112,15 @@ public class UserService {
 
     }
 
+    public void modify(String nickname) {
+        SiteUser actor = rq.findActor().get();
+        actor.changeNickname(nickname);
+        userRepository.save(actor);
+
+        // 수정된 닉네임 보이게 쿠키 수정
+        rq.makeAuthCookies(actor);
+    }
+
     // user 가입
     public SiteUser join(String username, String nickname, String password, String email, String providerTypeCode) {
         // 새로운 user 생성

@@ -21,18 +21,18 @@ export default function ClientPage({
       return;
     }
 
-    // const response = await client.POST("/user", {
-    //   body: {
-    //     nickname: form.nickname.value,
-    //   },
-    // });
+    const response = await client.POST("/user", {
+      body: {
+        nickname: form.nickname.value,
+      },
+    });
 
-    // if (response.error) {
-    //   alert(response.error.msg);
-    //   return;
-    // }
+    if (response.error) {
+      alert(response.error.msg);
+      return;
+    }
 
-    // alert(response.data.msg);
+    alert(response.data.msg);
 
     window.location.replace("/me");
   };
