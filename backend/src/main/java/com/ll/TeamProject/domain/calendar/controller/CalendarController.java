@@ -5,7 +5,7 @@ import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.service.CalendarService;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
-import com.ll.TeamProject.global.rq.Rq;
+import com.ll.TeamProject.global.userContext.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +19,12 @@ import java.util.List;
 public class CalendarController {
 
     private final CalendarService calendarService;
-    private final Rq rq;
+    private final UserContext userContext;
 
     // 캘린더 생성
     @PostMapping
     public ResponseEntity<Calendar> createCalendar(@RequestBody CalendarCreateDto dto) {
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         dto.setUserId(user.getId());
         Calendar calendar = calendarService.createCalendar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(calendar);
@@ -32,7 +32,7 @@ public class CalendarController {
     // 모든 캘린더 조회  (사용자의 모든 캘린더 조회)
     @GetMapping
     public ResponseEntity<List<Calendar>> getAllCalendars() {
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         return ResponseEntity.ok(calendarService.getAllCalendars(user.getId()));
     }
 
@@ -40,7 +40,7 @@ public class CalendarController {
     // 특정 캘린더 조회 (사용자의 5개의 캘린더중 3번 캘린더 조회)
     @GetMapping("/{id}")
     public ResponseEntity<Calendar> getCalendarById(@PathVariable Long id) {
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         Calendar calendar = calendarService.getCalendarById(id);
 
         // 본인의 캘린더가 아닌 경우 접근 거부
@@ -56,7 +56,7 @@ public class CalendarController {
     public ResponseEntity<Calendar> updateCalendar(
             @PathVariable Long id,
             @RequestBody CalendarUpdateDto dto) {
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         Calendar calendar = calendarService.getCalendarById(id);
 
         // 본인의 캘린더가 아닌 경우 접근 거부
@@ -70,7 +70,7 @@ public class CalendarController {
     // 캘린더 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCalendar(@PathVariable Long id) {
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         Calendar calendar = calendarService.getCalendarById(id);
 
         // 본인의 캘린더가 아닌 경우 접근 거부

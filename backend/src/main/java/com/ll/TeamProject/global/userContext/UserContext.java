@@ -1,4 +1,4 @@
-package com.ll.TeamProject.global.rq;
+package com.ll.TeamProject.global.userContext;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.service.UserService;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequestScope
 @Component
 @RequiredArgsConstructor
-public class Rq {
+public class UserContext {
 
     private final HttpServletResponse resp;
     private final HttpServletRequest req;

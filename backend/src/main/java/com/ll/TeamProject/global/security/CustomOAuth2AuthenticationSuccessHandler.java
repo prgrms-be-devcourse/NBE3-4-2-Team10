@@ -1,8 +1,7 @@
 package com.ll.TeamProject.global.security;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
-import com.ll.TeamProject.domain.user.service.UserService;
-import com.ll.TeamProject.global.rq.Rq;
+import com.ll.TeamProject.global.userContext.UserContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomOAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    private final UserService userService;
-    private final Rq rq;
+    private final UserContext userContext;
 
     @Value("${custom.dev.frontUrl}")
     private String devFrontUrl;
@@ -25,11 +23,10 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SavedRequestAwareA
     @SneakyThrows
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        // SiteUser actor = userService.findById(rq.getActor().getId()).get();
 
-        SiteUser user = rq.findActor().get();
+        SiteUser user = userContext.findActor().get();
 
-        rq.makeAuthCookies(user);
+        userContext.makeAuthCookies(user);
 
         response.sendRedirect(devFrontUrl + "/calendar/"); // 프론트 메인 페이지로 연결
     }

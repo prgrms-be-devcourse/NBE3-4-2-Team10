@@ -1,5 +1,7 @@
 package com.ll.TeamProject.domain.user.service;
 
+import com.ll.TeamProject.domain.user.dto.LoginDto;
+import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.AuthType;
@@ -7,11 +9,13 @@ import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
-import com.ll.TeamProject.global.rq.Rq;
+import com.ll.TeamProject.global.userContext.UserContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -27,7 +31,33 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthTokenService authTokenService;
     private final AuthenticationRepository authenticationRepository;
-    private final Rq rq;
+    private final UserContext userContext;
+    private final AuthenticationService authenticationService;
+    private final ApplicationContext applicationContext;
+
+    public LoginDto login(String username, String password) {
+        SiteUser user = findByUsername(username)
+                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+
+        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
+
+        // 비밀번호 일치하지 않으면 로그인 실패 증가, 5회이상 계정 잠김
+        // 계정 잠김 -> 관련 로직 필요
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            authenticationService.handleLoginFailure(user);
+            throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
+        }
+
+        authenticationService.modifyLastLogin(user);
+
+        String accessToken = userContext.makeAuthCookies(user);
+
+        return new LoginDto(
+                new UserDto(user),
+                user.getApiKey(),
+                accessToken
+        );
+    }
 
     // username으로 찾기
     public Optional<SiteUser> findByUsername(String username) {
@@ -96,26 +126,20 @@ public class UserService {
     }
 
     // 소셜 로그인 user가 이미 있으면 modify, user가 없으면 회원가입
-    public SiteUser modifyOrJoin(String username, String nickname, String email, String providerTypeCode) {
+    public SiteUser findOrRegisterUser(String username, String nickname, String email, String providerTypeCode) {
         Optional<SiteUser> opUser = findByUsername(username);
 
         if (opUser.isPresent()) {
             SiteUser user = opUser.get();
-            modify(user);
             return user;
         }
 
         return join(username, nickname, "", email, providerTypeCode);
     }
 
-    // user 수정 부분 미구현
-    public void modify(SiteUser user) {
-
-    }
-
     // 내정보 수정 (닉네임 부분 구현)
     public void modify(String nickname) {
-        SiteUser actor = rq.findActor().get();
+        SiteUser actor = userContext.findActor().get();
         try {
             actor.changeNickname(nickname);
             userRepository.save(actor);
@@ -124,7 +148,7 @@ public class UserService {
         }
 
         // 수정된 닉네임 보이게 쿠키 수정
-        rq.makeAuthCookies(actor);
+        userContext.makeAuthCookies(actor);
     }
 
     // user 가입
@@ -166,7 +190,7 @@ public class UserService {
         SiteUser userToDelete = userOptional.get();
 
         // 요청 사용자 확인
-        SiteUser actor = rq.getActor();
+        SiteUser actor = userContext.getActor();
 
         // 권한 확인
         if(!userToDelete.getId().equals(actor.getId())) {
