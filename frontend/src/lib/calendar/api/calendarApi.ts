@@ -1,10 +1,15 @@
-// lib/calendar/api.ts
-import axios from 'axios';
+//src/lib/calendar/api.ts
+import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:8080/api/calendar'; // 실제 백엔드 URL로 변경
+const API_BASE_URL = "http://localhost:8080/api/calendars"; // 백엔드 URL
 
 export const getAllCalendars = async () => {
   const response = await axios.get(`${API_BASE_URL}`);
+  return response.data;
+};
+
+export const getCalendarById = async (id) => {
+  const response = await axios.get(`${API_BASE_URL}/${id}`);
   return response.data;
 };
 
