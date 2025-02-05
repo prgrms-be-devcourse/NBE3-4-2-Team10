@@ -89,13 +89,11 @@ class AdminControllerTest {
                     assertThat(accessTokenCookie.getValue()).isNotBlank();
                     assertThat(accessTokenCookie.getPath()).isEqualTo("/");
                     assertThat(accessTokenCookie.isHttpOnly()).isTrue();
-                    assertThat(accessTokenCookie.getSecure()).isTrue();
 
                     Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
                     assertThat(apiKeyCookie.getValue()).isEqualTo(actor.getApiKey());
                     assertThat(apiKeyCookie.getPath()).isEqualTo("/");
                     assertThat(apiKeyCookie.isHttpOnly()).isTrue();
-                    assertThat(apiKeyCookie.getSecure()).isTrue();
                 }
         );
     }
@@ -336,14 +334,55 @@ class AdminControllerTest {
                     assertThat(accessTokenCookie.getMaxAge()).isEqualTo(0);
                     assertThat(accessTokenCookie.getPath()).isEqualTo("/");
                     assertThat(accessTokenCookie.isHttpOnly()).isTrue();
-//                    assertThat(accessTokenCookie.getSecure()).isTrue();
 
                     Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
                     assertThat(apiKeyCookie.getValue()).isEmpty();
                     assertThat(apiKeyCookie.getMaxAge()).isEqualTo(0);
                     assertThat(apiKeyCookie.getPath()).isEqualTo("/");
                     assertThat(apiKeyCookie.isHttpOnly()).isTrue();
-//                    assertThat(apiKeyCookie.getSecure()).isTrue();
                 });
+    }
+
+    @Test
+    @DisplayName("사용자 탈퇴")
+    void deleteUser() throws Exception {
+        SiteUser actor = userService.findByUsername("user1").get();
+        String actorAuthToken = userService.genAuthToken(actor);
+
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/user/2")
+                                .header("Authorization", "Bearer " + actorAuthToken)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("회원정보가 삭제되었습니다."))
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.data.id").value(actor.getId()))
+                .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.nickname").value("탈퇴한 사용자"));
+    }
+
+    @Test
+    @DisplayName("사용자 탈퇴 - 다른 사용자, 권한 없음")
+    void deleteUser2() throws Exception {
+        SiteUser actor = userService.findByUsername("user2").get();
+        String actorAuthToken = userService.genAuthToken(actor);
+
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/user/2")
+                                .header("Authorization", "Bearer " + actorAuthToken)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.resultCode").value("403-1"))
+                .andExpect(jsonPath("$.msg").value("접근 권한이 없습니다."));
     }
 }

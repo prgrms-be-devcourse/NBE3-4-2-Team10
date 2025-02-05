@@ -6,6 +6,8 @@ import com.ll.TeamProject.domain.user.enums.AuthType;
 import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
+import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.global.rq.Rq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthTokenService authTokenService;
     private final AuthenticationRepository authenticationRepository;
+    private final Rq rq;
 
     // username으로 찾기
     public Optional<SiteUser> findByUsername(String username) {
@@ -54,8 +57,8 @@ public class UserService {
         searchKeyword = "%" + searchKeyword + "%"; // 일부만 입력해도 조회되도록
 
         return switch (searchKeywordType) {
-            case "email" -> userRepository.findByRoleAndEmailLike(Role.USER, searchKeyword, pageRequest);
-            default -> userRepository.findByRoleAndUsernameLike(Role.USER, searchKeyword, pageRequest);
+            case "email" -> userRepository.findByRoleAndEmailLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
+            default -> userRepository.findByRoleAndUsernameLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
         };
     }
 
@@ -137,5 +140,30 @@ public class UserService {
         authenticationRepository.save(authentication);
 
         return user;
+    }
+
+    public SiteUser delete(long id) {
+        // 회원 존재 확인
+        Optional<SiteUser> userOptional = findById(id);
+        if(userOptional.isEmpty()) {
+            throw new ServiceException("401-1", "존재하지 않는 사용자입니다.");
+        }
+        SiteUser userToDelete = userOptional.get();
+
+        // 요청 사용자 확인
+        SiteUser actor = rq.getActor();
+
+        // 권한 확인
+        if(!userToDelete.getId().equals(actor.getId())) {
+            throw new ServiceException("403-1", "접근 권한이 없습니다.");
+        }
+
+        // 삭제 로직
+        userToDelete.changeNickname("탈퇴한 사용자");
+        userToDelete.deleteUsernameEmail();
+        userToDelete.delete(true);
+        userRepository.save(userToDelete);
+
+        return userToDelete;
     }
 }

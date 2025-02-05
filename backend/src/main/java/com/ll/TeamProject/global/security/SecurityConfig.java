@@ -42,12 +42,16 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 // 관리자 작업 권한 필요
-                                .requestMatchers("/admin")
+                                .requestMatchers("/admin/**")
                                 .hasAuthority("ROLE_ADMIN")
 
                                 // 로그인 요청 허용
                                 .requestMatchers("/login")
                                 .permitAll()
+
+                                // user 관련 인증 필요
+                                .requestMatchers("/user/**")
+                                .authenticated()
 
                                 // 정적자원 허용
                                 .requestMatchers("/static/**", "/images/**", "/css/**", "/js/**") // 정적 자원 예외 추가
