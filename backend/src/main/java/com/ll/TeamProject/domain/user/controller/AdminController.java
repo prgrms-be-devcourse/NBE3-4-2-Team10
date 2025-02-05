@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,13 +67,7 @@ public class AdminController {
     @Operation(summary = "로그아웃")
     public RsData<Void> logout(HttpServletRequest request) {
 
-        request.getSession().invalidate(); // 서버측 세션 무효화
-
-        userContext.deleteCookie("accessToken");
-        userContext.deleteCookie("apiKey");
-        userContext.deleteCookie("JSESSIONID");
-
-        SecurityContextHolder.clearContext();
+        userService.logout(request);
 
         return new RsData<>(
                 "200-1",

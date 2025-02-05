@@ -33,10 +33,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     @Operation(summary = "회원 탈퇴 (soft)")
     public RsData<UserDto> deleteUser(@PathVariable("id") long id) {
-        SiteUser userToDelete = userService.delete(id);
+        UserDto userToDelete = userService.delete(id);
 
         return new RsData<>(
-                "200-1", "회원정보가 삭제되었습니다.", new UserDto(userToDelete)
+                "200-1", "회원정보가 삭제되었습니다.", userToDelete
         );
     }
 

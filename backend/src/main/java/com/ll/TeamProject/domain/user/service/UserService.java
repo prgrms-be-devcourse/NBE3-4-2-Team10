@@ -10,11 +10,13 @@ import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.userContext.UserContext;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -181,7 +183,7 @@ public class UserService {
         return user;
     }
 
-    public SiteUser delete(long id) {
+    public UserDto delete(long id) {
         // 회원 존재 확인
         Optional<SiteUser> userOptional = findById(id);
         if(userOptional.isEmpty()) {
@@ -203,6 +205,16 @@ public class UserService {
         userToDelete.delete(true);
         userRepository.save(userToDelete);
 
-        return userToDelete;
+        return new UserDto(userToDelete);
+    }
+
+    public void logout(HttpServletRequest request) {
+        request.getSession().invalidate(); // 서버측 세션 무효화
+
+        userContext.deleteCookie("accessToken");
+        userContext.deleteCookie("apiKey");
+        userContext.deleteCookie("JSESSIONID");
+
+        SecurityContextHolder.clearContext();
     }
 }
