@@ -1,25 +1,25 @@
 package com.ll.TeamProject.domain.user.dto;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Getter
-public class UserDto {
-    private long id;
-    private String username;
-    private String nickname;
-    private String email;
-    private LocalDateTime createDate;
-    private LocalDateTime modifyDate;
-
-    public UserDto(SiteUser siteUser) {
-        this.id = siteUser.getId();
-        this.username = siteUser.getUsername();
-        this.nickname = siteUser.getNickname();
-        this.createDate = siteUser.getCreateDate();
-        this.modifyDate = siteUser.getModifyDate();
-        this.email = siteUser.getEmail();
+public record UserDto(
+        long id,
+        String username,
+        String nickname,
+        String email,
+        LocalDateTime createDate,
+        LocalDateTime modifyDate
+) {
+    public UserDto(SiteUser user) {
+        this(
+                user.getId(),
+                user.getUsername(),
+                user.getNickname(),
+                user.getEmail(),
+                user.getCreateDate(),
+                user.getModifyDate()
+        );
     }
 }

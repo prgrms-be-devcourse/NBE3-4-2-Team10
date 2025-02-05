@@ -3,7 +3,7 @@ package com.ll.TeamProject.global.security;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.service.AuthenticationService;
 import com.ll.TeamProject.domain.user.service.UserService;
-import com.ll.TeamProject.global.rq.Rq;
+import com.ll.TeamProject.global.userContext.UserContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
-    private final Rq rq;
+    private final UserContext userContext;
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
@@ -64,7 +64,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
         // user 있으면 로그인 처리
         if (user != null)
-            rq.setLogin(user);
+            userContext.setLogin(user);
 
         filterChain.doFilter(request, response);
     }
@@ -88,14 +88,14 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         String newAccessToken = userService.genAccessToken(user);
 
         // 토큰 재발급 후 헤더와 쿠키에 재설정
-        rq.setHeader("Authorization", "Bearer " + user.getApiKey() + " " + newAccessToken);
-        rq.setCookie("accessToken", newAccessToken);
+        userContext.setHeader("Authorization", "Bearer " + user.getApiKey() + " " + newAccessToken);
+        userContext.setCookie("accessToken", newAccessToken);
     }
 
     // 요청애서 토큰 얻기
     private AuthTokens getAuthTokensFromRequest() {
         // 요청 헤더에서 Authorization 얻기
-        String authorization = rq.getHeader("Authorization");
+        String authorization = userContext.getHeader("Authorization");
 
         // Authorization null 아니고 Bearer 시작하면 토큰값 얻기
         if (authorization != null && authorization.startsWith("Bearer ")) {
@@ -107,8 +107,8 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // 헤더에 토큰이 없다면 쿠키에서 토큰값 얻기
-        String apikey = rq.getCookieValue("apiKey");
-        String accessToken = rq.getCookieValue("accessToken");
+        String apikey = userContext.getCookieValue("apiKey");
+        String accessToken = userContext.getCookieValue("accessToken");
 
         if (apikey != null && accessToken != null)
             return new AuthTokens(apikey, accessToken);
