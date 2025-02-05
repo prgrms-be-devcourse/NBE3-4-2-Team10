@@ -83,6 +83,9 @@ public class UserService {
             int page,
             int pageSize
     ) {
+
+        if (page < 1) throw new ServiceException("400-1", "페이지 번호는 1 이상이어야 합니다.");
+
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
 
         if (searchKeyword.isBlank()) return findUsersNoKeyword(page, pageSize); // 키워드 없는 유저 목록
