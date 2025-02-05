@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Schedule, ScheduleFormData } from '../../../types/schedule/schedule';
+import { Schedule, ScheduleFormData } from '@/types/schedule/schedule';
 
 const BASE_URL = 'http://localhost:8080/calendars';
 
@@ -18,10 +18,8 @@ export const scheduleApi = {
         await axios.delete(`${BASE_URL}/${calendarId}/schedules/${scheduleId}`);
     },
 
-    async getSchedules(calendarId: number, startDate: string, endDate: string): Promise<Schedule[]> {
-        const response = await axios.get<Schedule[]>(`${BASE_URL}/${calendarId}/schedules`, {
-            params: { startDate, endDate },
-        });
+    async getSchedules(calendarId: number): Promise<Schedule[]> {
+        const response = await axios.get<Schedule[]>(`${BASE_URL}/${calendarId}/schedules`);
         return response.data;
     },
 

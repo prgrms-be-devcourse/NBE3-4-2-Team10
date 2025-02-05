@@ -16,18 +16,15 @@ export default function ScheduleForm({ initialData, onSubmit, onCancel }: Schedu
         location: initialData?.location || { address: '', latitude: 0, longitude: 0 }
     });
 
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const address = e.target.value;
+        // 주소 입력 시 좌표 변환이 필요 없다면 아래 코드는 생략
+        setFormData(prev => ({ ...prev, location: { ...prev.location, address } }));
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-
-        if (name.startsWith('location.')) {
-            const fieldName = name.split('.')[1];
-            setFormData(prev => ({
-                ...prev,
-                location: { ...prev.location, [fieldName]: value }
-            }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -75,7 +72,7 @@ export default function ScheduleForm({ initialData, onSubmit, onCancel }: Schedu
                     type="text"
                     name="location.address"
                     value={formData.location.address}
-                    onChange={handleChange}
+                    onChange={handleAddressChange}
                     className="w-full p-2 border rounded"
                 />
             </div>
