@@ -3,8 +3,10 @@ package com.ll.TeamProject.global.initData;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
 import com.ll.TeamProject.domain.user.entity.Authentication;
+import com.ll.TeamProject.domain.user.entity.ForbiddenNickname;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
+import com.ll.TeamProject.domain.user.repository.ForbiddenRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class BaseInitData {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationRepository authenticationRepository;
+    private final ForbiddenRepository forbiddenRepository;
 
     @Autowired
     @Lazy
@@ -40,6 +43,7 @@ public class BaseInitData {
         return args -> {
             self.work1();
             self.work2();
+            self.work3();
         };
     }
     @Transactional
@@ -116,6 +120,26 @@ public class BaseInitData {
                     calendarRepository.save(calendar);
                 }
             });
+        }
+    }
+
+    @Transactional
+    public void work3() {
+        // 닉네임 변경 금지어 설정
+        if (forbiddenRepository.count() == 0) {
+
+            String[] forbiddenNames = {
+                    "어?", "404", "200", "500", "null",
+                    "DROP TABLE Site_User", "rm -rf", "undefined",
+                    "git push origin main --force", "NullPointerException",
+                    "sudo", "localhost", "True", "False", "test", "guest",
+                    "admin", "error", "exception", "deprecated"
+            };
+
+            for (String name : forbiddenNames) {
+                ForbiddenNickname forbiddenNickname = new ForbiddenNickname(name);
+                forbiddenRepository.save(forbiddenNickname);
+            }
         }
     }
 }
