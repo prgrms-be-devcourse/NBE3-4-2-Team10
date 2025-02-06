@@ -26,15 +26,15 @@ export function parseAccessToken(accessToken: string | undefined) {
   const me: components["schemas"]["UserDto"] | null = isLogin
     ? {
         id: accessTokenPayload.id,
-        createDate: "",
-        modifyDate: "",
-        username: accessTokenPayload.username,
+        createDate: accessTokenPayload.createDate,
+        nickname: accessTokenPayload.nickname,
+        email: accessTokenPayload.email,
       }
     : {
         id: 0,
         createDate: "",
-        modifyDate: "",
-        username: "",
+        nickname: "",
+        email: "",
       };
 
   return { isLogin, isAdmin, isAccessTokenExpired, accessTokenPayload, me };

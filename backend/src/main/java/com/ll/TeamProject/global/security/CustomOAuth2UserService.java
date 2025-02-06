@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         // 회원이 아니면 회원가입, 회원이면 수정
-        SiteUser user = userService.modifyOrJoin(username, nickname, email, providerTypeCode);
+        SiteUser user = userService.findOrRegisterUser(username, nickname, email, providerTypeCode);
 
         // 최근 로그인 시간
         authenticationService.modifyLastLogin(user);

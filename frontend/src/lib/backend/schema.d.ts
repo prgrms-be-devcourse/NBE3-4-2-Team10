@@ -4,6 +4,34 @@
  */
 
 export interface paths {
+    "/calendars/{calendarId}/schedules/{scheduleId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 특정 일정 조회
+         * @description 주어진 일정 ID(scheduleId)를 기반으로 특정 일정을 조회합니다.
+         */
+        get: operations["getSchedule"];
+        /**
+         * 일정 수정
+         * @description 기존 일정(scheduleId)을 수정합니다.
+         */
+        put: operations["updateSchedule"];
+        post?: never;
+        /**
+         * 일정 삭제
+         * @description 지정된 일정(scheduleId)을 삭제합니다.
+         */
+        delete: operations["deleteSchedule"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/calendars/{id}": {
         parameters: {
             query?: never;
@@ -15,6 +43,47 @@ export interface paths {
         put: operations["updateCalendar"];
         post?: never;
         delete: operations["deleteCalendar"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 내정보 수정 */
+        post: operations["modifyUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/calendars/{calendarId}/schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 일정 목록 조회
+         * @description 지정된 날짜(date)에 해당하는 일정을 조회합니다.
+         */
+        get: operations["getSchedules"];
+        put?: never;
+        /**
+         * 일정 생성
+         * @description 주어진 calendarId에 새 일정을 생성합니다.
+         */
+        post: operations["createSchedule"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -70,6 +139,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/calendars/{calendarId}/schedules/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 하루 일정 조회
+         * @description 특정 날짜(24시간)의 일정을 조회합니다.
+         */
+        get: operations["getDailySchedules"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin": {
         parameters: {
             query?: never;
@@ -82,6 +171,23 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 회원 탈퇴 (soft) */
+        delete: operations["deleteUser"];
         options?: never;
         head?: never;
         patch?: never;
@@ -113,6 +219,40 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["Empty"];
+        };
+        Location: {
+            /** Format: double */
+            latitude?: number;
+            /** Format: double */
+            longitude?: number;
+            address?: string;
+        };
+        ScheduleRequestDto: {
+            title: string;
+            description?: string;
+            /** Format: date-time */
+            startTime: string;
+            /** Format: date-time */
+            endTime: string;
+            location?: components["schemas"]["Location"];
+            endTimeValid?: boolean;
+        };
+        ScheduleResponseDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            calendarId?: number;
+            title?: string;
+            description?: string;
+            /** Format: date-time */
+            startTime?: string;
+            /** Format: date-time */
+            endTime?: string;
+            location?: components["schemas"]["Location"];
+            /** Format: date-time */
+            createDate?: string;
+            /** Format: date-time */
+            modifyDate?: string;
         };
         CalendarUpdateDto: {
             name?: string;
@@ -166,7 +306,18 @@ export interface components {
             /** @enum {string} */
             role?: "ADMIN" | "USER";
             apiKey?: string;
+            /** Format: date-time */
+            deletedDate?: string;
             authorities?: components["schemas"]["GrantedAuthority"][];
+            deleted?: boolean;
+        };
+        modifyUserReqBody: {
+            nickname: string;
+        };
+        RsDataVoid: {
+            resultCode: string;
+            msg: string;
+            data: Record<string, never>;
         };
         CalendarCreateDto: {
             /** Format: int64 */
@@ -215,10 +366,10 @@ export interface components {
             msg: string;
             data: components["schemas"]["PageDtoUserDto"];
         };
-        RsDataVoid: {
+        RsDataUserDto: {
             resultCode: string;
             msg: string;
-            data: Record<string, never>;
+            data: components["schemas"]["UserDto"];
         };
     };
     responses: never;
@@ -229,6 +380,145 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 일정 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 일정이 존재하지 않음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
+        };
+    };
+    updateSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 일정 수정 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 일정이 존재하지 않음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
+        };
+    };
+    deleteSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 일정 삭제 성공 */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 일정이 존재하지 않음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getCalendarById: {
         parameters: {
             query?: never;
@@ -316,6 +606,122 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    modifyUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["modifyUserReqBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getSchedules: {
+        parameters: {
+            query: {
+                startDate: string;
+                endDate: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 일정 목록 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+            /** @description 잘못된 날짜 형식 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+        };
+    };
+    createSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 일정 생성 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
+            /** @description 잘못된 요청 데이터 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
                 };
             };
         };
@@ -444,6 +850,46 @@ export interface operations {
             };
         };
     };
+    getDailySchedules: {
+        parameters: {
+            query: {
+                date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 하루 일정 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+            /** @description 잘못된 날짜 형식 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+        };
+    };
     users: {
         parameters: {
             query?: {
@@ -465,6 +911,37 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoUserDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deleteUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataUserDto"];
                 };
             };
             /** @description Bad Request */
