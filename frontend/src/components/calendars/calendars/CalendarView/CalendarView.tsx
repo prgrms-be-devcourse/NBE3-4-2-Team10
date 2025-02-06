@@ -4,7 +4,7 @@ import React from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { Calendar } from "../../../../lib/calendar/types/calendarTypes";
+import type { Calendar } from "@/lib/calendars/types/calendarTypes";
 import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 
 interface CalendarViewProps {

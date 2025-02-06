@@ -7,7 +7,7 @@ import {
     TrashIcon,
     ChevronDownIcon
 } from "@heroicons/react/24/outline";
-import type { Calendar } from "../../../../lib/calendar/types/calendarTypes";
+import type { Calendar } from "@/lib/calendars/types/calendarTypes";
 
 interface CalendarSidebarProps {
     onCreateClick: () => void;
