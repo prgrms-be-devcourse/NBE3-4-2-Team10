@@ -132,8 +132,9 @@ public class BaseInitData {
                     "어?", "404", "200", "500", "null",
                     "DROP TABLE Site_User", "rm -rf", "undefined",
                     "git push origin main --force", "NullPointerException",
-                    "sudo", "localhost", "True", "False", "test", "guest",
-                    "admin", "error", "exception", "deprecated"
+                    "sudo", "localhost", "test", "guest",
+                    "admin", "error", "exception", "deprecated",
+                    "Kakao", "Google"
             };
 
             for (String name : forbiddenNames) {
