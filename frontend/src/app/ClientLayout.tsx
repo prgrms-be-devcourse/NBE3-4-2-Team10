@@ -34,9 +34,9 @@ export default function ClientLayout({
   useEffect(() => {
     setIsHydrated(true);
 
-    // ✅ 로그인한 사용자는 /calendar로 자동 이동
+    // ✅ 로그인한 사용자는 /calendars로 자동 이동
     if (isLogin) {
-      router.push("/calendar");
+      router.push("/calendars");
     }
   }, [isLogin, router]);
 
@@ -83,7 +83,7 @@ export default function ClientLayout({
           )}
           <div className="flex-grow"></div>
           {isLogin && (
-            <Link href="/calendar">
+            <Link href="/calendars">
               <FontAwesomeIcon icon={faCalendar} className="px-2" />
               캘린더
             </Link>

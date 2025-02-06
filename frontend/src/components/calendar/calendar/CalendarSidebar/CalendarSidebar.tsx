@@ -23,7 +23,6 @@ export const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
                                                                     onCreateClick,
                                                                     onUpdateClick,
                                                                     onDeleteClick,
-                                                                    onViewClick,
                                                                     selectedCalendar,
                                                                     calendars = [],
                                                                     onCalendarSelect,
