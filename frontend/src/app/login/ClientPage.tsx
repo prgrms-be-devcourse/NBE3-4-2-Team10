@@ -3,10 +3,9 @@
 "use client";
 
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/schedule/ui/button";
 import { faComments, faGlobe, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function ClientPage() {

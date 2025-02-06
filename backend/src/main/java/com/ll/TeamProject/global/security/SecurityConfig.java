@@ -58,6 +58,10 @@ public class SecurityConfig {
                                 .requestMatchers("/static/**", "/images/**", "/css/**", "/js/**") // 정적 자원 예외 추가
                                 .permitAll()
 
+                                // 캘린더 API에 대한 인증 요구
+                                .requestMatchers("/api/calendars/**")
+                                .authenticated() // 캘린더 API에 대한 인증 요구
+
                                 // 나머지 요청은 허용
                                 // SpringDoc 관련 작업 하면서 임시로 (swagger 허용 필요)
                                 .anyRequest()
@@ -121,7 +125,7 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 허용할 오리진 설정
-        configuration.setAllowedOrigins(Arrays.asList("https://cdpn.io", AppConfig.getSiteFrontUrl()));
+        configuration.setAllowedOriginPatterns(Arrays.asList(AppConfig.getSiteFrontUrl()));
         // 허용할 HTTP 메서드 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         // 자격 증명 허용 설정

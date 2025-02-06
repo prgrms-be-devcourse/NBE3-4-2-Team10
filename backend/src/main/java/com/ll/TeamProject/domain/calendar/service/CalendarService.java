@@ -9,11 +9,14 @@ import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j // 로깅 추가
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CalendarService {
 
@@ -27,11 +30,18 @@ public class CalendarService {
                 .orElseThrow(() -> new ServiceException("404", "사용자를 찾을 수 없습니다."));
 
         Calendar calendar = new Calendar(user, dto.getName(), dto.getDescription());
-        return calendarRepository.save(calendar);
+        Calendar savedCalendar = calendarRepository.save(calendar);
+
+        log.info("캘린더 생성 완료 - ID: {}, Name: {}", savedCalendar.getId(), savedCalendar.getName());
+
+        return savedCalendar;
     }
 
-    // 모든 캘린더 조회
+    // 모든 캘린더 조회 (유저 ID 기반)
     public List<Calendar> getAllCalendars(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new ServiceException("404", "사용자를 찾을 수 없습니다.");
+        }
         return calendarRepository.findByUserId(userId);
     }
 
@@ -45,17 +55,24 @@ public class CalendarService {
     @Transactional
     public Calendar updateCalendar(Long id, CalendarUpdateDto dto) {
         Calendar calendar = getCalendarById(id);
-        calendar.update(dto.getName(), dto.getDescription());
+
+        // null 체크 후 업데이트 (기존 값 유지)
+        String updatedName = (dto.getName() != null) ? dto.getName() : calendar.getName();
+        String updatedDescription = (dto.getDescription() != null) ? dto.getDescription() : calendar.getDescription();
+
+        calendar.update(updatedName, updatedDescription);
+
+        log.info("캘린더 수정 완료 - ID: {}, New Name: {}, New Description: {}", id, updatedName, updatedDescription);
+
         return calendarRepository.save(calendar);
     }
 
     // 캘린더 삭제
     @Transactional
-    public boolean deleteCalendar(Long id) {
-        if (!calendarRepository.existsById(id)) {
-            throw new ServiceException("404", "캘린더를 찾을 수 없습니다.");
-        }
-        calendarRepository.deleteById(id);
-        return true; // 삭제 성공 시 true 반환
+    public void deleteCalendar(Long id) {
+        Calendar calendar = getCalendarById(id); // 예외 발생 시 자동 처리됨
+        calendarRepository.delete(calendar);
+
+        log.info("캘린더 삭제 완료 - ID: {}", id);
     }
 }

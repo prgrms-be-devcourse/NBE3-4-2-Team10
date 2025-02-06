@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/schedule/ui/button";
 import client from "@/lib/backend/client";
 import { components } from "@/lib/backend/schema";
 

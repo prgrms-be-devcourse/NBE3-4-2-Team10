@@ -1,9 +1,11 @@
+//src/lib/calendar/types/calendarTypes.ts
 export interface Calendar {
   id: number;
+  userId: number;
   name: string;
   description: string;
-  createDate: string;
-  modifyDate: string;
+  createdDate?: string;
+  modifiedDate?: string;
 }
 
 export interface CalendarCreateDto {

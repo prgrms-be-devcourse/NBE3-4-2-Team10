@@ -3,6 +3,66 @@
 @tailwind utilities;
 
 .fc {
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+}
+
+.fc-header-toolbar {
+  padding: 1rem;
+  margin-bottom: 0 !important;
+}
+
+.fc-toolbar-title {
+  font-size: 1.5rem !important;
+  font-weight: 400 !important;
+}
+
+.fc-button-primary {
+  background-color: white !important;
+  border-color: #dadce0 !important;
+  color: #3c4043 !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.fc-button-primary:hover {
+  background-color: #f1f3f4 !important;
+  border-color: #dadce0 !important;
+}
+
+.fc-button-primary:not(:disabled).fc-button-active,
+.fc-button-primary:not(:disabled):active {
+  background-color: #e8f0fe !important;
+  border-color: #dadce0 !important;
+  color: #1a73e8 !important;
+}
+
+.fc-day-today {
+  background-color: #e8f0fe !important;
+}
+
+.fc th {
+  border-color: #dadce0 !important;
+  padding: 0.5rem 0 !important;
+  font-weight: 500 !important;
+  color: #3c4043 !important;
+}
+
+.fc td {
+  border-color: #dadce0 !important;
+}
+
+.fc-event {
+  border: none !important;
+  background-color: #039be5 !important;
+  padding: 2px 4px !important;
+  font-size: 0.875rem !important;
+}
+
+.fc-day-grid-event {
+  border-radius: 4px !important;
+}
+.fc {
     height: 100% !important;
     background: white !important;
     body {
