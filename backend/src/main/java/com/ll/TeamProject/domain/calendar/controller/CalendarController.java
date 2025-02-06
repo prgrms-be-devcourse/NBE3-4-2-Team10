@@ -37,7 +37,7 @@ public class CalendarController {
     public ResponseEntity<?> createCalendar(@RequestBody CalendarCreateDto dto) {
         try {
             validateLogin();
-            SiteUser user = rq.getActor();
+            SiteUser user = rq.findByActor().get();
             dto.setUserId(user.getId());
 
             Calendar calendar = calendarService.createCalendar(dto);

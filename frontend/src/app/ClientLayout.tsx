@@ -1,20 +1,14 @@
-// 레이아웃 (브라우저)
-
 "use client";
 
 import client from "@/lib/backend/client";
 import { components } from "@/lib/backend/schema";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse } from "@fortawesome/free-solid-svg-icons/faHouse";
-import {
-  faCopyright,
-  faList,
-  faPowerOff,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faCopyright, faList, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 
-export default function ClientLayput({
+export default function ClientLayout({
   children,
   me,
   isLogin,
@@ -26,14 +20,19 @@ export default function ClientLayput({
   isAdmin: boolean;
 }>) {
   const [isHydrated, setIsHydrated] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // 클라이언트에서만 실행되도록 설정
     setIsHydrated(true);
-  }, []);
+
+    // ✅ 로그인한 사용자는 /calendar로 자동 이동
+    if (isLogin) {
+      router.push("/calendar");
+    }
+  }, [isLogin, router]);
 
   if (!isHydrated) {
-    return null; // 클라이언트에서만 렌더링 되도록 함
+    return null; // 클라이언트에서만 렌더링되도록 함
   }
 
   const logout = async () => {
@@ -44,7 +43,7 @@ export default function ClientLayput({
       return;
     }
 
-    window.location.replace("/");
+    router.push("/login"); // ✅ 로그아웃 후 /login 페이지로 이동
   };
 
   return (

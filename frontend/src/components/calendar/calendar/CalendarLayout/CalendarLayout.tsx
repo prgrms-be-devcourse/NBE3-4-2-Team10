@@ -1,6 +1,5 @@
-// components/calendar/calendar/CalendarLayout/CalendarLayout.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { CalendarSidebar } from "../CalendarSidebar";
 import { RightSidebar } from "../CalendarRightSidebar";
@@ -9,20 +8,16 @@ import { useCalendar } from "../../../../lib/calendar/hooks/useCalendar";
 import type { Calendar } from "../../../../lib/calendar/types/calendarTypes";
 
 export const CalendarLayout = () => {
-  const { calendars, loading, createCalendar, updateCalendar, deleteCalendar } =
-    useCalendar();
-
-  const [selectedCalendar, setSelectedCalendar] = useState<Calendar | null>(
-    null
-  );
+  const { calendars, loading, createCalendar, updateCalendar, deleteCalendar } = useCalendar();
+  const [selectedCalendar, setSelectedCalendar] = useState<Calendar | null>(null);
 
   const handleCreateCalendar = async () => {
+    const name = prompt("캘린더 이름을 입력하세요");
+    const description = prompt("캘린더 설명을 입력하세요");
+
+    if (!name) return;
+
     try {
-      const name = prompt("캘린더 이름을 입력하세요");
-      const description = prompt("캘린더 설명을 입력하세요");
-
-      if (!name) return;
-
       await createCalendar({ name, description: description || "" });
       alert("캘린더가 생성되었습니다.");
     } catch (err) {
@@ -36,22 +31,13 @@ export const CalendarLayout = () => {
       return;
     }
 
+    const name = prompt("새로운 캘린더 이름을 입력하세요", selectedCalendar.name);
+    const description = prompt("새로운 캘린더 설명을 입력하세요", selectedCalendar.description);
+
+    if (!name) return;
+
     try {
-      const name = prompt(
-        "새로운 캘린더 이름을 입력하세요",
-        selectedCalendar.name
-      );
-      const description = prompt(
-        "새로운 캘린더 설명을 입력하세요",
-        selectedCalendar.description
-      );
-
-      if (!name) return;
-
-      await updateCalendar(selectedCalendar.id, {
-        name,
-        description: description || "",
-      });
+      await updateCalendar(selectedCalendar.id, { name, description: description || "" });
       alert("캘린더가 수정되었습니다.");
     } catch (err) {
       alert("캘린더 수정에 실패했습니다.");
@@ -64,9 +50,9 @@ export const CalendarLayout = () => {
       return;
     }
 
-    try {
-      if (!confirm("정말 이 캘린더를 삭제하시겠습니까?")) return;
+    if (!confirm("정말 이 캘린더를 삭제하시겠습니까?")) return;
 
+    try {
       await deleteCalendar(selectedCalendar.id);
       setSelectedCalendar(null);
       alert("캘린더가 삭제되었습니다.");
@@ -75,12 +61,6 @@ export const CalendarLayout = () => {
     }
   };
 
-  const handleViewCalendar = () => {
-    if (calendars.length === 0) {
-      alert("조회할 캘린더가 없습니다.");
-      return;
-    }
-  };
   return (
     <PanelGroup direction="horizontal" className="min-h-screen">
       <Panel defaultSize={15} minSize={10} maxSize={30}>
@@ -88,7 +68,6 @@ export const CalendarLayout = () => {
           onCreateClick={handleCreateCalendar}
           onUpdateClick={handleUpdateCalendar}
           onDeleteClick={handleDeleteCalendar}
-          onViewClick={handleViewCalendar}
           selectedCalendar={selectedCalendar}
         />
       </Panel>
