@@ -13,21 +13,27 @@ export default function SchedulePage() {
     const [selectedSchedule, setSelectedSchedule] = useState<Schedule | undefined>(undefined);
     const params = useParams();
 
-    // 동적으로 calendarId 가져오기
-    const calendarId = Number(params.calendarId);
+    //  params가 `null`이면 기본값 할당하여 안전하게 변환
+    const calendarId = params?.calendarId ? Number(params.calendarId) : null;
 
     useEffect(() => {
-        if (!calendarId) return;
+        if (calendarId === null) return; //`calendarId`가 `null`이면 실행하지 않음
 
         const fetchSchedules = async () => {
-            const data = await scheduleApi.getSchedules(calendarId);
-            setSchedules(data);
+            try {
+                const data = await scheduleApi.getSchedules(calendarId);
+                setSchedules(data);
+            } catch (error) {
+                console.error("📛 일정 목록을 불러오는 중 오류 발생:", error);
+            }
         };
 
         fetchSchedules();
     }, [calendarId]);
 
     const handleCreateOrUpdateSchedule = async (formData: ScheduleFormData) => {
+        if (calendarId === null) return; // `calendarId`가 `null`이면 실행하지 않음
+
         if (selectedSchedule) {
             await scheduleApi.updateSchedule(calendarId, selectedSchedule.id, formData);
             setSchedules(schedules.map(s => (s.id === selectedSchedule.id ? { ...s, ...formData } : s)));
@@ -39,14 +45,20 @@ export default function SchedulePage() {
     };
 
     const handleDeleteSchedule = async (scheduleId: number) => {
+        if (calendarId === null) return; // `calendarId`가 `null`이면 실행하지 않음
+
         await scheduleApi.deleteSchedule(calendarId, scheduleId);
         setSchedules(schedules.filter(s => s.id !== scheduleId));
     };
 
     const handleViewSchedule = (scheduleId: number) => {
-        // 여기서 원하는 경로로 이동하거나 특정 동작 수행
         console.log('Viewing schedule:', scheduleId);
     };
+
+    // params가 `null`이면 오류 메시지 표시
+    if (calendarId === null) {
+        return <div className="text-center mt-20 text-xl font-bold">잘못된 접근입니다.</div>;
+    }
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white text-black">
