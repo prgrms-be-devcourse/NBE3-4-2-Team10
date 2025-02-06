@@ -131,7 +131,7 @@ public class UserService {
     }
 
     // 소셜 로그인 user가 이미 있으면 modify, user가 없으면 회원가입
-    public SiteUser findOrRegisterUser(String username, String nickname, String email, String providerTypeCode) {
+    public SiteUser findOrRegisterUser(String username, String email, String providerTypeCode) {
         Optional<SiteUser> opUser = findByUsername(username);
 
         if (opUser.isPresent()) {
@@ -139,7 +139,7 @@ public class UserService {
             return user;
         }
 
-        return join(username, nickname, "", email, providerTypeCode);
+        return join(username, "", email, providerTypeCode);
     }
 
     // 내정보 수정 (닉네임 부분 구현)
@@ -157,12 +157,12 @@ public class UserService {
     }
 
     // user 가입
-    public SiteUser join(String username, String nickname, String password, String email, String providerTypeCode) {
+    public SiteUser join(String username, String password, String email, String providerTypeCode) {
         // 새로운 user 생성
         SiteUser user = SiteUser.builder()
                 .username(username)
                 .password(password)
-                .nickname(nickname)
+                .nickname(username) // nickname = username 초기 설정
                 .email(email)
                 .role(USER)
                 .apiKey(UUID.randomUUID().toString())
