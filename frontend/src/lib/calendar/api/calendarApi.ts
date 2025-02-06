@@ -7,18 +7,29 @@ const client = axios.create({
   withCredentials: true
 });
 
-// 요청 인터셉터 추가
+// 요청 인터셉터 수정
 client.interceptors.request.use((config) => {
-  // 쿠키에서 JWT 토큰을 가져와서 헤더에 추가
-  const token = document.cookie
+  if (!config.headers) {
+    config.headers = {};
+  }
+
+  const apiKey = document.cookie
       .split('; ')
-      .find(row => row.startsWith('jwtToken='))
+      .find(row => row.startsWith('apiKey='))
       ?.split('=')[1];
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const accessToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('accessToken='))
+      ?.split('=')[1];
+
+  if (apiKey && accessToken) {
+    config.headers.Authorization = `Bearer ${apiKey} ${accessToken}`;
   }
+
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 export const calendarApi = {

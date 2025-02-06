@@ -1,3 +1,5 @@
+// 레이아웃 (브라우저)
+
 "use client";
 
 import client from "@/lib/backend/client";
@@ -6,7 +8,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faCopyright, faList, faPowerOff } from "@fortawesome/free-solid-svg-icons";
+import { faHouse } from "@fortawesome/free-solid-svg-icons/faHouse";
+import {
+  faCalendar,
+  faCopyright,
+  faList,
+  faPowerOff,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function ClientLayout({
   children,
@@ -43,7 +52,7 @@ export default function ClientLayout({
       return;
     }
 
-    router.push("/login"); // ✅ 로그아웃 후 /login 페이지로 이동
+    window.location.replace("/");
   };
 
   return (
@@ -53,7 +62,7 @@ export default function ClientLayout({
           <Link href="/">
             <FontAwesomeIcon icon={faHouse} className="px-2" />홈
           </Link>
-          {isLogin && <div>환영합니다. {me.username}님!</div>}
+          {isLogin && <div>환영합니다. {me.nickname}님!</div>}
           {!isLogin && (
             <Link href="/login">
               <FontAwesomeIcon icon={faPowerOff} className="px-2" />
@@ -70,6 +79,19 @@ export default function ClientLayout({
             <Link href="/admin/list">
               <FontAwesomeIcon icon={faList} className="px-2" />
               관리자
+            </Link>
+          )}
+          <div className="flex-grow"></div>
+          {isLogin && (
+            <Link href="/calendar">
+              <FontAwesomeIcon icon={faCalendar} className="px-2" />
+              캘린더
+            </Link>
+          )}
+          {isLogin && (
+            <Link href="/me">
+              <FontAwesomeIcon icon={faUser} className="px-2" />
+              내정보
             </Link>
           )}
         </div>

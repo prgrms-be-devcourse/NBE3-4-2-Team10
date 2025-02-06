@@ -5,8 +5,8 @@ import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.service.CalendarService;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.global.userContext.UserContext;
 import com.ll.TeamProject.global.exceptions.ServiceException;
-import com.ll.TeamProject.global.rq.Rq;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,11 +23,11 @@ import java.util.List;
 public class CalendarController {
 
     private final CalendarService calendarService;
-    private final Rq rq;
+    private final UserContext userContext;
 
     //캘린더 생성
     private void validateLogin() {
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         if (user == null) {
             throw new ServiceException("401-1", "로그인이 필요한 서비스입니다.");
         }
@@ -37,7 +37,7 @@ public class CalendarController {
     public ResponseEntity<?> createCalendar(@RequestBody CalendarCreateDto dto) {
         try {
             validateLogin();
-            SiteUser user = rq.findByActor().get();
+            SiteUser user = userContext.findActor().get();
             dto.setUserId(user.getId());
 
             Calendar calendar = calendarService.createCalendar(dto);
@@ -52,7 +52,7 @@ public class CalendarController {
     @GetMapping
     public ResponseEntity<List<Calendar>> getAllCalendars() {
         validateLogin();  // 로그인 검증 추가
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         List<Calendar> calendars = calendarService.getAllCalendars(user.getId());
         return ResponseEntity.ok(calendars);
     }
@@ -61,7 +61,7 @@ public class CalendarController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getCalendarById(@PathVariable Long id) {
         validateLogin();
-        SiteUser user = rq.getActor(); // 현재 사용자 정보 가져오기
+        SiteUser user = userContext.getActor(); // 현재 사용자 정보 가져오기
         Calendar calendar = calendarService.getCalendarById(id); //Optional이 아니라 Calendar로 직접 받기
 
         if (!calendar.getUser().getId().equals(user.getId())) {
@@ -76,7 +76,7 @@ public class CalendarController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCalendar(@PathVariable Long id, @RequestBody CalendarUpdateDto dto) {
         validateLogin();  // 로그인 검증 추가
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         Calendar calendar = calendarService.getCalendarById(id); //Optional 제거하고 직접 Calendar 받기
 
         if (!calendar.getUser().getId().equals(user.getId())) {
@@ -91,7 +91,7 @@ public class CalendarController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCalendar(@PathVariable Long id) {
         validateLogin();  // 로그인 검증 추가
-        SiteUser user = rq.getActor();
+        SiteUser user = userContext.getActor();
         Calendar calendar = calendarService.getCalendarById(id); //Optional 제거하고 직접 Calendar 받기
 
         if (!calendar.getUser().getId().equals(user.getId())) {

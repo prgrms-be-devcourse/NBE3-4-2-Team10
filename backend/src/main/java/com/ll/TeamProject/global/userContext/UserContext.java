@@ -1,4 +1,4 @@
-package com.ll.TeamProject.global.rq;
+package com.ll.TeamProject.global.userContext;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.service.UserService;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequestScope
 @Component
 @RequiredArgsConstructor
-public class Rq {
+public class UserContext {
 
     private final HttpServletResponse resp;
     private final HttpServletRequest req;
@@ -111,7 +111,6 @@ public class Rq {
     public String makeAuthCookies(SiteUser user) {
         String accessToken = userService.genAccessToken(user);
 
-        System.out.println("쿠키를 설정합니다.");
         setCookie("apiKey", user.getApiKey());
         setCookie("accessToken", accessToken);
 
@@ -119,7 +118,7 @@ public class Rq {
     }
 
     // 요청을 보낸 사용자의 인증 정보를 가져와 실제 DB에 저장된 user 찾기
-    public Optional<SiteUser> findByActor() {
+    public Optional<SiteUser> findActor() {
         SiteUser actor = getActor();
 
         if (actor == null) {
