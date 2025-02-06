@@ -3,6 +3,7 @@ package com.ll.TeamProject.domain.user.service;
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
+import com.ll.TeamProject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
+    private final UserRepository userRepository;
 
     // 최근 로그인 시간 및 로그인 실패 초기화
     public void modifyLastLogin(SiteUser user) {
@@ -38,9 +40,10 @@ public class AuthenticationService {
             int updatedFailedAttempts = authentication.failedLogin(currentFailedAttempts);
 
             // 5회 이상 계정 잠김
-            if (updatedFailedAttempts >= 5) authentication.lockAccount();
+            if (updatedFailedAttempts >= 5) user.lockAccount();
 
             authenticationRepository.save(authentication);
+            userRepository.save(user);
         });
     }
 

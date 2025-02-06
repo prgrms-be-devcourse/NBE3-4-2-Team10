@@ -58,6 +58,7 @@ public class BaseInitData {
                     .role(ADMIN)
                     .email("admin@ll.com")
                     .apiKey(UUID.randomUUID().toString())
+                    .locked(false)
                     .build();
             admin = userRepository.save(admin);
 
@@ -66,7 +67,6 @@ public class BaseInitData {
                     .userId(admin.getId())
                     .authType(LOCAL)
                     .failedAttempts(0)
-                    .isLocked(false)
                     .build();
 
             authenticationRepository.save(authentication);
@@ -79,6 +79,7 @@ public class BaseInitData {
                         .role(USER)
                         .email("user" + i + "@test.com")
                         .apiKey(UUID.randomUUID().toString())
+                        .locked(false)
                         .build();
                 user = userRepository.save(user);
 
@@ -87,7 +88,6 @@ public class BaseInitData {
                         .userId(user.getId())
                         .authType(LOCAL)
                         .failedAttempts(0)
-                        .isLocked(false)
                         .build();
 
                 authenticationRepository.save(userAuthentication);

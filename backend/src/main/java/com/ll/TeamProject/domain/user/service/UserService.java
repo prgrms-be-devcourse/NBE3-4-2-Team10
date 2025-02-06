@@ -171,6 +171,7 @@ public class UserService {
                 .email(email)
                 .role(USER)
                 .apiKey(UUID.randomUUID().toString())
+                .locked(false)
                 .build();
 
         user = userRepository.save(user);
@@ -183,7 +184,6 @@ public class UserService {
                 .userId(user.getId())
                 .authType(authType)
                 .failedAttempts(0)
-                .isLocked(false)
                 .build();
 
         authenticationRepository.save(authentication);

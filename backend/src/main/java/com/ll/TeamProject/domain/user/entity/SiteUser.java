@@ -46,9 +46,14 @@ public class SiteUser extends BaseTime {
     @Column(unique = true)
     private String apiKey;
 
+    @Column
     private boolean isDeleted;
 
+    @Column
     private LocalDateTime deletedDate;
+
+    @Column
+    private boolean locked;
 
     public SiteUser(long id, String username, String nickname, Role role) {
         super();
@@ -102,5 +107,17 @@ public class SiteUser extends BaseTime {
     public void delete(boolean changed) {
         this.isDeleted = changed;
         this.deletedDate = LocalDateTime.now();
+    }
+
+    public boolean isLocked() {
+        return this.locked;
+    }
+
+    public void lockAccount() {
+        this.locked = true;
+    }
+
+    public void unlockAccount() {
+        this.locked = false;
     }
 }

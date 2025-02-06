@@ -32,9 +32,6 @@ public class Authentication extends BaseEntity {
     @Column
     private int failedAttempts; // 실패한 로그인 시도 횟수
 
-    @Column
-    private boolean isLocked; // 계정 잠금 여부
-
     public void setLastLogin() {
         this.lastLogin = LocalDateTime.now();
     }
@@ -42,10 +39,6 @@ public class Authentication extends BaseEntity {
     public int failedLogin(int attempts) {
         this.failedAttempts = attempts;
         return failedAttempts;
-    }
-
-    public void lockAccount() {
-        this.isLocked = true;
     }
 
     public void resetFailedAttempts() {
