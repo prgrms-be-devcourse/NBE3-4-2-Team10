@@ -36,6 +36,7 @@ public class UserService {
     private final UserContext userContext;
     private final AuthenticationService authenticationService;
     private final ApplicationContext applicationContext;
+    private final ForbiddenService forbiddenService;
 
     public LoginDto login(String username, String password) {
         SiteUser user = findByUsername(username)
@@ -144,6 +145,10 @@ public class UserService {
 
     // 내정보 수정 (닉네임 부분 구현)
     public void modify(String nickname) {
+        if(forbiddenService.isForbidden(nickname)){
+            throw new ServiceException("400-1", "해당 닉네임은 사용할 수 없습니다.");
+        }
+
         SiteUser actor = userContext.findActor().get();
         try {
             actor.changeNickname(nickname);
