@@ -56,9 +56,9 @@ public class BaseInitData {
                     .nickname("관리자")
                     .password(passwordEncoder.encode("admin"))
                     .role(ADMIN)
-                    .email("taeheemin62@gmail.com")
+                    .email("admin@ll.com")
                     .apiKey(UUID.randomUUID().toString())
-                    .locked(true)
+                    .locked(false)
                     .build();
             admin = userRepository.save(admin);
 
