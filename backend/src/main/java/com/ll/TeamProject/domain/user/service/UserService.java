@@ -36,6 +36,7 @@ public class UserService {
     private final UserContext userContext;
     private final AuthenticationService authenticationService;
     private final ApplicationContext applicationContext;
+    private final ForbiddenService forbiddenService;
 
     public LoginDto login(String username, String password) {
         SiteUser user = findByUsername(username)
@@ -131,7 +132,7 @@ public class UserService {
     }
 
     // 소셜 로그인 user가 이미 있으면 modify, user가 없으면 회원가입
-    public SiteUser findOrRegisterUser(String username, String nickname, String email, String providerTypeCode) {
+    public SiteUser findOrRegisterUser(String username, String email, String providerTypeCode) {
         Optional<SiteUser> opUser = findByUsername(username);
 
         if (opUser.isPresent()) {
@@ -139,11 +140,15 @@ public class UserService {
             return user;
         }
 
-        return join(username, nickname, "", email, providerTypeCode);
+        return join(username, "", email, providerTypeCode);
     }
 
     // 내정보 수정 (닉네임 부분 구현)
     public void modify(String nickname) {
+        if(forbiddenService.isForbidden(nickname)){
+            throw new ServiceException("400-1", "해당 닉네임은 사용할 수 없습니다.");
+        }
+
         SiteUser actor = userContext.findActor().get();
         try {
             actor.changeNickname(nickname);
@@ -157,12 +162,12 @@ public class UserService {
     }
 
     // user 가입
-    public SiteUser join(String username, String nickname, String password, String email, String providerTypeCode) {
+    public SiteUser join(String username, String password, String email, String providerTypeCode) {
         // 새로운 user 생성
         SiteUser user = SiteUser.builder()
                 .username(username)
                 .password(password)
-                .nickname(nickname)
+                .nickname(username) // nickname = username 초기 설정
                 .email(email)
                 .role(USER)
                 .apiKey(UUID.randomUUID().toString())
