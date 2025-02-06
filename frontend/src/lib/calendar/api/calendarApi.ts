@@ -1,29 +1,39 @@
-//src/lib/calendar/api.ts
-import axios from "axios";
+//src/lib/calendar/api/calendarApi.ts
+import axios from 'axios';
+import type { Calendar, CalendarCreateDto, CalendarUpdateDto } from '../types/calendarTypes';
 
-const API_BASE_URL = "http://localhost:8080/api/calendars"; // 백엔드 URL
+const client = axios.create({
+  baseURL: 'http://localhost:8080/api',
+  withCredentials: true
+});
 
-export const getAllCalendars = async () => {
-  const response = await axios.get(`${API_BASE_URL}`);
-  return response.data;
-};
+// 요청 인터셉터 추가
+client.interceptors.request.use((config) => {
+  // 쿠키에서 JWT 토큰을 가져와서 헤더에 추가
+  const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('jwtToken='))
+      ?.split('=')[1];
 
-export const getCalendarById = async (id) => {
-  const response = await axios.get(`${API_BASE_URL}/${id}`);
-  return response.data;
-};
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-export const createCalendar = async (calendarData) => {
-  const response = await axios.post(`${API_BASE_URL}`, calendarData);
-  return response.data;
-};
+export const calendarApi = {
+  getAllCalendars: () =>
+      client.get<Calendar[]>('/calendars'),
 
-export const updateCalendar = async (id, calendarData) => {
-  const response = await axios.put(`${API_BASE_URL}/${id}`, calendarData);
-  return response.data;
-};
+  getCalendarById: (id: number) =>
+      client.get<Calendar>(`/calendars/${id}`),
 
-export const deleteCalendar = async (id) => {
-  const response = await axios.delete(`${API_BASE_URL}/${id}`);
-  return response.data;
+  createCalendar: (data: CalendarCreateDto) =>
+      client.post<Calendar>('/calendars', data),
+
+  updateCalendar: (id: number, data: CalendarUpdateDto) =>
+      client.put<Calendar>(`/calendars/${id}`, data),
+
+  deleteCalendar: (id: number) =>
+      client.delete(`/calendars/${id}`)
 };

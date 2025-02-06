@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { client  } from "@/lib/backend/client";
+import { client } from "@/lib/backend/client";
 
 interface LoginRequiredProps {
     children: React.ReactNode;
