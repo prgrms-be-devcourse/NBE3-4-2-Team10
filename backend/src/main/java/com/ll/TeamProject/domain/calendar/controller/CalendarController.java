@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/calendars")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000") // Next.js 프론트엔드와 연결
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // Next.js 프론트엔드와 연결
 @SecurityRequirement(name = "bearerAuth")
 public class CalendarController {
 
