@@ -1,24 +1,29 @@
-// lib/calendar/api.ts
-import axios from 'axios';
+// lib/calendar/api/calendarApi.ts
+import axios from "axios";
+import type {
+  Calendar,
+  CalendarCreateDto,
+  CalendarUpdateDto,
+} from "../types/calendarTypes";
 
-const API_BASE_URL = 'http://localhost:8080/api/calendar'; // 실제 백엔드 URL로 변경
+// 백엔드 서버 URL을 명시적으로 지정
+const BASE_URL = "http://localhost:8080/api/calendars";
 
-export const getAllCalendars = async () => {
-  const response = await axios.get(`${API_BASE_URL}`);
-  return response.data;
-};
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:8080",
+  withCredentials: true, // CORS 요청에 쿠키 포함
+});
 
-export const createCalendar = async (calendarData) => {
-  const response = await axios.post(`${API_BASE_URL}`, calendarData);
-  return response.data;
-};
+export const calendarApi = {
+  getAll: () => axiosInstance.get<Calendar[]>("/api/calendars"),
 
-export const updateCalendar = async (id, calendarData) => {
-  const response = await axios.put(`${API_BASE_URL}/${id}`, calendarData);
-  return response.data;
-};
+  getById: (id: number) => axiosInstance.get<Calendar>(`/api/calendars/${id}`),
 
-export const deleteCalendar = async (id) => {
-  const response = await axios.delete(`${API_BASE_URL}/${id}`);
-  return response.data;
+  create: (dto: CalendarCreateDto) =>
+      axiosInstance.post<Calendar>("/api/calendars", dto),
+
+  update: (id: number, dto: CalendarUpdateDto) =>
+      axiosInstance.put<Calendar>(`/api/calendars/${id}`, dto),
+
+  delete: (id: number) => axiosInstance.delete(`/api/calendars/${id}`),
 };

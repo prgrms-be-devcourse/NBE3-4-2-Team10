@@ -1,6 +1,5 @@
 "use client";
 import { CalendarLayout } from "@/components/calendar/calendar/CalendarLayout";
+import { LoginRequired } from "./layout";
 
-export default function CalendarPage() {
-  return <CalendarLayout />;
-}
+export default LoginRequired(CalendarLayout);

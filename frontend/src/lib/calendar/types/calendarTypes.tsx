@@ -5,8 +5,8 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { CalendarSidebar } from '../CalendarSidebar';
 import { RightSidebar } from '../CalendarRightSidebar';
 import { CalendarView } from '../CalendarView';
-import { useCalendar } from '../../../../lib/calendar/hooks/useCalendar';
-import type { Calendar } from '../../../../lib/calendar/types/calendarTypes';
+import { useCalendar } from '@/lib/calendar/hooks/useCalendar';
+import type { Calendar } from '@/lib/calendar/types/calendarTypes';
 
 export const CalendarLayout = () => {
   const { calendars, loading, createCalendar, updateCalendar, deleteCalendar } =
