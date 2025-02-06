@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "ScheduleController", description = "스케줄 컨트롤러")
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping("/calendars/{calendarId}/schedules")
+@RequestMapping("/api/calendars/{calendarId}/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;

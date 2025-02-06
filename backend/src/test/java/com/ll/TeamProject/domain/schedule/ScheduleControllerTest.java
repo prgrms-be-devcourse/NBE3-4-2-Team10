@@ -94,7 +94,7 @@ public class ScheduleControllerTest {
         String requestBody2 = objectMapper.writeValueAsString(dto2);
 
         // 첫 번째 일정 생성 및 scheduleId1 저장
-        String responseJson1 = mvc.perform(post("/calendars/{calendarId}/schedules", calendarId)
+        String responseJson1 = mvc.perform(post("/api/calendars/{calendarId}/schedules", calendarId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody1)
                         .characterEncoding(StandardCharsets.UTF_8))
@@ -107,7 +107,7 @@ public class ScheduleControllerTest {
         scheduleId1 = objectMapper.readTree(responseJson1).get("id").asLong();
 
         // 두 번째 일정 생성 및 scheduleId2 저장
-        String responseJson2 = mvc.perform(post("/calendars/{calendarId}/schedules", calendarId)
+        String responseJson2 = mvc.perform(post("/api/calendars/{calendarId}/schedules", calendarId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody2)
                         .characterEncoding(StandardCharsets.UTF_8))
@@ -159,7 +159,7 @@ public class ScheduleControllerTest {
 
         // Perform POST 요청
         ResultActions resultActions1 = mvc.perform(
-                        post("/calendars/{calendarId}/schedules", calendarId)
+                        post("/api/calendars/{calendarId}/schedules", calendarId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody1)
                                 .characterEncoding(StandardCharsets.UTF_8)
@@ -167,7 +167,7 @@ public class ScheduleControllerTest {
                 .andDo(print());
 
         ResultActions resultActions2 = mvc.perform(
-                        post("/calendars/{calendarId}/schedules", calendarId)
+                        post("/api/calendars/{calendarId}/schedules", calendarId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody2)
                                 .characterEncoding(StandardCharsets.UTF_8)
@@ -217,7 +217,7 @@ public class ScheduleControllerTest {
 
         // Perform POST 요청
         ResultActions resultActions = mvc.perform(
-                        post("/calendars/{calendarId}/schedules", calendarId)
+                        post("/api/calendars/{calendarId}/schedules", calendarId)
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8)
@@ -240,7 +240,7 @@ public class ScheduleControllerTest {
 
         // Perform GET 요청
         ResultActions resultActions = mvc.perform(
-                        get("/calendars/{calendarId}/schedules", calendarId)
+                        get("/api/calendars/{calendarId}/schedules", calendarId)
                                 .param("startDate", tomorrow.toLocalDate().toString())
                                 .param("endDate", tomorrow.toLocalDate().toString())
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -277,7 +277,7 @@ public class ScheduleControllerTest {
 
         // Perform GET 요청
         ResultActions resultActions = mvc.perform(
-                        get("/calendars/{calendarId}/schedules", calendarId)
+                        get("/api/calendars/{calendarId}/schedules", calendarId)
                                 .param("startDate", "2025-03-01")
                                 .param("endDate", "2025-03-02")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -298,7 +298,7 @@ public class ScheduleControllerTest {
 
         // Perform GET 요청
         ResultActions resultActions = mvc.perform(
-                        get("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId1)
+                        get("/api/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8)
                 )
@@ -331,7 +331,7 @@ public class ScheduleControllerTest {
 
         // Perform GET 요청
         ResultActions resultActions = mvc.perform(
-                get("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, nonExistentScheduleId) // 동적으로 존재하지 않는 ID 사용
+                get("/api/calendars/{calendarId}/schedules/{scheduleId}", calendarId, nonExistentScheduleId) // 동적으로 존재하지 않는 ID 사용
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
         ).andDo(print());
@@ -369,7 +369,7 @@ public class ScheduleControllerTest {
 
         // Perform PUT 요청
         ResultActions resultActions = mvc.perform(
-                put("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                put("/api/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -416,7 +416,7 @@ public class ScheduleControllerTest {
 
         // Perform PUT 요청
         ResultActions resultActions = mvc.perform(
-                put("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, nonExistentScheduleId) // 존재하지 않는 ID 사용
+                put("/api/calendars/{calendarId}/schedules/{scheduleId}", calendarId, nonExistentScheduleId) // 존재하지 않는 ID 사용
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -452,7 +452,7 @@ public class ScheduleControllerTest {
 
         // Perform PUT 요청 (시간 충돌 발생 예상)
         ResultActions resultActions = mvc.perform(
-                put("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                put("/api/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -473,7 +473,7 @@ public class ScheduleControllerTest {
 
         // Perform DELETE 요청
         ResultActions resultActions = mvc.perform(
-                        delete("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
+                        delete("/api/calendars/{calendarId}/schedules/{scheduleId}", calendarId, scheduleId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8)
                 )
@@ -498,7 +498,7 @@ public class ScheduleControllerTest {
 
         // Perform DELETE 요청
         ResultActions resultActions = mvc.perform(
-                delete("/calendars/{calendarId}/schedules/{scheduleId}", calendarId, nonExistentScheduleId) // 존재하지 않는 ID 사용
+                delete("/api/calendars/{calendarId}/schedules/{scheduleId}", calendarId, nonExistentScheduleId) // 존재하지 않는 ID 사용
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
         ).andDo(print());
