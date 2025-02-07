@@ -28,20 +28,20 @@ public class SiteUser extends BaseTime {
     // BaseTime : id (BaseEntity, no setter), 생성/수정일
 
     @Column(unique = true)
-    private String username; // 사용자 이름
+    private String username;
 
     @Column(unique = true)
     private String nickname;
 
     @Column
-    private String password; // 암호화된 비밀번호
+    private String password;
 
     @Column(unique = true)
-    private String email; // 이메일 주소
+    private String email;
 
     @Column
     @Enumerated(EnumType.STRING)
-    private Role role; // 사용자 역할 (관리자/일반 사용자)
+    private Role role;
 
     @Column(unique = true)
     private String apiKey;

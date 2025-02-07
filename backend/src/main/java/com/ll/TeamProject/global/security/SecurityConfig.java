@@ -83,7 +83,6 @@ public class SecurityConfig {
                 // 소셜 로그인
                 .oauth2Login(
                         oauth2 -> {
-                            // 소셜 로그인 성공시 실행
                             oauth2.successHandler(customOAuth2AuthenticationSuccessHandler);
                         }
                 )

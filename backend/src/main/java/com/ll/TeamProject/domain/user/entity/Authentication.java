@@ -32,13 +32,20 @@ public class Authentication extends BaseEntity {
     @Column
     private int failedAttempts;
 
+    @Column
+    private boolean isLocked;
+
     public void setLastLogin() {
         this.lastLogin = LocalDateTime.now();
     }
 
-    public int failedLogin() {
-        this.failedAttempts = this.failedAttempts + 1;
+    public int failedLogin(int attempts) {
+        this.failedAttempts = attempts;
         return failedAttempts;
+    }
+
+    public void lockAccount() {
+        this.isLocked = true;
     }
 
     public void resetFailedAttempts() {

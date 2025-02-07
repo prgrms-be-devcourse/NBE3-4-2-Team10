@@ -17,5 +17,5 @@ public class ForbiddenNickname extends BaseTime {
     // BaseTime : id (BaseEntity, no setter), 생성/수정일
 
     @Column(unique = true)
-    private String name; // 금지어
+    private String forbiddenName;
 }
