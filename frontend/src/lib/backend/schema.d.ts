@@ -105,6 +105,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/send-verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 인증번호 발송 */
+        post: operations["sendVerification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/login": {
         parameters: {
             query?: never;
@@ -289,6 +306,10 @@ export interface components {
             name?: string;
             description?: string;
         };
+        VerifyRequest: {
+            username?: string;
+            email?: string;
+        };
         UserLoginReqBody: {
             username?: string;
             password?: string;
@@ -316,7 +337,6 @@ export interface components {
         };
         VerifyCodeReqBody: {
             username?: string;
-            email?: string;
             verificationCode?: string;
         };
         Calendar: {
@@ -830,6 +850,39 @@ export interface operations {
             };
         };
     };
+    sendVerification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;
@@ -881,9 +934,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
-                };
+                content?: never;
             };
             /** @description Bad Request */
             400: {

@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<SiteUser, Long> {
     Page<SiteUser> findByRoleAndEmailLikeAndIsDeletedFalse(Role role, String emailLike, PageRequest pageRequest);
 
     Page<SiteUser> findByRoleAndUsernameLikeAndIsDeletedFalse(Role role, String usernameLike, PageRequest pageRequest);
+
+    Optional<SiteUser> findByUsernameAndEmail(String username, String email);
 }

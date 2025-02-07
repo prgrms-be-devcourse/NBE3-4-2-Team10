@@ -2,8 +2,8 @@ package com.ll.TeamProject.domain.user.controller;
 
 import com.ll.TeamProject.domain.user.dto.LoginDto;
 import com.ll.TeamProject.domain.user.dto.UserDto;
-import com.ll.TeamProject.global.mail.EmailService;
 import com.ll.TeamProject.domain.user.service.UserService;
+import com.ll.TeamProject.global.mail.EmailService;
 import com.ll.TeamProject.global.rsData.RsData;
 import com.ll.TeamProject.standard.page.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,20 +44,29 @@ public class AdminController {
         );
     }
 
-    record VerifyCodeReqBody(
+    record VerifyRequest(
             String username,
-            String email,
+            String email
+    ) { }
+
+    @PostMapping("/send-verification")
+    @Operation(summary = "인증번호 발송")
+    public RsData<Void> sendVerification(@RequestBody @Valid VerifyRequest req) {
+
+        userService.processVerification(req.username, req.email);
+
+        return new RsData<>("200-1", "인증번호가 발송되었습니다.");
+    }
+
+    public record VerifyCodeReqBody(
+            String username,
             String verificationCode
     ) { }
 
     @PostMapping("/account-verifications")
     @Operation(summary = "관리자 계정 잠김 해제")
-    public RsData<Void> unlockAdminAccount(@RequestBody @Valid VerifyCodeReqBody req) {
-        emailService.sendEmail(req.email(), "제목", "내용");
-        return new RsData<>(
-                "200-1",
-                ""
-        );
+    public void unlockAdminAccount(@RequestBody @Valid VerifyCodeReqBody req) {
+
     }
 
     @GetMapping
