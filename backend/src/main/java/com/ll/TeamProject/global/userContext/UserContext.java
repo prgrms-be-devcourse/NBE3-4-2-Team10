@@ -61,7 +61,6 @@ public class UserContext {
 
     // 로그인 설정
     public void setLogin(SiteUser user) {
-        // 스프링 시큐리티가 이해하는 user로 변경
         UserDetails userDetails = new SecurityUser(
                 user.getId(),
                 user.getUsername(),

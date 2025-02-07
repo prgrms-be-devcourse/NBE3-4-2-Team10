@@ -31,23 +31,19 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // /admin 으로 시작 하지 않으면 건너뜀
         if (!request.getRequestURI().startsWith("/admin") && !request.getRequestURI().startsWith("/user")&&
                 !request.getRequestURI().startsWith("/api")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 로그인, 로그아웃에선 건너뜀
         if (List.of("/admin/login", "/admin/logout").contains(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 요청에서 토큰 얻기
         AuthTokens authTokens = getAuthTokensFromRequest();
 
-        // 토큰이 없으면 건너뜀
         if (authTokens == null) {
             filterChain.doFilter(request, response);
             return;
@@ -56,44 +52,33 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         String apiKey = authTokens.apiKey;
         String accessToken = authTokens.accessToken;
 
-        // 토큰으로 user 얻기 -> JWT로 얻은 가짜 user 객체(DB에서 조회한 user 아님) id, username, role 있는 user
         SiteUser user = userService.getUserFromAccessToken(accessToken);
 
-        // 토큰이 만료된거면 새로 refresh
         if (user == null)
             user = refreshAccessTokenByApiKey(apiKey);
 
-        // user 있으면 로그인 처리
         if (user != null)
             userContext.setLogin(user);
 
         filterChain.doFilter(request, response);
     }
 
-    // apiKey로 JWT 토큰 재생성
     private SiteUser refreshAccessTokenByApiKey(String apiKey) {
-        // apiKey로 user 찾음
         Optional<SiteUser> opUser = userService.findByApiKey(apiKey);
-
         if (opUser.isEmpty()) return null;
-
         SiteUser user = opUser.get();
 
-        // 토큰 재발급 -> 헤더와 쿠키에 토큰 설정 완료
         refreshAccessToken(user);
-
         return user;
     }
 
     private void refreshAccessToken(SiteUser user) {
         String newAccessToken = userService.genAccessToken(user);
 
-        // 토큰 재발급 후 헤더와 쿠키에 재설정
         userContext.setHeader("Authorization", "Bearer " + user.getApiKey() + " " + newAccessToken);
         userContext.setCookie("accessToken", newAccessToken);
     }
 
-    // 요청애서 토큰 얻기
     private AuthTokens getAuthTokensFromRequest() {
         // 요청 헤더에서 Authorization 얻기
         String authorization = userContext.getHeader("Authorization");

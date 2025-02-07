@@ -28,7 +28,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String oauthId = oAuth2User.getName();
 
-        // 소셜 로그인 종류
         String providerTypeCode = userRequest
                 .getClientRegistration()
                 .getRegistrationId()
@@ -54,10 +53,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             email = accountProperties.get("email");
         }
 
-        // 회원이 아니면 회원가입, 회원이면 수정 (nickname 사용하지 않게 수정)
         SiteUser user = userService.findOrRegisterUser(username, email, providerTypeCode);
 
-        // 최근 로그인 시간
         authenticationService.modifyLastLogin(user);
 
         return new SecurityUser(

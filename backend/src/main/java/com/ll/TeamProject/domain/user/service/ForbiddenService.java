@@ -13,12 +13,10 @@ public class ForbiddenService {
     private final ForbiddenRepository forbiddenRepository;
 
     public boolean isForbidden(String nickname) {
-        // 금지어 명단
         List<ForbiddenNickname> forbiddenList = forbiddenRepository.findAll();
 
-        // 금지어가 들어있는지 확인
         for(ForbiddenNickname forbiddenNickname : forbiddenList) {
-            if(nickname.toLowerCase().contains(forbiddenNickname.getName().toLowerCase())) return true;
+            if(nickname.toLowerCase().contains(forbiddenNickname.getForbiddenName().toLowerCase())) return true;
         }
         return false;
     }

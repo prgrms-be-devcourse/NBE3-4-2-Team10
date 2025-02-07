@@ -21,19 +21,19 @@ import java.time.LocalDateTime;
 public class Authentication extends BaseEntity {
     // BaseEntity : id (no setter)
     @Column
-    private Long userId; // 사용자 ID
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
-    private AuthType authType; // 인증 유형
+    private AuthType authType;
 
     @Column
-    private LocalDateTime lastLogin; // 마지막 로그인 시간
+    private LocalDateTime lastLogin;
 
     @Column
-    private int failedAttempts; // 실패한 로그인 시도 횟수
+    private int failedAttempts;
 
     @Column
-    private boolean isLocked; // 계정 잠금 여부
+    private boolean isLocked;
 
     public void setLastLogin() {
         this.lastLogin = LocalDateTime.now();
