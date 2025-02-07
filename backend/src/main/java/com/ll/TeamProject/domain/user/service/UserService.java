@@ -131,16 +131,10 @@ public class UserService {
         return new SiteUser(id, username, role);
     }
 
-    // 소셜 로그인 user가 이미 있으면 modify, user가 없으면 회원가입
+    // 소셜 로그인 이미 있으면 회원 반환, 없으면 회원가입
     public SiteUser findOrRegisterUser(String username, String email, String providerTypeCode) {
-        Optional<SiteUser> opUser = findByUsername(username);
-
-        if (opUser.isPresent()) {
-            SiteUser user = opUser.get();
-            return user;
-        }
-
-        return join(username, "", email, providerTypeCode);
+        return findByUsername(username)
+                .orElseGet(() -> join(username, "", email, providerTypeCode));
     }
 
     // 내정보 수정 (닉네임 부분 구현)

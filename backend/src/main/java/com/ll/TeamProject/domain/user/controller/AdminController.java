@@ -50,11 +50,9 @@ public class AdminController {
             String verificationCode
     ) { }
 
-    @PostMapping("/verify")
+    @PostMapping("/account-verifications")
     @Operation(summary = "관리자 계정 잠김 해제")
-    public RsData<Void> verify(@RequestBody @Valid VerifyCodeReqBody req) {
-        System.out.println("req = " + req.toString());
-
+    public RsData<Void> unlockAdminAccount(@RequestBody @Valid VerifyCodeReqBody req) {
         emailService.sendEmail(req.email(), "제목", "내용");
         return new RsData<>(
                 "200-1",

@@ -105,23 +105,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/verify": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 관리자 계정 잠김 해제 */
-        post: operations["verify"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admin/login": {
         parameters: {
             query?: never;
@@ -133,6 +116,23 @@ export interface paths {
         put?: never;
         /** 관리자 로그인 */
         post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/account-verifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 관리자 계정 잠김 해제 */
+        post: operations["unlockAdminAccount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -289,10 +289,6 @@ export interface components {
             name?: string;
             description?: string;
         };
-        VerifyCodeReqBody: {
-            username?: string;
-            verificationCode?: string;
-        };
         UserLoginReqBody: {
             username?: string;
             password?: string;
@@ -317,6 +313,11 @@ export interface components {
             createDate?: string;
             /** Format: date-time */
             modifyDate?: string;
+        };
+        VerifyCodeReqBody: {
+            username?: string;
+            email?: string;
+            verificationCode?: string;
         };
         Calendar: {
             /** Format: int64 */
@@ -369,8 +370,8 @@ export interface components {
             /** Format: date-time */
             deletedDate?: string;
             locked?: boolean;
-            deleted?: boolean;
             authorities?: components["schemas"]["GrantedAuthority"][];
+            deleted?: boolean;
         };
         PageDtoUserDto: {
             /** Format: int32 */
@@ -829,39 +830,6 @@ export interface operations {
             };
         };
     };
-    verify: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VerifyCodeReqBody"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     login: {
         parameters: {
             query?: never;
@@ -882,6 +850,39 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataLoginDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    unlockAdminAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyCodeReqBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */

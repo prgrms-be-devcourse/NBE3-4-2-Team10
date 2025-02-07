@@ -13,6 +13,12 @@ export default function VerifyPage() {
       return;
     }
 
+    if (form.email.value.length === 0) {
+      alert("이메일을 입력해주세요.");
+      form.email.focus();
+      return;
+    }
+
     if (form.verificationCode.value.length === 0) {
       alert("인증번호를 입력해주세요.");
       form.verificationCode.focus();
@@ -20,9 +26,10 @@ export default function VerifyPage() {
     }
 
     // 인증번호 검증 요청
-    const response = await client.POST("/admin/verify", {
+    const response = await client.POST("/admin/account-verifications", {
       body: {
         username: form.username.value,
+        email: form.email.value,
         verificationCode: form.verificationCode.value,
       },
     });
@@ -47,6 +54,15 @@ export default function VerifyPage() {
             name="username"
             className="p-2"
             placeholder="아이디를 입력하세요"
+          />
+        </div>
+        <div>
+          <label>이메일</label>
+          <input
+            type="email"
+            name="email"
+            className="p-2"
+            placeholder="이메일을 입력하세요"
           />
         </div>
         <div>

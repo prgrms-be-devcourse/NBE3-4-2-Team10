@@ -36,8 +36,8 @@ public class Authentication extends BaseEntity {
         this.lastLogin = LocalDateTime.now();
     }
 
-    public int failedLogin(int attempts) {
-        this.failedAttempts = attempts;
+    public int failedLogin() {
+        this.failedAttempts = this.failedAttempts + 1;
         return failedAttempts;
     }
 
