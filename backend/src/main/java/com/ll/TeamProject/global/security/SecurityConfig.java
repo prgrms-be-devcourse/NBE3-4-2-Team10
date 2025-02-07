@@ -2,7 +2,7 @@ package com.ll.TeamProject.global.security;
 
 import com.ll.TeamProject.global.app.AppConfig;
 import com.ll.TeamProject.global.rsData.RsData;
-import com.ll.TeamProject.standard.util.Ut;
+import com.ll.TeamProject.standard.util.Json;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -96,7 +96,7 @@ public class SecurityConfig {
 
                                             response.setStatus(401);
                                             response.getWriter().write(
-                                                    Ut.json.toString(
+                                                    Json.toString(
                                                             new RsData("401-1", "사용자 인증정보가 올바르지 않습니다.")
                                                     )
                                             );
@@ -108,7 +108,7 @@ public class SecurityConfig {
 
                                             response.setStatus(403);
                                             response.getWriter().write(
-                                                    Ut.json.toString(
+                                                    Json.toString(
                                                             new RsData("403-1", "접근 권한이 없습니다.")
                                                     )
                                             );
