@@ -6,28 +6,51 @@ import ScheduleForm from '@/components/schedule/ScheduleForm';
 import ScheduleList from '@/components/schedule/ScheduleList';
 import { Schedule, ScheduleFormData } from '@/types/schedule/schedule';
 import { scheduleApi } from '@/lib/schedule/api/scheduleApi';
+import DynamicMapWithMarkers from '@/components/schedule/DynamicMapWithMarkers';
 
 export default function SchedulePage() {
     const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState<Schedule | undefined>(undefined);
-    const params = useParams();
+    const [selectedMarkerId, setSelectedMarkerId] = useState<number | undefined>(undefined);
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-    // 동적으로 calendarId 가져오기
-    const calendarId = Number(params.calendarId);
+    const params = useParams();
+    const calendarId = params?.calendarId ? Number(params.calendarId) : null;
 
     useEffect(() => {
-        if (!calendarId) return;
+        const storedDate = localStorage.getItem("selectedDate");
+        if (storedDate) {
+            setSelectedDate(storedDate);
+        } else {
+            setSelectedDate(new Date().toISOString().split("T")[0]);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (selectedDate !== null) {
+            localStorage.setItem("selectedDate", selectedDate);
+        }
+    }, [selectedDate]);
+
+    useEffect(() => {
+        if (calendarId === null || selectedDate === null) return;
 
         const fetchSchedules = async () => {
-            const data = await scheduleApi.getSchedules(calendarId);
-            setSchedules(data);
+            try {
+                const data = await scheduleApi.getSchedules(calendarId, selectedDate);
+                setSchedules(data);
+            } catch (error) {
+                console.error("Error fetching schedules:", error);
+            }
         };
 
         fetchSchedules();
-    }, [calendarId]);
+    }, [calendarId, selectedDate]);
 
     const handleCreateOrUpdateSchedule = async (formData: ScheduleFormData) => {
+        if (calendarId === null) return;
+
         if (selectedSchedule) {
             await scheduleApi.updateSchedule(calendarId, selectedSchedule.id, formData);
             setSchedules(schedules.map(s => (s.id === selectedSchedule.id ? { ...s, ...formData } : s)));
@@ -39,22 +62,55 @@ export default function SchedulePage() {
     };
 
     const handleDeleteSchedule = async (scheduleId: number) => {
+        if (calendarId === null) return;
+
         await scheduleApi.deleteSchedule(calendarId, scheduleId);
         setSchedules(schedules.filter(s => s.id !== scheduleId));
     };
 
     const handleViewSchedule = (scheduleId: number) => {
-        // 여기서 원하는 경로로 이동하거나 특정 동작 수행
-        console.log('Viewing schedule:', scheduleId);
+        setSelectedMarkerId(scheduleId);
     };
+
+    const sortedSchedules = [...schedules].sort((a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+    );
+
+    const markers = sortedSchedules
+        .filter(schedule => schedule.location)
+        .map((schedule, index) => ({
+            id: schedule.id,
+            lat: schedule.location.latitude,
+            lng: schedule.location.longitude,
+            address: schedule.location.address,
+            label: `${index + 1}`,
+        }));
+
+    if (calendarId === null) {
+        return <div className="text-center mt-20 text-xl font-bold">Invalid access.</div>;
+    }
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white text-black">
-            <div className="flex justify-end mb-6">
-                <button onClick={() => setIsFormVisible(true)} className="p-2 bg-black text-white rounded-lg">
+            <div className="flex justify-between mb-6">
+                <input
+                    type="date"
+                    value={selectedDate || ""}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="border p-2 rounded"
+                />
+                <button
+                    onClick={() => {
+                        setIsFormVisible(true);
+                        setSelectedSchedule(undefined); // 새 일정 추가 시 초기화
+                    }}
+                    className="p-2 bg-black text-white rounded-lg"
+                >
                     새 일정 추가
                 </button>
             </div>
+
+            <DynamicMapWithMarkers markers={markers} selectedMarkerId={selectedMarkerId} />
 
             {isFormVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -63,17 +119,25 @@ export default function SchedulePage() {
                             initialData={selectedSchedule}
                             onSubmit={handleCreateOrUpdateSchedule}
                             onCancel={() => setIsFormVisible(false)}
+                            isNew={!selectedSchedule}  // 새 일정 추가 시 '저장' 버튼 표시
                         />
                     </div>
                 </div>
             )}
 
-            <ScheduleList
-                schedules={schedules}
-                onEdit={setSelectedSchedule}
-                onDelete={handleDeleteSchedule}
-                onView={handleViewSchedule}
-            />
+            {sortedSchedules.length === 0 ? (
+                <div className="text-center text-gray-500 mt-4">해당 날짜에 일정이 없습니다.</div>
+            ) : (
+                <ScheduleList
+                    schedules={sortedSchedules}
+                    onEdit={(schedule) => {
+                        setSelectedSchedule(schedule);
+                        setIsFormVisible(true);
+                    }}
+                    onDelete={handleDeleteSchedule}
+                    onView={handleViewSchedule}
+                />
+            )}
         </div>
     );
 }

@@ -9,26 +9,43 @@ import { scheduleApi } from '@/lib/schedule/api/scheduleApi';
 export default function ScheduleDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const calendarId = Number(params.calendarId);
-    const scheduleId = Number(params.scheduleId);
+
+    const calendarId = params?.calendarId ? Number(params.calendarId) : null;
+    const scheduleId = params?.scheduleId ? Number(params.scheduleId) : null;
 
     const [schedule, setSchedule] = useState<Schedule | null>(null);
     const [isEditFormVisible, setIsEditFormVisible] = useState(false);
 
     useEffect(() => {
+        if (calendarId === null || scheduleId === null) return;
+
         const fetchSchedule = async () => {
-            const data = await scheduleApi.getScheduleById(calendarId, scheduleId);
-            setSchedule(data);
+            try {
+                const data = await scheduleApi.getScheduleById(calendarId, scheduleId);
+                setSchedule(data);
+            } catch (error) {
+                console.error("📛 일정 데이터를 가져오는 중 오류 발생:", error);
+            }
         };
 
         fetchSchedule();
     }, [calendarId, scheduleId]);
 
     const handleUpdateSchedule = async (formData: ScheduleFormData) => {
-        const updatedSchedule = await scheduleApi.updateSchedule(calendarId, scheduleId, formData);
-        setSchedule(updatedSchedule);
-        setIsEditFormVisible(false);
+        if (calendarId === null || scheduleId === null) return;
+
+        try {
+            const updatedSchedule = await scheduleApi.updateSchedule(calendarId, scheduleId, formData);
+            setSchedule(updatedSchedule);
+            setIsEditFormVisible(false);
+        } catch (error) {
+            console.error("📛 일정 업데이트 실패:", error);
+        }
     };
+
+    if (calendarId === null || scheduleId === null) {
+        return <div className="text-center mt-20 text-xl font-bold">잘못된 접근입니다.</div>;
+    }
 
     if (!schedule) {
         return <div className="text-center mt-20 text-xl font-bold">Loading...</div>;
