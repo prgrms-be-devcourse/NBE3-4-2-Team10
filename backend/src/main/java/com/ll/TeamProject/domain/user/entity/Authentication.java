@@ -44,10 +44,6 @@ public class Authentication extends BaseEntity {
         return failedAttempts;
     }
 
-    public void lockAccount() {
-        this.isLocked = true;
-    }
-
     public void resetFailedAttempts() {
         this.failedAttempts = 0;
     }

@@ -42,6 +42,8 @@ public class UserService {
         SiteUser user = findByUsername(username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
+        if (user.isLocked()) throw new ServiceException("403-2", "계정이 잠겨있습니다.");
+
         PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
