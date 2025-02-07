@@ -2,6 +2,7 @@ package com.ll.TeamProject.domain.user.controller;
 
 import com.ll.TeamProject.domain.user.dto.LoginDto;
 import com.ll.TeamProject.domain.user.dto.UserDto;
+import com.ll.TeamProject.global.mail.EmailService;
 import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.rsData.RsData;
 import com.ll.TeamProject.standard.page.dto.PageDto;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     record UserLoginReqBody(
             String username,
@@ -39,6 +41,24 @@ public class AdminController {
                 "200-1",
                 "%s님 환영합니다.".formatted(loginDto.item().nickname()),
                 loginDto
+        );
+    }
+
+    record VerifyCodeReqBody(
+            String username,
+            String email,
+            String verificationCode
+    ) { }
+
+    @PostMapping("/verify")
+    @Operation(summary = "관리자 계정 잠김 해제")
+    public RsData<Void> verify(@RequestBody @Valid VerifyCodeReqBody req) {
+        System.out.println("req = " + req.toString());
+
+        emailService.sendEmail(req.email(), "제목", "내용");
+        return new RsData<>(
+                "200-1",
+                ""
         );
     }
 

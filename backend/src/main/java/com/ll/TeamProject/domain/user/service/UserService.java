@@ -42,10 +42,10 @@ public class UserService {
         SiteUser user = findByUsername(username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
+        if (user.isLocked()) throw new ServiceException("403-2", "계정이 잠겨있습니다.");
+
         PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
 
-        // 비밀번호 일치하지 않으면 로그인 실패 증가, 5회이상 계정 잠김
-        // 계정 잠김 -> 관련 로직 필요
         if (!passwordEncoder.matches(password, user.getPassword())) {
             authenticationService.handleLoginFailure(user);
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");

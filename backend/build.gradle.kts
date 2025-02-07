@@ -46,6 +46,9 @@ dependencies {
 
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1")
 
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+	implementation("org.springframework.boot:spring-boot-starter-mail:3.4.2")
+
 }
 
 tasks.withType<Test> {

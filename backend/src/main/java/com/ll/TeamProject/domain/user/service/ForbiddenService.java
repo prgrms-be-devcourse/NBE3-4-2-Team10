@@ -18,6 +18,7 @@ public class ForbiddenService {
 
         // 금지어가 들어있는지 확인
         for(ForbiddenNickname forbiddenNickname : forbiddenList) {
+
             if(nickname.toLowerCase().contains(forbiddenNickname.getName().toLowerCase())) return true;
         }
         return false;

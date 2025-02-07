@@ -38,8 +38,8 @@ public class SecurityConfig {
                                 .requestMatchers("/h2-console/**")
                                 .permitAll()
 
-                                // 관리자 로그인 로그아웃 요청 허용
-                                .requestMatchers("/admin/login", "/admin/logout")
+                                // 관리자 로그인 로그아웃 인증 요청 허용
+                                .requestMatchers("/admin/login", "/admin/logout", "admin/verify")
                                 .permitAll()
 
                                 // 관리자 작업 권한 필요
