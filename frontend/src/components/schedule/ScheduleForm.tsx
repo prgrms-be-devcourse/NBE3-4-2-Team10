@@ -88,11 +88,11 @@ export default function ScheduleForm({ initialData, onSubmit, onCancel }: Schedu
             </div>
 
             <div className="flex justify-end space-x-4">
+                <button type="submit" className="p-2 bg-black text-white font-bold rounded hover:bg-gray-700">
+                    {initialData ? '저장' : '수정'}
+                </button>
                 <button type="button" onClick={onCancel} className="p-2 bg-black text-white font-bold rounded hover:bg-gray-400">
                     취소
-                </button>
-                <button type="submit" className="p-2 bg-black text-white font-bold rounded hover:bg-gray-700">
-                    {initialData ? '수정' : '저장'}
                 </button>
             </div>
         </form>
