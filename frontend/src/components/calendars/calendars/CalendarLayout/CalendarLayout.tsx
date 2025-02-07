@@ -13,10 +13,10 @@ export const CalendarLayout = () => {
   const [selectedCalendar, setSelectedCalendar] = useState<Calendar | null>(null);
 
   const handleCreateCalendar = async () => {
-    const name = prompt('캘린더 이름을 입력하세요');
+    const name = prompt('캘린더 제목을 알려주세요!');
     if (!name) return;
 
-    const description = prompt('캘린더 설명을 입력하세요') || '';
+    const description = prompt('캘린더 설명을 알려주세요!') || '';
 
     try {
       const newCalendar = await createCalendar({ name, description });
@@ -75,7 +75,7 @@ export const CalendarLayout = () => {
 
   const handleViewCalendar = () => {
     if (calendars.length === 0) {
-      alert('조회할 캘린더가 없습니다.');
+      alert('먼저 캘린더를 만들어보세요!');
       return;
     }
     // 현재 선택된 캘린더가 없다면 첫 번째 캘린더 선택

@@ -35,7 +35,7 @@ export const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
                 className="mb-8 flex items-center justify-center space-x-2 rounded-full bg-white px-6 py-3 shadow-md hover:shadow-lg border border-gray-300 w-full transition-all duration-200"
             >
                 <PlusIcon className="h-5 w-5" />
-                <span>새로운 캘린더</span>
+                <span>NEW CALENDAR</span>
             </button>
 
             {/* Calendar List Section */}
