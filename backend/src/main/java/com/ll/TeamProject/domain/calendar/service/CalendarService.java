@@ -7,16 +7,15 @@ import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j // 로깅 추가
+@Slf4j
+//로그 체크
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CalendarService {
 
@@ -24,7 +23,6 @@ public class CalendarService {
     private final UserRepository userRepository;
 
     // 캘린더 생성
-    @Transactional
     public Calendar createCalendar(CalendarCreateDto dto) {
         SiteUser user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ServiceException("404", "사용자를 찾을 수 없습니다."));
@@ -52,11 +50,9 @@ public class CalendarService {
     }
 
     // 캘린더 수정
-    @Transactional
     public Calendar updateCalendar(Long id, CalendarUpdateDto dto) {
         Calendar calendar = getCalendarById(id);
 
-        // null 체크 후 업데이트 (기존 값 유지)
         String updatedName = (dto.getName() != null) ? dto.getName() : calendar.getName();
         String updatedDescription = (dto.getDescription() != null) ? dto.getDescription() : calendar.getDescription();
 
@@ -68,9 +64,8 @@ public class CalendarService {
     }
 
     // 캘린더 삭제
-    @Transactional
     public void deleteCalendar(Long id) {
-        Calendar calendar = getCalendarById(id); // 예외 발생 시 자동 처리됨
+        Calendar calendar = getCalendarById(id);
         calendarRepository.delete(calendar);
 
         log.info("캘린더 삭제 완료 - ID: {}", id);
