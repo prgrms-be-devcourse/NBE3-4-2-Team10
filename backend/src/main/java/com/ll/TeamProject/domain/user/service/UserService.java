@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.ll.TeamProject.domain.user.enums.Role.USER;
 
@@ -39,6 +41,8 @@ public class UserService {
     private final ApplicationContext applicationContext;
     private final ForbiddenService forbiddenService;
     private final EmailService emailService;
+
+    private final StringRedisTemplate redisTemplate;
 
     public LoginDto login(String username, String password) {
         SiteUser user = findByUsername(username)
@@ -69,18 +73,20 @@ public class UserService {
 
         String code = generateVerificationCode();
 
-        sendVerificationEmail(user, code);
+        redisTemplate.opsForValue().set("username", code, 180, TimeUnit.SECONDS);
+
+        sendVerificationEmail(user.getNickname(), user.getEmail(), code);
     }
 
     public void verifyAndUnlockAccount(String username, String verificationCode) {
         SiteUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
-        // 인증번호 검증 로직
         if (!isVerificationCodeValid(user, verificationCode)) {
             throw new ServiceException("401-3", "인증번호가 유효하지 않거나 만료되었습니다.");
         }
 
+        redisTemplate.delete("username");
         unlockAccount(user);
     }
 
@@ -99,11 +105,11 @@ public class UserService {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private void sendVerificationEmail(SiteUser user, String verificationCode) {
+    private void sendVerificationEmail(String nickname, String email, String verificationCode) {
         String subject = "계정 인증번호";
-        String content = String.format("안녕하세요, %s님.\n\n인증번호: %s\n인증번호는 3분 동안 유효합니다.", user.getNickname(), verificationCode);
+        String content = String.format("안녕하세요, %s님.\n\n인증번호: %s\n인증번호는 3분 동안 유효합니다.", nickname, verificationCode);
 
-        emailService.sendEmail(user.getEmail(), subject, content);
+        emailService.sendEmail(email, subject, content);
     }
 
     private void unlockAccount(SiteUser user) {
@@ -112,9 +118,8 @@ public class UserService {
     }
 
     private boolean isVerificationCodeValid(SiteUser user, String verificationCode) {
-        // 단순히 검증용 예시 로직
-        // 실제로는 Redis나 저장된 코드와 비교해야 함
-        return "123456".equals(verificationCode);  // 임시 검증 로직
+        String code = redisTemplate.opsForValue().get("username");
+        return code.equals(verificationCode);  // 임시 검증 로직
     }
 
     // username으로 찾기
