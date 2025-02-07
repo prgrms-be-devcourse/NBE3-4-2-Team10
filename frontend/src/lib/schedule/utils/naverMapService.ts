@@ -6,13 +6,16 @@ import { NaverGeocodeApiResponse } from "@/types/naverMapTypes";
  */
 export const getAddress = async (lat: number, lng: number): Promise<string> => {
     try {
+        console.log(`📍 Reverse Geocoding 요청: (${lat}, ${lng})`);
+
         const response = await axios.get<NaverGeocodeApiResponse>("/api/naverGeocode", {
             params: { lat, lng },
         });
 
-        const results = response.data.results;
+        console.log("🔄 Reverse Geocoding 응답:", response.data);
 
-        if (!results || results.length === 0) {
+        if (!response.data || !response.data.results || response.data.results.length === 0) {
+            console.warn("⚠️ Reverse Geocoding 결과 없음:", response.data);
             return "주소 없음";
         }
 
@@ -20,7 +23,7 @@ export const getAddress = async (lat: number, lng: number): Promise<string> => {
         let roadAddress = "";
         let regionAddress = "";
 
-        results.forEach((result) => {
+        response.data.results.forEach((result) => {
             const area1 = result.region.area1.name || "";
             const area2 = result.region.area2.name || "";
             const area3 = result.region.area3.name || "";
@@ -29,7 +32,7 @@ export const getAddress = async (lat: number, lng: number): Promise<string> => {
             const land = result.land;
             const roadName = land?.name || "";
             const roadNumber = land?.number1 ? `${land.number1}${land.number2 ? `-${land.number2}` : ""}` : "";
-            const buildingName = land?.addition0?.value || ""; // 건물명
+            const buildingName = land?.addition0?.value || "";
 
             if (buildingName) {
                 bestAddress = `${area1} ${area2} ${area3}, ${roadName} ${roadNumber} (${buildingName})`;
@@ -44,11 +47,9 @@ export const getAddress = async (lat: number, lng: number): Promise<string> => {
             }
         });
 
-        if (bestAddress) return bestAddress;
-        if (roadAddress) return roadAddress;
-        return regionAddress || "주소 없음";
+        return bestAddress || roadAddress || regionAddress || "주소 없음";
     } catch (error) {
-        console.error("📛 Reverse Geocoding 요청 실패:", error);
+        console.error("❌ Reverse Geocoding 요청 실패:", error);
         return "주소 가져오기 실패";
     }
 };
@@ -58,29 +59,34 @@ export const getAddress = async (lat: number, lng: number): Promise<string> => {
  */
 export const getCoordinates = async (address: string): Promise<{ x: string; y: string; roadAddress: string } | null> => {
     try {
-        console.log("🔍 Geocoding 요청 시작 - 주소:", address);
+        console.log(`📍 Geocoding 요청: ${address}`);
 
         const response = await axios.get<NaverGeocodeApiResponse>("/api/naverGeocode", {
             params: { address },
         });
 
-        console.log("🌍 네이버 Geocoding API 응답:", response.data);
+        console.log("🔄 Geocoding 응답:", response.data);
 
-        // ✅ 응답 구조 변경 확인
         if (!response.data || !response.data.addresses || response.data.addresses.length === 0) {
-            console.error("📛 주소 검색 실패: API 응답이 비어 있거나 유효하지 않습니다.", response.data);
+            console.warn("⚠️ 주소 검색 실패 - 응답이 비어 있음:", response.data);
             return null;
         }
 
-        const result = response.data.addresses[0]; // addresses 배열에서 첫 번째 결과 사용
+        const result = response.data.addresses[0];
+
+        if (!result || !result.x || !result.y) {
+            console.warn("⚠️ 올바른 좌표 정보를 찾을 수 없음:", result);
+            return null;
+        }
 
         return {
-            x: result.x, // ✅ 변경된 응답 구조 적용
+            x: result.x,
             y: result.y,
             roadAddress: result.roadAddress || result.jibunAddress || "주소 없음",
         };
     } catch (error) {
-        console.error("📛 Geocoding 요청 실패:", error);
+        console.error("❌ Geocoding 요청 실패:", error);
         return null;
     }
 };
+0
