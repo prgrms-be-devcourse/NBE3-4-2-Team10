@@ -29,13 +29,13 @@ export default function ScheduleList({ schedules, onEdit, onDelete, onView }: Sc
                             <div className="flex justify-end space-x-3 mt-3">
                                 <button
                                     onClick={() => onView(schedule.id)}
-                                    className="px-3 py-1 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+                                    className="px-3 py-1 bg-black text-white font-semibold rounded"
                                 >
-                                    보기
+                                    위치
                                 </button>
                                 <button
                                     onClick={() => onEdit(schedule)}
-                                    className="px-3 py-1 bg-green-500 text-white font-semibold rounded hover:bg-green-600"
+                                    className="px-3 py-1 bg-black text-white font-semibold rounded"
                                 >
                                     수정
                                 </button>
