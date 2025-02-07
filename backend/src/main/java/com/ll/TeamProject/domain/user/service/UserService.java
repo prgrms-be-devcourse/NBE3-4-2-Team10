@@ -9,6 +9,7 @@ import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.global.mail.EmailService;
 import com.ll.TeamProject.global.userContext.UserContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class UserService {
     private final AuthenticationService authenticationService;
     private final ApplicationContext applicationContext;
     private final ForbiddenService forbiddenService;
+    private final EmailService emailService;
 
     public LoginDto login(String username, String password) {
         SiteUser user = findByUsername(username)
@@ -62,6 +64,38 @@ public class UserService {
         );
     }
 
+    public void processVerification(String username, String email) {
+        SiteUser user = validateUsernameAndEmail(username, email);
+
+        String code = generateVerificationCode();
+        System.out.println("code = " + code);
+
+        sendVerificationEmail(user, code);
+    }
+
+    private SiteUser validateUsernameAndEmail(String username, String email) {
+        return userRepository.findByUsername(username)
+                .map(user -> {
+                    if (!user.getEmail().equals(email)) {
+                        throw new ServiceException("401-2", "이메일이 일치하지 않습니다.");
+                    }
+                    return user;
+                })
+                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+    }
+
+    private String generateVerificationCode() {
+        return UUID.randomUUID().toString().substring(0, 6);
+    }
+
+    private void sendVerificationEmail(SiteUser user, String verificationCode) {
+        String subject = "계정 인증번호";
+        String content = String.format("안녕하세요, %s님.\n\n인증번호: %s\n인증번호는 3분 동안 유효합니다.", user.getNickname(), verificationCode);
+
+        emailService.sendEmail(user.getEmail(), subject, content);
+    }
+
+    // username으로 찾기
     public void logout(HttpServletRequest request) {
         request.getSession().invalidate();
 
@@ -76,14 +110,17 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    // apiKey로 user 찾기
     public Optional<SiteUser> findByApiKey(String apiKey) {
         return userRepository.findByApiKey(apiKey);
     }
 
+    // id로 user 찾기
     public Optional<SiteUser> findById(long id) {
         return userRepository.findById(id);
     }
 
+    // 관리자 user 조회
     public Page<SiteUser> findUsers(
             String searchKeywordType,
             String searchKeyword,
