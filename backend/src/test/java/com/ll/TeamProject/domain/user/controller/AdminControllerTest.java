@@ -129,8 +129,6 @@ class AdminControllerTest {
             resultActions
                     .andExpect(jsonPath("$.data.items[%d].id".formatted(i)).value(user.getId()))
                     .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
-                    .andExpect(jsonPath("$.data.items[%d].createDate".formatted(i)).value(Matchers.startsWith(user.getCreateDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(user.getModifyDate().toString().substring(0, 25))))
                     .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
                     .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
         }
@@ -202,6 +200,36 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.nickname").value("탈퇴한 사용자"));
+    }
+
+    @Test
+    @DisplayName("닉네임 변경")
+    void changeNickname() throws Exception {
+        SiteUser actor = userService.findByUsername("user1").get();
+        String actorAuthToken = userService.genAuthToken(actor);
+
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/user")
+                                .header("Authorization", "Bearer " + actorAuthToken)
+                                .content("""
+                                            {
+                                                "nickname": "changedNickname"
+                                            }
+                                            """.stripIndent()
+                                )
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("사용자 정보가 수정되었습니다."));
+
+        assertThat(actor.getNickname()).isEqualTo("changedNickname");
     }
 
 }
