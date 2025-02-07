@@ -130,14 +130,8 @@ public class UserService {
     }
 
     public SiteUser findOrRegisterUser(String username, String email, String providerTypeCode) {
-        Optional<SiteUser> opUser = findByUsername(username);
-
-        if (opUser.isPresent()) {
-            SiteUser user = opUser.get();
-            return user;
-        }
-
-        return join(username, "", email, providerTypeCode);
+        return findByUsername(username)
+                .orElseGet(() -> join(username, "", email, providerTypeCode));
     }
 
     public SiteUser join(String username, String password, String email, String providerTypeCode) {

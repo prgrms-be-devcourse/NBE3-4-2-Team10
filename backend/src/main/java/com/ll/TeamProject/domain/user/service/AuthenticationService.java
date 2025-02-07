@@ -33,14 +33,15 @@ public class AuthenticationService {
     public void handleLoginFailure(SiteUser user) {
         authenticationRepository.findByUserId(user.getId()).ifPresent(authentication -> {
 
-            int currentFailedAttempts = authentication.getFailedAttempts() + 1;
-            int updatedFailedAttempts = authentication.failedLogin(currentFailedAttempts);
+            int failedLogin = authentication.failedLogin();
 
             // 5회 이상 계정 잠김
-            if (updatedFailedAttempts >= 5) user.lockAccount();
+            if (failedLogin >= 5) {
+                user.lockAccount();
+                userRepository.save(user);
+            }
 
             authenticationRepository.save(authentication);
-            userRepository.save(user);
         });
     }
 
