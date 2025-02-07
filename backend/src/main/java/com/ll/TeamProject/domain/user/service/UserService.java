@@ -194,11 +194,11 @@ public class UserService {
         return new UserDto(userToDelete);
     }
 
-    private void validatePermission(SiteUser userToDelete) {
+    public void validatePermission(SiteUser userToDelete) {
         SiteUser actor = userContext.getActor();
         if (actor.getUsername().equals("admin")) return;
 
-        if (!userToDelete.getId().equals(actor.getId())) {
+        if (!userToDelete.getUsername().equals(actor.getUsername())) {
             throw new ServiceException("403-1", "접근 권한이 없습니다.");
         }
     }
