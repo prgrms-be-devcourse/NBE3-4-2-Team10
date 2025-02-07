@@ -5,11 +5,14 @@ import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +20,8 @@ public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
     private final UserRepository userRepository;
+    private final ApplicationContext applicationContext;
+
 
     // 최근 로그인 시간 및 로그인 실패 초기화
     public void modifyLastLogin(SiteUser user) {
@@ -37,12 +42,17 @@ public class AuthenticationService {
 
             // 5회 이상 계정 잠김
             if (failedLogin >= 5) {
-                user.lockAccount();
+                user.lockAccountAndResetPassword(generateRandomPassword());
                 userRepository.save(user);
             }
 
             authenticationRepository.save(authentication);
         });
+    }
+
+    private String generateRandomPassword() {
+        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
+        return passwordEncoder.encode(UUID.randomUUID().toString().substring(0, 15));
     }
 
     public Optional<Authentication> findByUserId(Long id) {
