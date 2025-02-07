@@ -1,4 +1,3 @@
-// src/components/calendar/calendar/CalendarView/CalendarView.tsx
 "use client";
 import React from "react";
 import FullCalendar from "@fullcalendar/react";
@@ -6,6 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import type { Calendar } from "@/lib/calendars/types/calendarTypes";
 import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
+import client from "@/lib/backend/client";
 
 interface CalendarViewProps {
     calendars: Calendar[];
@@ -14,10 +14,11 @@ interface CalendarViewProps {
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
-                                                              calendars,
-                                                              selectedCalendar,
-                                                              onCalendarSelect,
-                                                          }) => {
+    calendars,
+    selectedCalendar,
+    onCalendarSelect,
+}) => {
+    // ✅ 일정 클릭 시 해당 캘린더 선택
     const handleEventClick = (clickInfo: EventClickArg) => {
         const calendar = calendars.find(cal => String(cal.id) === clickInfo.event.id);
         if (calendar) {
@@ -25,24 +26,61 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         }
     };
 
-    const handleDateSelect = (selectInfo: DateSelectArg) => {
+    // ✅ 날짜 선택 시 일정 추가하는 함수 (백엔드 연동 포함)
+    const handleDateSelect = async (selectInfo: DateSelectArg) => {
         if (!selectedCalendar) {
             alert('먼저 캘린더를 선택해주세요.');
             return;
         }
 
-        const title = prompt('일정 제목을 입력하세요:');
+        const title = prompt('일정 제목을 입력해주세요!');
         if (!title) return;
 
-        alert(`${selectedCalendar.name} 캘린더에 새로운 일정 "${title}"이 생성되었습니다.`);
+        let calendarApi = selectInfo.view.calendar;
+        let newEvent = {
+            id: String(new Date().getTime()), // 임시 ID
+            title: title,
+            start: selectInfo.startStr,
+            allDay: true,
+        };
+
+        // 📌 1. 풀캘린더 UI에 일정 추가
+        calendarApi.addEvent(newEvent);
+
+        // 📌 2. 백엔드에 일정 저장 요청 (API 호출)
+        // 스케쥴팀 참고용 : 이 코드가 백엔드의 스케쥴값과 상호작용하는 코드
+        // 테스트용으로 이 코드를 주석처리해둠. 실행하면 정상적으로 캘린더에 일정 표기됨
+        // 주석을 풀면 스케쥴이랑 연결이 안되서 생성은되나 오류가뜨고 새로고침시 없어짐
+        // 추 후 스케쥴 완성되시면 연결하시면됩니다.
+//         try {
+//             const response = await fetch("/api/events", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({
+//                     calendarId: selectedCalendar.id,
+//                     title: title,
+//                     start: selectInfo.startStr,
+//                 }),
+//             });
+//
+//             if (!response.ok) {
+//                 throw new Error("서버 응답 오류");
+//             }
+//
+//             console.log("일정 생성 성공!");
+//         } catch (error) {
+//             console.error("일정 추가 실패:", error);
+//             alert("일정을 저장하는 중 오류가 발생했습니다.");
+//         }
     };
 
+    // ✅ 캘린더 선택 안 했을 때 안내 메시지
     if (!selectedCalendar) {
         return (
             <div className="w-full h-full flex items-center justify-center bg-white">
                 <div className="text-center text-gray-500">
-                    <p className="text-xl mb-2">캘린더를 선택해주세요</p>
-                    <p className="text-sm text-gray-400">좌측에서 캘린더를 선택하여 시작하세요</p>
+                    <p className="text-xl mb-2">새로운 캘린더를 만들어보세요!</p>
+                    <p className="text-sm text-gray-400">좌측 메뉴에서 + NEW CALENDAR을 통해 새로운 캘린더를 만들어보세요!</p>
                 </div>
             </div>
         );
@@ -66,7 +104,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         allDay: true
                     }]}
                     selectable={true}
-                    select={handleDateSelect}
+                    select={handleDateSelect} // ✅ 일정 추가 함수 연결
                     eventClick={handleEventClick}
                     handleWindowResize={true}
                     dayCellContent={(e) => e.dayNumberText}
@@ -76,11 +114,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     dayMaxEventRows={true}
                     fixedWeekCount={false}
                     dayCellClassNames="min-h-[100px] p-2"
-                    // Google Calendar style customization
+                    // Google Calendar 스타일 적용
                     buttonText={{
-                        today: '오늘',
-                        month: '월',
-                        week: '주',
+                        today: 'TODAY',
+                        month: 'M',
+                        week: 'W',
                     }}
                     buttonIcons={{
                         prev: 'chevron-left',
