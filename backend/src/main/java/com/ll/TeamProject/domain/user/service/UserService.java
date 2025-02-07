@@ -68,9 +68,20 @@ public class UserService {
         SiteUser user = validateUsernameAndEmail(username, email);
 
         String code = generateVerificationCode();
-        System.out.println("code = " + code);
 
         sendVerificationEmail(user, code);
+    }
+
+    public void verifyAndUnlockAccount(String username, String verificationCode) {
+        SiteUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+
+        // 인증번호 검증 로직
+        if (!isVerificationCodeValid(user, verificationCode)) {
+            throw new ServiceException("401-3", "인증번호가 유효하지 않거나 만료되었습니다.");
+        }
+
+        unlockAccount(user);
     }
 
     private SiteUser validateUsernameAndEmail(String username, String email) {
@@ -93,6 +104,17 @@ public class UserService {
         String content = String.format("안녕하세요, %s님.\n\n인증번호: %s\n인증번호는 3분 동안 유효합니다.", user.getNickname(), verificationCode);
 
         emailService.sendEmail(user.getEmail(), subject, content);
+    }
+
+    private void unlockAccount(SiteUser user) {
+        user.unlockAccount();  // 계정 상태 변경 (잠금 해제)
+        userRepository.save(user);
+    }
+
+    private boolean isVerificationCodeValid(SiteUser user, String verificationCode) {
+        // 단순히 검증용 예시 로직
+        // 실제로는 Redis나 저장된 코드와 비교해야 함
+        return "123456".equals(verificationCode);  // 임시 검증 로직
     }
 
     // username으로 찾기

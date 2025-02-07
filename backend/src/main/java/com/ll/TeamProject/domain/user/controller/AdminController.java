@@ -66,6 +66,7 @@ public class AdminController {
     @PostMapping("/verificationCode/verify")
     @Operation(summary = "관리자 계정 잠김 해제")
     public void unlockAdminAccount(@RequestBody @Valid VerificationCodeVerifyRequest req) {
+        userService.verifyAndUnlockAccount(req.username, req.verificationCode);
     }
 
     @GetMapping

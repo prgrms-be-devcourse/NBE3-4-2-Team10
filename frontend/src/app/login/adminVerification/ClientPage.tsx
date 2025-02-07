@@ -49,7 +49,7 @@ export default function ClientPage() {
     }
 
     // 인증번호 검증 요청
-    const response = await client.POST("/admin/account-verifications", {
+    const response = await client.POST("/admin/verificationCode/verify", {
       body: { username, verificationCode },
     });
 
