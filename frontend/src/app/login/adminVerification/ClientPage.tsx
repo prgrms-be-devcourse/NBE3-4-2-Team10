@@ -21,7 +21,7 @@ export default function ClientPage() {
 
     try {
       // 서버에 인증번호 요청
-      const response = await client.POST("/admin/send-verification", {
+      const response = await client.POST("/admin/verificationCode/send", {
         body: { username, email },
       });
 

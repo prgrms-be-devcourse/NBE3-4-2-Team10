@@ -44,29 +44,28 @@ public class AdminController {
         );
     }
 
-    record VerifyRequest(
+    record VerificationCodeRequest(
             String username,
             String email
     ) { }
 
-    @PostMapping("/send-verification")
+    @PostMapping("/verificationCode/send")
     @Operation(summary = "인증번호 발송")
-    public RsData<Void> sendVerification(@RequestBody @Valid VerifyRequest req) {
+    public RsData<Void> sendVerification(@RequestBody @Valid VerificationCodeRequest req) {
 
-        userService.processVerification(req.username, req.email);
+        userService.sendVerificationCode(req.username, req.email);
 
         return new RsData<>("200-1", "인증번호가 발송되었습니다.");
     }
 
-    public record VerifyCodeReqBody(
+    public record VerificationCodeVerifyRequest(
             String username,
             String verificationCode
     ) { }
 
-    @PostMapping("/account-verifications")
+    @PostMapping("/verificationCode/verify")
     @Operation(summary = "관리자 계정 잠김 해제")
-    public void unlockAdminAccount(@RequestBody @Valid VerifyCodeReqBody req) {
-
+    public void unlockAdminAccount(@RequestBody @Valid VerificationCodeVerifyRequest req) {
     }
 
     @GetMapping

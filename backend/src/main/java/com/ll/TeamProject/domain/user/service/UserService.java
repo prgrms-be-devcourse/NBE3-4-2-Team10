@@ -64,7 +64,7 @@ public class UserService {
         );
     }
 
-    public void processVerification(String username, String email) {
+    public void sendVerificationCode(String username, String email) {
         SiteUser user = validateUsernameAndEmail(username, email);
 
         String code = generateVerificationCode();
