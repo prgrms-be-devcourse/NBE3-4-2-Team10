@@ -119,6 +119,7 @@ export default function SchedulePage() {
                             initialData={selectedSchedule}
                             onSubmit={handleCreateOrUpdateSchedule}
                             onCancel={() => setIsFormVisible(false)}
+                            isNew={!selectedSchedule}  // 새 일정 추가 시 '저장' 버튼 표시
                         />
                     </div>
                 </div>

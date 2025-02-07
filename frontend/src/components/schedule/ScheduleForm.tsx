@@ -5,9 +5,10 @@ interface ScheduleFormProps {
     initialData?: ScheduleFormData;
     onSubmit: (formData: ScheduleFormData) => void;
     onCancel: () => void;
+    isNew?: boolean; // 새로운 일정 여부를 판단하는 속성 추가
 }
 
-export default function ScheduleForm({ initialData, onSubmit, onCancel }: ScheduleFormProps) {
+export default function ScheduleForm({ initialData, onSubmit, onCancel, isNew }: ScheduleFormProps) {
     const [formData, setFormData] = useState<ScheduleFormData>({
         title: initialData?.title || '',
         description: initialData?.description || '',
@@ -18,7 +19,6 @@ export default function ScheduleForm({ initialData, onSubmit, onCancel }: Schedu
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const address = e.target.value;
-        // 주소 입력 시 좌표 변환이 필요 없다면 아래 코드는 생략
         setFormData(prev => ({ ...prev, location: { ...prev.location, address } }));
     };
 
@@ -89,7 +89,7 @@ export default function ScheduleForm({ initialData, onSubmit, onCancel }: Schedu
 
             <div className="flex justify-end space-x-4">
                 <button type="submit" className="p-2 bg-black text-white font-bold rounded hover:bg-gray-700">
-                    {initialData ? '저장' : '수정'}
+                    {isNew ? '저장' : '수정'}
                 </button>
                 <button type="button" onClick={onCancel} className="p-2 bg-black text-white font-bold rounded hover:bg-gray-400">
                     취소
