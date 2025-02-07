@@ -2,7 +2,7 @@ package com.ll.TeamProject.domain.user.service;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.Role;
-import com.ll.TeamProject.standard.util.Ut;
+import com.ll.TeamProject.standard.util.Jwt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class AuthTokenService {
         String role = user.getRole().name();
         String nickname = user.getNickname();
 
-        return Ut.jwt.toString(
+        return Jwt.toString(
                 secretKey,
                 accessTokenExpirationSeconds,
                 Map.of("id", id, "username", username, "nickname", nickname, "role", role)
@@ -31,7 +31,7 @@ public class AuthTokenService {
     }
 
     public Map<String, Object> payload(String accessToken) {
-        Map<String, Object> parsedPayload = Ut.jwt.payload(secretKey, accessToken);
+        Map<String, Object> parsedPayload = Jwt.payload(secretKey, accessToken);
 
         if (parsedPayload == null) return null;
 
