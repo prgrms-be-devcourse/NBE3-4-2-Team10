@@ -60,6 +60,16 @@ public class UserService {
         );
     }
 
+    public void logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+
+        userContext.deleteCookie("accessToken");
+        userContext.deleteCookie("apiKey");
+        userContext.deleteCookie("JSESSIONID");
+
+        SecurityContextHolder.clearContext();
+    }
+
     public Optional<SiteUser> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -85,7 +95,8 @@ public class UserService {
         searchKeyword = "%" + searchKeyword + "%";
 
         return switch (searchKeywordType) {
-            case "email" -> userRepository.findByRoleAndEmailLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
+            case "email" ->
+                    userRepository.findByRoleAndEmailLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
             default -> userRepository.findByRoleAndUsernameLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
         };
     }
@@ -127,23 +138,6 @@ public class UserService {
         return join(username, "", email, providerTypeCode);
     }
 
-    public void modify(String nickname) {
-        if(forbiddenService.isForbidden(nickname)){
-            throw new ServiceException("400-1", "해당 닉네임은 사용할 수 없습니다.");
-        }
-
-        SiteUser actor = userContext.findActor().get();
-        try {
-            actor.changeNickname(nickname);
-            userRepository.save(actor);
-        } catch (DataIntegrityViolationException exception) {
-            throw new ServiceException("409-1", "이미 사용중인 닉네임입니다.");
-        }
-
-        // 수정된 닉네임 바로 적용되도록 쿠키 수정
-        userContext.makeAuthCookies(actor);
-    }
-
     public SiteUser join(String username, String password, String email, String providerTypeCode) {
         SiteUser user = SiteUser.builder()
                 .username(username)
@@ -168,34 +162,44 @@ public class UserService {
         return user;
     }
 
+    public void modify(String nickname) {
+        if (forbiddenService.isForbidden(nickname)) {
+            throw new ServiceException("400-1", "해당 닉네임은 사용할 수 없습니다.");
+        }
+
+        SiteUser actor = userContext.findActor().get();
+        try {
+            actor.changeNickname(nickname);
+            userRepository.save(actor);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ServiceException("409-1", "이미 사용중인 닉네임입니다.");
+        }
+
+        // 수정된 닉네임 바로 적용되도록 쿠키 수정
+        userContext.makeAuthCookies(actor);
+    }
+
     public UserDto delete(long id) {
         Optional<SiteUser> userOptional = findById(id);
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             throw new ServiceException("401-1", "존재하지 않는 사용자입니다.");
         }
         SiteUser userToDelete = userOptional.get();
 
-        SiteUser actor = userContext.getActor();
+        validatePermission(userToDelete);
 
-        if(!userToDelete.getId().equals(actor.getId())) {
-            throw new ServiceException("403-1", "접근 권한이 없습니다.");
-        }
-
-        userToDelete.changeNickname("탈퇴한 사용자");
-        userToDelete.deleteUsernameEmail();
-        userToDelete.delete(true);
+        userToDelete.delete();
         userRepository.save(userToDelete);
 
         return new UserDto(userToDelete);
     }
 
-    public void logout(HttpServletRequest request) {
-        request.getSession().invalidate();
+    private void validatePermission(SiteUser userToDelete) {
+        SiteUser actor = userContext.getActor();
+        if (actor.getNickname().equals("admin")) return;
 
-        userContext.deleteCookie("accessToken");
-        userContext.deleteCookie("apiKey");
-        userContext.deleteCookie("JSESSIONID");
-
-        SecurityContextHolder.clearContext();
+        if (!userToDelete.getId().equals(actor.getId())) {
+            throw new ServiceException("403-1", "접근 권한이 없습니다.");
+        }
     }
 }

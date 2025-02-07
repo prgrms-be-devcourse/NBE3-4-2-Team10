@@ -16,8 +16,16 @@ public class ForbiddenService {
         List<ForbiddenNickname> forbiddenList = forbiddenRepository.findAll();
 
         for(ForbiddenNickname forbiddenNickname : forbiddenList) {
-            if(nickname.toLowerCase().contains(forbiddenNickname.getForbiddenName().toLowerCase())) return true;
+            if(containsForbiddenWord(nickname, forbiddenNickname)) return true;
         }
         return false;
     }
+
+    private boolean containsForbiddenWord(String nickname, ForbiddenNickname forbiddenNickname) {
+        nickname = nickname.toLowerCase();
+        String forbiddenName = forbiddenNickname.getForbiddenName().toLowerCase();
+
+        return nickname.contains(forbiddenName);
+    }
+
 }

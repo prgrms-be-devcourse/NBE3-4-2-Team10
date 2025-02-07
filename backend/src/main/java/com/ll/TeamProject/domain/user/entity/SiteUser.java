@@ -99,13 +99,11 @@ public class SiteUser extends BaseTime {
         this.nickname = newNickname;
     }
 
-    public void deleteUsernameEmail() {
+    public void delete() {
         this.username = "deleted_" + UUID.randomUUID();
         this.email = username + "@deleted.com";
-    }
-
-    public void delete(boolean changed) {
-        this.isDeleted = changed;
+        changeNickname("탈퇴한 사용자");
+        this.isDeleted = true;
         this.deletedDate = LocalDateTime.now();
     }
 
