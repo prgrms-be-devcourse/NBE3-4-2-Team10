@@ -28,6 +28,6 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SavedRequestAwareA
 
         userContext.makeAuthCookies(user);
 
-        response.sendRedirect(devFrontUrl + "/calendars/"); // 프론트 메인 페이지로 연결
+        response.sendRedirect(devFrontUrl + "/calendars/");
     }
 }

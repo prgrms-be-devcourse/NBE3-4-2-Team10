@@ -41,13 +41,13 @@ public class BaseInitData {
     @Bean
     public ApplicationRunner baseInitDataApplicationRunner() {
         return args -> {
-            self.work1();
-            self.work2();
-            self.work3();
+            self.makeSampleUsers();
+            self.makeSampleCalenders();
+            self.makeForbiddenNicknames();
         };
     }
     @Transactional
-    public void work1() {
+    public void makeSampleUsers() {
         // 관리자 계정 만들기
         if (userRepository.count() == 0) {
             SiteUser admin = SiteUser
@@ -96,7 +96,7 @@ public class BaseInitData {
     }
 
     @Transactional
-    public void work2() {
+    public void makeSampleCalenders() {
         if (calendarRepository.count() == 0) {
             // 각 사용자별 생성할 캘린더 수 정의
             Map<String, Integer> userCalendarCounts = Map.of(
@@ -124,8 +124,7 @@ public class BaseInitData {
     }
 
     @Transactional
-    public void work3() {
-        // 닉네임 변경 금지어 설정
+    public void makeForbiddenNicknames() {
         if (forbiddenRepository.count() == 0) {
 
             String[] forbiddenNames = {

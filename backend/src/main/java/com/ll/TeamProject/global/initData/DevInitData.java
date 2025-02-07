@@ -1,6 +1,7 @@
 package com.ll.TeamProject.global.initData;
 
-import com.ll.TeamProject.standard.util.Ut;
+import com.ll.TeamProject.standard.util.Cmd;
+import com.ll.TeamProject.standard.util.File;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -21,10 +22,10 @@ public class DevInitData {
         return args -> {
             try{
 
-                Ut.file.downloadByHttp("http://localhost:8080/v3/api-docs", ".");
+                File.downloadByHttp("http://localhost:8080/v3/api-docs", ".");
 
                 String cmd = "yes | npx --package typescript --package openapi-typescript openapi-typescript api-docs.json -o ../frontend/src/lib/backend/schema.d.ts";
-                Ut.cmd.runAsync(cmd);
+                Cmd.runAsync(cmd);
             }catch(Exception e){
             }
         };

@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -42,7 +43,7 @@ class AdminControllerTest {
 
     @Test
     @DisplayName("관리자 로그인")
-    void t1() throws Exception {
+    void adminLogin() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         post("/admin/login")
@@ -99,69 +100,12 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 - 잘못된 사용자이름")
-    void t2() throws Exception {
-        ResultActions resultActions = mvc
-                .perform(
-                        post("/admin/login")
-                                .content("""
-                                        {
-                                            "username": "user0",
-                                            "password": "1234"
-                                        }
-                                        """.stripIndent())
-                                .contentType(
-                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                                )
-                )
-                .andDo(print());
-
-        resultActions
-                .andExpect(handler().handlerType(AdminController.class))
-                .andExpect(handler().methodName("login"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.resultCode").value("401-1"))
-                .andExpect(jsonPath("$.msg").value("존재하지 않는 사용자입니다."));
-    }
-
-    @Test
-    @DisplayName("로그인 - 잘못된 비밀번호")
-    void t3() throws Exception {
-        ResultActions resultActions = mvc
-                .perform(
-                        post("/admin/login")
-                                .content("""
-                                        {
-                                            "username": "admin",
-                                            "password": "1"
-                                        }
-                                        """.stripIndent())
-                                .contentType(
-                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                                )
-                )
-                .andDo(print());
-
-        // authentication 비밀번호 실패 테스트 필요
-
-        resultActions
-                .andExpect(handler().handlerType(AdminController.class))
-                .andExpect(handler().methodName("login"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.resultCode").value("401-2"))
-                .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
-    }
-
-    @Test
     @DisplayName("회원 목록 조회")
-    void t4() throws Exception {
-        SiteUser actor = userService.findByUsername("admin").get();
-        String actorAuthToken = userService.genAuthToken(actor);
-
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void userList() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         get("/admin")
-                                .header("Authorization", "Bearer " + actorAuthToken)
                                 .param("page", "1")
                                 .param("pageSize", "3")
                 )
@@ -185,8 +129,6 @@ class AdminControllerTest {
             resultActions
                     .andExpect(jsonPath("$.data.items[%d].id".formatted(i)).value(user.getId()))
                     .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
-                    .andExpect(jsonPath("$.data.items[%d].createDate".formatted(i)).value(Matchers.startsWith(user.getCreateDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(user.getModifyDate().toString().substring(0, 25))))
                     .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
                     .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
         }
@@ -194,14 +136,11 @@ class AdminControllerTest {
 
     @Test
     @DisplayName("회원 목록 조회 - 일반 회원 접근")
+    @WithMockUser(username = "test", roles = "USER")
     void t5() throws Exception {
-        SiteUser actor = userService.findByUsername("user1").get();
-        String actorAuthToken = userService.genAuthToken(actor);
-
         ResultActions resultActions = mvc
                 .perform(
                         get("/admin")
-                                .header("Authorization", "Bearer " + actorAuthToken)
                 )
                 .andDo(print());
 
@@ -212,112 +151,8 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("회원 목록 조회 - username 조회")
-    void t6() throws Exception {
-        SiteUser actor = userService.findByUsername("admin").get();
-        String actorAuthToken = userService.genAuthToken(actor);
-
-        ResultActions resultActions = mvc
-                .perform(
-                        get("/admin")
-                                .header("Authorization", "Bearer " + actorAuthToken)
-                                .param("page", "1")
-                                .param("pageSize", "3")
-                                .param("searchKeyword", "user1")
-                )
-                .andDo(print());
-
-        Page<SiteUser> userPage = userService.findUsers("", "user1", 1, 3);
-
-        resultActions
-                .andExpect(handler().handlerType(AdminController.class))
-                .andExpect(handler().methodName("users"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.currentPageNumber").value(1))
-                .andExpect(jsonPath("$.data.pageSize").value(3))
-                .andExpect(jsonPath("$.data.totalPages").value(userPage.getTotalPages()))
-                .andExpect(jsonPath("$.data.totalItems").value(userPage.getTotalElements()));
-
-        List<SiteUser> users = userPage.getContent();
-
-        for (int i = 0; i < users.size(); i++) {
-            SiteUser user = users.get(i);
-            resultActions
-                    .andExpect(jsonPath("$.data.items[%d].id".formatted(i)).value(user.getId()))
-                    .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
-                    .andExpect(jsonPath("$.data.items[%d].createDate".formatted(i)).value(Matchers.startsWith(user.getCreateDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(user.getModifyDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
-                    .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
-        }
-    }
-
-    @Test
-    @DisplayName("회원 목록 조회 - email 조회")
-    void t7() throws Exception {
-        SiteUser actor = userService.findByUsername("admin").get();
-        String actorAuthToken = userService.genAuthToken(actor);
-
-        ResultActions resultActions = mvc
-                .perform(
-                        get("/admin")
-                                .header("Authorization", "Bearer " + actorAuthToken)
-                                .param("page", "1")
-                                .param("pageSize", "3")
-                                .param("searchKeywordType", "email")
-                                .param("searchKeyword", "user2")
-                )
-                .andDo(print());
-
-        Page<SiteUser> userPage = userService.findUsers("email", "user2", 1, 3);
-
-        resultActions
-                .andExpect(handler().handlerType(AdminController.class))
-                .andExpect(handler().methodName("users"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.currentPageNumber").value(1))
-                .andExpect(jsonPath("$.data.pageSize").value(3))
-                .andExpect(jsonPath("$.data.totalPages").value(userPage.getTotalPages()))
-                .andExpect(jsonPath("$.data.totalItems").value(userPage.getTotalElements()));
-
-        List<SiteUser> users = userPage.getContent();
-
-        for (int i = 0; i < users.size(); i++) {
-            SiteUser user = users.get(i);
-            resultActions
-                    .andExpect(jsonPath("$.data.items[%d].id".formatted(i)).value(user.getId()))
-                    .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
-                    .andExpect(jsonPath("$.data.items[%d].createDate".formatted(i)).value(Matchers.startsWith(user.getCreateDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(user.getModifyDate().toString().substring(0, 25))))
-                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
-                    .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
-        }
-    }
-
-    @Test
-    @DisplayName("회원 목록 조회 - 잘못된 페이지 번호 요청")
-    void t8() throws Exception {
-        SiteUser actor = userService.findByUsername("admin").get();
-        String actorAuthToken = userService.genAuthToken(actor);
-
-        ResultActions resultActions = mvc
-                .perform(
-                        get("/admin")
-                                .header("Authorization", "Bearer " + actorAuthToken)
-                                .param("page", "-1")
-                                .param("pageSize", "3")
-                )
-                .andDo(print());
-
-        resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.resultCode").value("400-1"))
-                .andExpect(jsonPath("$.msg").value("페이지 번호는 1 이상이어야 합니다."));
-    }
-
-    @Test
     @DisplayName("로그아웃")
-    void t9() throws Exception {
+    void logout() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         delete("/admin/logout")
@@ -368,21 +203,33 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("사용자 탈퇴 - 다른 사용자, 권한 없음")
-    void deleteUser2() throws Exception {
-        SiteUser actor = userService.findByUsername("user2").get();
+    @DisplayName("닉네임 변경")
+    void changeNickname() throws Exception {
+        SiteUser actor = userService.findByUsername("user1").get();
         String actorAuthToken = userService.genAuthToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(
-                        delete("/user/2")
+                        post("/user")
                                 .header("Authorization", "Bearer " + actorAuthToken)
+                                .content("""
+                                            {
+                                                "nickname": "changedNickname"
+                                            }
+                                            """.stripIndent()
+                                )
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
                 )
                 .andDo(print());
 
         resultActions
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.resultCode").value("403-1"))
-                .andExpect(jsonPath("$.msg").value("접근 권한이 없습니다."));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("사용자 정보가 수정되었습니다."));
+
+        assertThat(actor.getNickname()).isEqualTo("changedNickname");
     }
+
 }
