@@ -10,7 +10,6 @@ export default function ScheduleDetailPage() {
     const params = useParams();
     const router = useRouter();
 
-    // params가 `null`이면 기본값을 할당하여 오류 방지
     const calendarId = params?.calendarId ? Number(params.calendarId) : null;
     const scheduleId = params?.scheduleId ? Number(params.scheduleId) : null;
 
@@ -18,7 +17,7 @@ export default function ScheduleDetailPage() {
     const [isEditFormVisible, setIsEditFormVisible] = useState(false);
 
     useEffect(() => {
-        if (calendarId === null || scheduleId === null) return; // params가 `null`이면 실행하지 않음
+        if (calendarId === null || scheduleId === null) return;
 
         const fetchSchedule = async () => {
             try {
@@ -33,14 +32,17 @@ export default function ScheduleDetailPage() {
     }, [calendarId, scheduleId]);
 
     const handleUpdateSchedule = async (formData: ScheduleFormData) => {
-        if (calendarId === null || scheduleId === null) return; // ✅ params가 `null`이면 실행하지 않음
+        if (calendarId === null || scheduleId === null) return;
 
-        const updatedSchedule = await scheduleApi.updateSchedule(calendarId, scheduleId, formData);
-        setSchedule(updatedSchedule);
-        setIsEditFormVisible(false);
+        try {
+            const updatedSchedule = await scheduleApi.updateSchedule(calendarId, scheduleId, formData);
+            setSchedule(updatedSchedule);
+            setIsEditFormVisible(false);
+        } catch (error) {
+            console.error("📛 일정 업데이트 실패:", error);
+        }
     };
 
-    // params가 `null`이면 로딩 화면 표시
     if (calendarId === null || scheduleId === null) {
         return <div className="text-center mt-20 text-xl font-bold">잘못된 접근입니다.</div>;
     }

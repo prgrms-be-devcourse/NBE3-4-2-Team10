@@ -13,7 +13,7 @@ export default function SchedulePage() {
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState<Schedule | undefined>(undefined);
     const [selectedMarkerId, setSelectedMarkerId] = useState<number | undefined>(undefined);
-    const [selectedDate, setSelectedDate] = useState<string | null>(null); // 초기값을 null로 설정
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
     const params = useParams();
     const calendarId = params?.calendarId ? Number(params.calendarId) : null;
@@ -23,7 +23,7 @@ export default function SchedulePage() {
         if (storedDate) {
             setSelectedDate(storedDate);
         } else {
-            setSelectedDate(new Date().toISOString().split("T")[0]); // 로컬스토리지에 값이 없으면 오늘 날짜 설정
+            setSelectedDate(new Date().toISOString().split("T")[0]);
         }
     }, []);
 
@@ -36,13 +36,9 @@ export default function SchedulePage() {
     useEffect(() => {
         if (calendarId === null || selectedDate === null) return;
 
-        console.log("Fetching schedules for calendarId:", calendarId);
-        console.log("Selected date:", selectedDate);
-
         const fetchSchedules = async () => {
             try {
                 const data = await scheduleApi.getSchedules(calendarId, selectedDate);
-                console.log("Fetched schedules:", data);
                 setSchedules(data);
             } catch (error) {
                 console.error("Error fetching schedules:", error);
@@ -73,14 +69,13 @@ export default function SchedulePage() {
     };
 
     const handleViewSchedule = (scheduleId: number) => {
-        setSelectedMarkerId(scheduleId); // 선택한 일정의 마커로 지도 이동
+        setSelectedMarkerId(scheduleId);
     };
 
     const sortedSchedules = [...schedules].sort((a, b) =>
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
     );
 
-    // 마커의 번호를 초기 순서대로 유지
     const markers = sortedSchedules
         .filter(schedule => schedule.location)
         .map((schedule, index) => ({
@@ -88,7 +83,7 @@ export default function SchedulePage() {
             lat: schedule.location.latitude,
             lng: schedule.location.longitude,
             address: schedule.location.address,
-            label: `${index + 1}`, // 고정된 마커 번호 유지
+            label: `${index + 1}`,
         }));
 
     if (calendarId === null) {
@@ -104,7 +99,13 @@ export default function SchedulePage() {
                     onChange={(e) => setSelectedDate(e.target.value)}
                     className="border p-2 rounded"
                 />
-                <button onClick={() => setIsFormVisible(true)} className="p-2 bg-black text-white rounded-lg">
+                <button
+                    onClick={() => {
+                        setIsFormVisible(true);
+                        setSelectedSchedule(undefined); // 새 일정 추가 시 초기화
+                    }}
+                    className="p-2 bg-black text-white rounded-lg"
+                >
                     새 일정 추가
                 </button>
             </div>
@@ -128,9 +129,12 @@ export default function SchedulePage() {
             ) : (
                 <ScheduleList
                     schedules={sortedSchedules}
-                    onEdit={setSelectedSchedule}
+                    onEdit={(schedule) => {
+                        setSelectedSchedule(schedule);
+                        setIsFormVisible(true);
+                    }}
                     onDelete={handleDeleteSchedule}
-                    onView={handleViewSchedule} // 버튼 클릭 시 지도 위치만 이동
+                    onView={handleViewSchedule}
                 />
             )}
         </div>
