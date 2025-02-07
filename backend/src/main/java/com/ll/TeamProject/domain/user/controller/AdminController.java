@@ -3,7 +3,6 @@ package com.ll.TeamProject.domain.user.controller;
 import com.ll.TeamProject.domain.user.dto.LoginDto;
 import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.service.UserService;
-import com.ll.TeamProject.global.mail.EmailService;
 import com.ll.TeamProject.global.rsData.RsData;
 import com.ll.TeamProject.standard.page.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final UserService userService;
-    private final EmailService emailService;
 
     record UserLoginReqBody(
             String username,
