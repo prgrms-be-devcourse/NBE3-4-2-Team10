@@ -1,20 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import client from "@/lib/backend/client";
 
 export default function ChangePasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const router = useRouter();
+  const username = searchParams.get("username");
+
+  useEffect(() => {
+    if (!username) {
+      alert("잘못된 접근입니다.");
+      router.push("/login/adminLogin");
+    }
+  }, [username, router]);
 
   const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (password.length === 0 || confirmPassword.length === 0) {
+    if (!password || !confirmPassword) {
       alert("비밀번호와 비밀번호 확인을 입력해주세요.");
       return;
     }
@@ -24,6 +31,21 @@ export default function ChangePasswordPage() {
       return;
     }
 
+    try {
+      // 경로에 username 파라미터를 직접 삽입
+      const response = await client.PATCH(`/admin/${username}/password`, {
+        body: { password },
+      });
+
+      if (response.error) {
+        alert(response.error.msg);
+      } else {
+        alert("비밀번호가 성공적으로 변경되었습니다.");
+        router.push("/login/adminLogin");
+      }
+    } catch (error) {
+      alert("비밀번호 변경 실패: 다시 시도해주세요.");
+    }
   };
 
   return (

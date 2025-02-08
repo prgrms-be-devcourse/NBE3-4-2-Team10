@@ -123,4 +123,7 @@ public class SiteUser extends BaseTime {
     }
 
 
+    public void changePassword(String password) {
+        this.password = password;
+    }
 }

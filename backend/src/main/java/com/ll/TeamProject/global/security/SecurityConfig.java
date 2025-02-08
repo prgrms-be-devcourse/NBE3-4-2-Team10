@@ -6,6 +6,7 @@ import com.ll.TeamProject.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
 
     @Bean
+    @Lazy
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -39,7 +41,7 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 // 관리자 로그인 로그아웃 인증 요청 허용
-                                .requestMatchers("/admin/login", "/admin/logout", "/admin/verificationCode/verify", "/admin/verificationCode/send")
+                                .requestMatchers("/admin/login", "/admin/logout", "/admin/verification-codes", "/admin/verification-codes/verify", "/admin/{username}/password")
                                 .permitAll()
 
                                 // 관리자 작업 권한 필요
@@ -127,7 +129,7 @@ public class SecurityConfig {
         // 허용할 오리진 설정
         configuration.setAllowedOriginPatterns(Arrays.asList(AppConfig.getSiteFrontUrl()));
         // 허용할 HTTP 메서드 설정
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         // 자격 증명 허용 설정
         configuration.setAllowCredentials(true);
         // 허용할 헤더 설정

@@ -41,7 +41,6 @@ public class UserService {
     private final ApplicationContext applicationContext;
     private final ForbiddenService forbiddenService;
     private final EmailService emailService;
-
     private final StringRedisTemplate redisTemplate;
 
     public LoginDto login(String username, String password) {
@@ -120,6 +119,16 @@ public class UserService {
     private boolean isVerificationCodeValid(SiteUser user, String verificationCode) {
         String code = redisTemplate.opsForValue().get("username");
         return code.equals(verificationCode);  // 임시 검증 로직
+    }
+
+    public void changePassword(String username, String password) {
+        SiteUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
+
+        user.changePassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+
     }
 
     // username으로 찾기
