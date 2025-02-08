@@ -56,7 +56,7 @@ public class BaseInitData {
                     .nickname("관리자")
                     .password(passwordEncoder.encode("admin"))
                     .role(ADMIN)
-                    .email("mix264@naver.com")
+                    .email("taeheemin62@gmail.com")
                     .apiKey(UUID.randomUUID().toString())
                     .locked(true)
                     .build();
