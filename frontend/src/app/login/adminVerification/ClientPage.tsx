@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import client from "@/lib/backend/client";
 
 export default function ClientPage() {
@@ -10,6 +11,7 @@ export default function ClientPage() {
   const [isVerified, setIsVerified] = useState(false);  // 검증 상태
   const [verificationSent, setVerificationSent] = useState(false);  // 인증번호 발송 상태
   const [isSending, setIsSending] = useState(false);  // 메일 전송 중 상태
+  const router = useRouter();
 
   const handleSendVerification = async () => {
     if (!username || !email) {
@@ -21,7 +23,7 @@ export default function ClientPage() {
 
     try {
       // 서버에 인증번호 요청
-      const response = await client.POST("/admin/send-verification", {
+      const response = await client.POST("/admin/verification-codes", {
         body: { username, email },
       });
 
@@ -49,7 +51,7 @@ export default function ClientPage() {
     }
 
     // 인증번호 검증 요청
-    const response = await client.POST("/admin/verificationCode/verify", {
+    const response = await client.POST("/admin/verification-codes/verify", {
       body: { username, verificationCode },
     });
 
@@ -59,7 +61,7 @@ export default function ClientPage() {
     } else {
 
       alert("계정 인증이 완료되었습니다. 비밀번호를 변경해주세요.");
-      window.location.replace("/login/adminLogin");  // 인증 성공 후 관리자 로그인 페이지로 이동
+      router.push(`/login/adminChangePassword?username=${username}`);
     }
   };
 

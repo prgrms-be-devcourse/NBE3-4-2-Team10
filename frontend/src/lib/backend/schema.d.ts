@@ -105,7 +105,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/send-verification": {
+    "/admin/verification-codes": {
         parameters: {
             query?: never;
             header?: never;
@@ -116,6 +116,23 @@ export interface paths {
         put?: never;
         /** 인증번호 발송 */
         post: operations["sendVerification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/verification-codes/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 관리자 계정 잠김 해제 */
+        post: operations["unlockAdminAccount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -139,7 +156,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/account-verifications": {
+    "/admin/{username}/password": {
         parameters: {
             query?: never;
             header?: never;
@@ -148,12 +165,12 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 관리자 계정 잠김 해제 */
-        post: operations["unlockAdminAccount"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /** 관리자 비밀번호 변경 */
+        patch: operations["changePassword"];
         trace?: never;
     };
     "/user/me": {
@@ -306,9 +323,13 @@ export interface components {
             name?: string;
             description?: string;
         };
-        VerifyRequest: {
+        VerificationCodeRequest: {
             username?: string;
             email?: string;
+        };
+        VerificationCodeVerifyRequest: {
+            username?: string;
+            verificationCode?: string;
         };
         UserLoginReqBody: {
             username?: string;
@@ -335,9 +356,8 @@ export interface components {
             /** Format: date-time */
             modifyDate?: string;
         };
-        VerifyCodeReqBody: {
-            username?: string;
-            verificationCode?: string;
+        PasswordChangeRequest: {
+            password?: string;
         };
         Calendar: {
             /** Format: int64 */
@@ -859,7 +879,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["VerifyRequest"];
+                "application/json": components["schemas"]["VerificationCodeRequest"];
             };
         };
         responses: {
@@ -871,6 +891,37 @@ export interface operations {
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    unlockAdminAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerificationCodeVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Bad Request */
             400: {
@@ -916,16 +967,18 @@ export interface operations {
             };
         };
     };
-    unlockAdminAccount: {
+    changePassword: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                username: string;
+            };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["VerifyCodeReqBody"];
+                "application/json": components["schemas"]["PasswordChangeRequest"];
             };
         };
         responses: {
@@ -934,7 +987,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
             };
             /** @description Bad Request */
             400: {

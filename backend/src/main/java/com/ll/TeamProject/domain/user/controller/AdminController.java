@@ -47,7 +47,7 @@ public class AdminController {
             String email
     ) { }
 
-    @PostMapping("/verificationCode/send")
+    @PostMapping("/verification-codes")
     @Operation(summary = "인증번호 발송")
     public RsData<Void> sendVerification(@RequestBody @Valid VerificationCodeRequest req) {
 
@@ -61,11 +61,29 @@ public class AdminController {
             String verificationCode
     ) { }
 
-    @PostMapping("/verificationCode/verify")
+    @PostMapping("/verification-codes/verify")
     @Operation(summary = "관리자 계정 잠김 해제")
     public void unlockAdminAccount(@RequestBody @Valid VerificationCodeVerifyRequest req) {
         userService.verifyAndUnlockAccount(req.username, req.verificationCode);
     }
+
+    record PasswordChangeRequest(
+            String password
+    ) {}
+
+    @PatchMapping("/{username}/password")
+    @Operation(summary = "관리자 비밀번호 변경")
+    public RsData<Void> changePassword(@PathVariable("username") String username
+            , @RequestBody PasswordChangeRequest req) {
+
+        userService.changePassword(username, req.password);
+
+        return new RsData<>(
+                "200-1",
+                    "비밀번호 변경이 완료되었습니다."
+        );
+    }
+
 
     @GetMapping
     @Operation(summary = "회원 명단 조회 (페이징, 검색)")
