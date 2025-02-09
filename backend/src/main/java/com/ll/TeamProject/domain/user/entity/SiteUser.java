@@ -120,12 +120,7 @@ public class SiteUser extends BaseTime {
         this.locked = false;
     }
 
-
     public void changePassword(String password) {
         this.password = password;
-    }
-
-    public void lockAccount() {
-        this.locked = true;
     }
 }

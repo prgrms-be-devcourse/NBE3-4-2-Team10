@@ -132,7 +132,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 관리자 계정 잠김 해제 */
-        post: operations["unlockAdminAccount"];
+        post: operations["verificationAdminAccount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -378,16 +378,16 @@ export interface components {
             deleted?: boolean;
         };
         VerificationCodeRequest: {
-            username?: string;
-            email?: string;
+            username: string;
+            email: string;
         };
         VerificationCodeVerifyRequest: {
-            username?: string;
-            verificationCode?: string;
+            username: string;
+            verificationCode: string;
         };
         UserLoginReqBody: {
-            username?: string;
-            password?: string;
+            username: string;
+            password: string;
         };
         LoginDto: {
             item?: components["schemas"]["UserDto"];
@@ -411,7 +411,7 @@ export interface components {
             modifyDate?: string;
         };
         PasswordChangeRequest: {
-            password?: string;
+            password: string;
         };
         PageDtoUserDto: {
             /** Format: int32 */
@@ -903,7 +903,7 @@ export interface operations {
             };
         };
     };
-    unlockAdminAccount: {
+    verificationAdminAccount: {
         parameters: {
             query?: never;
             header?: never;

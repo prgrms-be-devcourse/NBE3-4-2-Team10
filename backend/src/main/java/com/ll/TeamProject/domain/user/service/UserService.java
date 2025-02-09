@@ -81,7 +81,7 @@ public class UserService {
 
         String code = generateVerificationCode();
 
-        redisTemplate.opsForValue().set("username", code, 180, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("verificationCode:", code, 180, TimeUnit.SECONDS);
 
         sendVerificationEmail(user.getNickname(), user.getEmail(), code);
     }
@@ -90,12 +90,12 @@ public class UserService {
         SiteUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
-        if (!isVerificationCodeValid(user, verificationCode)) {
+        if (!isVerificationCodeValid(verificationCode)) {
             throw new ServiceException("401-3", "인증번호가 유효하지 않거나 만료되었습니다.");
         }
 
-        redisTemplate.delete("username");
-        redisTemplate.opsForValue().set("password-reset", username, 300, TimeUnit.SECONDS);
+        redisTemplate.delete("verificationCode");
+        redisTemplate.opsForValue().set("password-reset", user.getUsername(), 300, TimeUnit.SECONDS);
     }
 
     private SiteUser validateUsernameAndEmail(String username, String email) {
@@ -125,8 +125,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    private boolean isVerificationCodeValid(SiteUser user, String verificationCode) {
-        String code = redisTemplate.opsForValue().get("username");
+    private boolean isVerificationCodeValid(String verificationCode) {
+        String code = redisTemplate.opsForValue().get("verificationCode:");
         return code.equals(verificationCode);
     }
 

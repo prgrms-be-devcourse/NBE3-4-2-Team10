@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class AdminController {
     private final UserService userService;
 
     record UserLoginReqBody(
-            String username,
-            String password
+            @NonNull String username,
+            @NonNull String password
     ) {}
 
     @PostMapping("/login")
@@ -43,8 +44,8 @@ public class AdminController {
     }
 
     record VerificationCodeRequest(
-            String username,
-            String email
+            @NonNull String username,
+            @NonNull String email
     ) { }
 
     @PostMapping("/verification-codes")
@@ -56,19 +57,24 @@ public class AdminController {
         return new RsData<>("200-1", "인증번호가 발송되었습니다.");
     }
 
-    public record VerificationCodeVerifyRequest(
-            String username,
-            String verificationCode
+    record VerificationCodeVerifyRequest(
+            @NonNull String username,
+            @NonNull String verificationCode
     ) { }
 
     @PostMapping("/verification-codes/verify")
-    @Operation(summary = "관리자 계정 잠김 해제")
-    public void unlockAdminAccount(@RequestBody @Valid VerificationCodeVerifyRequest req) {
+    @Operation(summary = "관리자 계정 잠김 이메일 인증")
+    public RsData<Void> verificationAdminAccount(@RequestBody @Valid VerificationCodeVerifyRequest req) {
         userService.verifyAndUnlockAccount(req.username, req.verificationCode);
+
+        return new RsData<>(
+                "200-1",
+                "인증이 완료되었습니다."
+        );
     }
 
     record PasswordChangeRequest(
-            String password
+            @NonNull String password
     ) {}
 
     @PatchMapping("/{username}/password")
