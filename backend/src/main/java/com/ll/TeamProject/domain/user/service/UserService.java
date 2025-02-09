@@ -66,6 +66,15 @@ public class UserService {
                 accessToken
         );
     }
+    public void logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+
+        userContext.deleteCookie("accessToken");
+        userContext.deleteCookie("apiKey");
+        userContext.deleteCookie("JSESSIONID");
+
+        SecurityContextHolder.clearContext();
+    }
 
     public void processVerification(String username, String email) {
         SiteUser user = validateUsernameAndEmail(username, email);
@@ -86,7 +95,7 @@ public class UserService {
         }
 
         redisTemplate.delete("username");
-        unlockAccount(user);
+        redisTemplate.opsForValue().set("password-reset", username, 300, TimeUnit.SECONDS);
     }
 
     private SiteUser validateUsernameAndEmail(String username, String email) {
@@ -112,34 +121,31 @@ public class UserService {
     }
 
     private void unlockAccount(SiteUser user) {
-        user.unlockAccount();  // 계정 상태 변경 (잠금 해제)
+        user.unlockAccount();
         userRepository.save(user);
     }
 
     private boolean isVerificationCodeValid(SiteUser user, String verificationCode) {
         String code = redisTemplate.opsForValue().get("username");
-        return code.equals(verificationCode);  // 임시 검증 로직
+        return code.equals(verificationCode);
     }
 
     public void changePassword(String username, String password) {
+        String code = redisTemplate.opsForValue().get("password-reset");
+
+        if (code == null || !code.equals(username)) {
+            redisTemplate.delete("password-reset");
+            throw new ServiceException("401-3", "올바른 요청이 아닙니다.");
+        }
+
         SiteUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
         PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
 
         user.changePassword(passwordEncoder.encode(password));
+        unlockAccount(user);
         userRepository.save(user);
-
-    }
-
-    // username으로 찾기
-    public void logout(HttpServletRequest request) {
-        request.getSession().invalidate();
-
-        userContext.deleteCookie("accessToken");
-        userContext.deleteCookie("apiKey");
-        userContext.deleteCookie("JSESSIONID");
-
-        SecurityContextHolder.clearContext();
+        redisTemplate.delete("password-reset");
     }
 
     public Optional<SiteUser> findByUsername(String username) {

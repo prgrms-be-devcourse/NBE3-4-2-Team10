@@ -323,42 +323,6 @@ export interface components {
             name?: string;
             description?: string;
         };
-        VerificationCodeRequest: {
-            username?: string;
-            email?: string;
-        };
-        VerificationCodeVerifyRequest: {
-            username?: string;
-            verificationCode?: string;
-        };
-        UserLoginReqBody: {
-            username?: string;
-            password?: string;
-        };
-        LoginDto: {
-            item?: components["schemas"]["UserDto"];
-            apiKey?: string;
-            accessToken?: string;
-        };
-        RsDataLoginDto: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["LoginDto"];
-        };
-        UserDto: {
-            /** Format: int64 */
-            id?: number;
-            username?: string;
-            nickname?: string;
-            email?: string;
-            /** Format: date-time */
-            createDate?: string;
-            /** Format: date-time */
-            modifyDate?: string;
-        };
-        PasswordChangeRequest: {
-            password?: string;
-        };
         Calendar: {
             /** Format: int64 */
             id?: number;
@@ -410,8 +374,44 @@ export interface components {
             /** Format: date-time */
             deletedDate?: string;
             locked?: boolean;
-            authorities?: components["schemas"]["GrantedAuthority"][];
             deleted?: boolean;
+            authorities?: components["schemas"]["GrantedAuthority"][];
+        };
+        VerificationCodeRequest: {
+            username?: string;
+            email?: string;
+        };
+        VerificationCodeVerifyRequest: {
+            username?: string;
+            verificationCode?: string;
+        };
+        UserLoginReqBody: {
+            username?: string;
+            password?: string;
+        };
+        LoginDto: {
+            item?: components["schemas"]["UserDto"];
+            apiKey?: string;
+            accessToken?: string;
+        };
+        RsDataLoginDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["LoginDto"];
+        };
+        UserDto: {
+            /** Format: int64 */
+            id?: number;
+            username?: string;
+            nickname?: string;
+            email?: string;
+            /** Format: date-time */
+            createDate?: string;
+            /** Format: date-time */
+            modifyDate?: string;
+        };
+        PasswordChangeRequest: {
+            password?: string;
         };
         PageDtoUserDto: {
             /** Format: int32 */
@@ -769,7 +769,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": unknown;
+                    "application/json;charset=UTF-8": components["schemas"]["Calendar"];
                 };
             };
             /** @description Bad Request */

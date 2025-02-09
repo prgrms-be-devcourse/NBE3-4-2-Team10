@@ -39,6 +39,7 @@ export default function ChangePasswordPage() {
 
       if (response.error) {
         alert(response.error.msg);
+        router.push("/login/adminLogin");
       } else {
         alert("비밀번호가 성공적으로 변경되었습니다.");
         router.push("/login/adminLogin");
