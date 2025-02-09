@@ -51,7 +51,7 @@ public class AdminController {
     @Operation(summary = "인증번호 발송")
     public RsData<Void> sendVerification(@RequestBody @Valid VerificationCodeRequest req) {
 
-        userService.sendVerificationCode(req.username, req.email);
+        userService.processVerification(req.username, req.email);
 
         return new RsData<>("200-1", "인증번호가 발송되었습니다.");
     }
@@ -83,7 +83,6 @@ public class AdminController {
                     "비밀번호 변경이 완료되었습니다."
         );
     }
-
 
     @GetMapping
     @Operation(summary = "회원 명단 조회 (페이징, 검색)")

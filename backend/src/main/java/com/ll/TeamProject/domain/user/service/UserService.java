@@ -138,10 +138,8 @@ public class UserService {
             throw new ServiceException("401-3", "올바른 요청이 아닙니다.");
         }
 
-        SiteUser user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+        SiteUser user = userRepository.findByUsername(username).get();
         PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
-
         user.changePassword(passwordEncoder.encode(password));
         unlockAccount(user);
         userRepository.save(user);
@@ -152,17 +150,14 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    // apiKey로 user 찾기
     public Optional<SiteUser> findByApiKey(String apiKey) {
         return userRepository.findByApiKey(apiKey);
     }
 
-    // id로 user 찾기
     public Optional<SiteUser> findById(long id) {
         return userRepository.findById(id);
     }
 
-    // 관리자 user 조회
     public Page<SiteUser> findUsers(
             String searchKeywordType,
             String searchKeyword,
@@ -217,7 +212,7 @@ public class UserService {
         SiteUser user = SiteUser.builder()
                 .username(username)
                 .password(password)
-                .nickname(username) // nickname = username 초기 설정
+                .nickname(username)
                 .email(email)
                 .role(USER)
                 .apiKey(UUID.randomUUID().toString())

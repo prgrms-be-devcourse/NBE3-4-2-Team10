@@ -374,8 +374,8 @@ export interface components {
             /** Format: date-time */
             deletedDate?: string;
             locked?: boolean;
-            deleted?: boolean;
             authorities?: components["schemas"]["GrantedAuthority"][];
+            deleted?: boolean;
         };
         VerificationCodeRequest: {
             username?: string;
