@@ -66,6 +66,7 @@ public class UserService {
                 accessToken
         );
     }
+  
     public void logout(HttpServletRequest request) {
         request.getSession().invalidate();
 
