@@ -25,15 +25,15 @@ export default function ClientPage({
           <a
             href={`${socialLoginForKakaoUrl}?redirectUrl=${redirectUrlAfterSocialLogin}`}
           >
-            <span className="flex gap-2 items-center">
+            <span className="flex gap-2 items-center relative">
               <FontAwesomeIcon icon={faComments} />
               카카오 로그인
+              {lastLogin === "KAKAO" && (
+                <span className="absolute top-0 left-28 bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-lg">
+                  최근 로그인한 방법
+                </span>
+              )}
             </span>
-            {lastLogin === "KAKAO" && (
-              <span className="text-sm text-gray-500">
-                (최근 로그인한 방법)
-              </span>
-            )}
           </a>
         </Button>
 
@@ -41,15 +41,15 @@ export default function ClientPage({
           <a
             href={`${socialLoginForGoogleUrl}?redirectUrl=${redirectUrlAfterSocialLogin}`}
           >
-            <span className="flex gap-2 items-center">
+            <span className="flex gap-2 items-center relative">
               <FontAwesomeIcon icon={faGlobe} />
               구글 로그인
+              {lastLogin === "GOOGLE" && (
+                <span className="absolute top-0 left-24 bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-lg">
+                  최근 로그인한 방법
+                </span>
+              )}
             </span>
-            {lastLogin === "GOOGLE" && (
-              <span className="text-sm text-gray-500">
-                (최근 로그인한 방법)
-              </span>
-            )}
           </a>
         </Button>
       </div>
