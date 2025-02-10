@@ -3,6 +3,7 @@ package com.ll.TeamProject.global.security;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.service.AuthenticationService;
 import com.ll.TeamProject.domain.user.service.UserService;
+import com.ll.TeamProject.global.userContext.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,6 +20,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final UserContext userContext;
 
     // 소셜 로그인이 성공할 때마다 이 함수가 실행된다.
     @Transactional
@@ -56,6 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         SiteUser user = userService.findOrRegisterUser(username, email, providerTypeCode);
 
         authenticationService.modifyLastLogin(user);
+        userContext.setCookie("lastLogin", providerTypeCode);
 
         return new SecurityUser(
                 user.getId(),

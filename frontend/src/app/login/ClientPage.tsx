@@ -2,13 +2,16 @@
 
 "use client";
 
-
 import { Button } from "@/components/schedule/ui/button";
 import { faComments, faGlobe, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 
-export default function ClientPage() {
+export default function ClientPage({
+  lastLogin,
+}: Readonly<{
+  lastLogin: string;
+}>) {
   const socialLoginForKakaoUrl = `http://localhost:8080/oauth2/authorization/kakao`;
   const socialLoginForGoogleUrl = `http://localhost:8080/oauth2/authorization/google`;
   const redirectUrlAfterSocialLogin = "http://localhost:3000";
@@ -26,6 +29,11 @@ export default function ClientPage() {
               <FontAwesomeIcon icon={faComments} />
               카카오 로그인
             </span>
+            {lastLogin === "KAKAO" && (
+              <span className="text-sm text-gray-500">
+                (최근 로그인한 방법)
+              </span>
+            )}
           </a>
         </Button>
 
@@ -37,6 +45,11 @@ export default function ClientPage() {
               <FontAwesomeIcon icon={faGlobe} />
               구글 로그인
             </span>
+            {lastLogin === "GOOGLE" && (
+              <span className="text-sm text-gray-500">
+                (최근 로그인한 방법)
+              </span>
+            )}
           </a>
         </Button>
       </div>
