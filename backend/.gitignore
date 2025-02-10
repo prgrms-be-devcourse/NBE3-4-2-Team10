@@ -39,6 +39,6 @@ out/
 ### Custom ###
 db_dev.mv.db
 db_dev.trace.db
-src/main/resources/application-secret.yml
+**/application-secret.yml
 api-docs.json
 package-lock.json

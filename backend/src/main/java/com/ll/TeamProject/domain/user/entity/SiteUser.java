@@ -46,9 +46,14 @@ public class SiteUser extends BaseTime {
     @Column(unique = true)
     private String apiKey;
 
+    @Column
     private boolean isDeleted;
 
+    @Column
     private LocalDateTime deletedDate;
+
+    @Column
+    private boolean locked;
 
     public SiteUser(long id, String username, String nickname, Role role) {
         super();
@@ -100,5 +105,22 @@ public class SiteUser extends BaseTime {
         changeNickname("탈퇴한 사용자");
         this.isDeleted = true;
         this.deletedDate = LocalDateTime.now();
+    }
+
+    public boolean isLocked() {
+        return this.locked;
+    }
+
+    public void lockAccountAndResetPassword(String randomPassword) {
+        this.locked = true;
+        this.password = randomPassword;
+    }
+
+    public void unlockAccount() {
+        this.locked = false;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
     }
 }

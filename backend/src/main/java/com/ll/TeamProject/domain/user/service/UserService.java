@@ -9,6 +9,7 @@ import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.global.mail.EmailService;
 import com.ll.TeamProject.global.userContext.UserContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.ll.TeamProject.domain.user.enums.Role.USER;
 
@@ -37,10 +40,14 @@ public class UserService {
     private final AuthenticationService authenticationService;
     private final ApplicationContext applicationContext;
     private final ForbiddenService forbiddenService;
+    private final EmailService emailService;
+    private final StringRedisTemplate redisTemplate;
 
     public LoginDto login(String username, String password) {
         SiteUser user = findByUsername(username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+
+        if (user.isLocked()) throw new ServiceException("403-2", "계정이 잠겨있습니다.");
 
         PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
 
@@ -59,7 +66,7 @@ public class UserService {
                 accessToken
         );
     }
-
+  
     public void logout(HttpServletRequest request) {
         request.getSession().invalidate();
 
@@ -68,6 +75,76 @@ public class UserService {
         userContext.deleteCookie("JSESSIONID");
 
         SecurityContextHolder.clearContext();
+    }
+
+    public void processVerification(String username, String email) {
+        SiteUser user = validateUsernameAndEmail(username, email);
+
+        String code = generateVerificationCode();
+
+        redisTemplate.opsForValue().set("verificationCode:", code, 180, TimeUnit.SECONDS);
+
+        sendVerificationEmail(user.getNickname(), user.getEmail(), code);
+    }
+
+    public void verifyAndUnlockAccount(String username, String verificationCode) {
+        SiteUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+
+        if (!isVerificationCodeValid(verificationCode)) {
+            throw new ServiceException("401-3", "인증번호가 유효하지 않거나 만료되었습니다.");
+        }
+
+        redisTemplate.delete("verificationCode");
+        redisTemplate.opsForValue().set("password-reset", user.getUsername(), 300, TimeUnit.SECONDS);
+    }
+
+    private SiteUser validateUsernameAndEmail(String username, String email) {
+        return userRepository.findByUsername(username)
+                .map(user -> {
+                    if (!user.getEmail().equals(email)) {
+                        throw new ServiceException("401-2", "이메일이 일치하지 않습니다.");
+                    }
+                    return user;
+                })
+                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+    }
+
+    private String generateVerificationCode() {
+        return UUID.randomUUID().toString().substring(0, 6);
+    }
+
+    private void sendVerificationEmail(String nickname, String email, String verificationCode) {
+        String subject = "계정 인증번호";
+        String content = String.format("안녕하세요, %s님.\n\n인증번호: %s\n인증번호는 3분 동안 유효합니다.", nickname, verificationCode);
+
+        emailService.sendEmail(email, subject, content);
+    }
+
+    private void unlockAccount(SiteUser user) {
+        user.unlockAccount();
+        userRepository.save(user);
+    }
+
+    private boolean isVerificationCodeValid(String verificationCode) {
+        String code = redisTemplate.opsForValue().get("verificationCode:");
+        return code.equals(verificationCode);
+    }
+
+    public void changePassword(String username, String password) {
+        String code = redisTemplate.opsForValue().get("password-reset");
+
+        if (code == null || !code.equals(username)) {
+            redisTemplate.delete("password-reset");
+            throw new ServiceException("401-3", "올바른 요청이 아닙니다.");
+        }
+
+        SiteUser user = userRepository.findByUsername(username).get();
+        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
+        user.changePassword(passwordEncoder.encode(password));
+        unlockAccount(user);
+        userRepository.save(user);
+        redisTemplate.delete("password-reset");
     }
 
     public Optional<SiteUser> findByUsername(String username) {
@@ -128,24 +205,19 @@ public class UserService {
     }
 
     public SiteUser findOrRegisterUser(String username, String email, String providerTypeCode) {
-        Optional<SiteUser> opUser = findByUsername(username);
-
-        if (opUser.isPresent()) {
-            SiteUser user = opUser.get();
-            return user;
-        }
-
-        return join(username, "", email, providerTypeCode);
+        return findByUsername(username)
+                .orElseGet(() -> join(username, "", email, providerTypeCode));
     }
 
     public SiteUser join(String username, String password, String email, String providerTypeCode) {
         SiteUser user = SiteUser.builder()
                 .username(username)
                 .password(password)
-                .nickname(username) // nickname = username 초기 설정
+                .nickname(username)
                 .email(email)
                 .role(USER)
                 .apiKey(UUID.randomUUID().toString())
+                .locked(false)
                 .build();
         user = userRepository.save(user);
 
@@ -155,7 +227,6 @@ public class UserService {
                 .userId(user.getId())
                 .authType(authType)
                 .failedAttempts(0)
-                .isLocked(false)
                 .build();
         authenticationRepository.save(authentication);
 

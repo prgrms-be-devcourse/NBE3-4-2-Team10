@@ -1,7 +1,6 @@
 package com.ll.TeamProject.global.security;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
-import com.ll.TeamProject.domain.user.service.AuthenticationService;
 import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.userContext.UserContext;
 import jakarta.servlet.FilterChain;
@@ -22,7 +21,6 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserContext userContext;
     private final UserService userService;
-    private final AuthenticationService authenticationService;
 
     record AuthTokens(
             String apiKey,
