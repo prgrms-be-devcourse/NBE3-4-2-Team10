@@ -111,6 +111,39 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
+    @Operation(summary = "주별 일정 조회", description = "지정된 날짜가 속한 주의 일정을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주별 일정 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 날짜 형식"),
+            @ApiResponse(responseCode = "403", description = "권한이 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/weekly")
+    public ResponseEntity<List<ScheduleResponseDto>> getWeeklySchedules(
+            @PathVariable Long calendarId,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
+        List<ScheduleResponseDto> schedules = scheduleService.getWeeklySchedules(calendarId, date, authenticatedUser);
+        return ResponseEntity.ok(schedules);
+    }
+
+    @Operation(summary = "월별 일정 조회", description = "지정된 날짜가 속한 월의 일정을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "월별 일정 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 날짜 형식"),
+            @ApiResponse(responseCode = "403", description = "권한이 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/monthly")
+    public ResponseEntity<List<ScheduleResponseDto>> getMonthlySchedules(
+            @PathVariable Long calendarId,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
+        List<ScheduleResponseDto> schedules = scheduleService.getMonthlySchedules(calendarId, date, authenticatedUser);
+        return ResponseEntity.ok(schedules);
+    }
+
+
     @Operation(summary = "특정 일정 조회", description = "주어진 일정 ID(scheduleId)를 기반으로 특정 일정을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "일정 조회 성공"),

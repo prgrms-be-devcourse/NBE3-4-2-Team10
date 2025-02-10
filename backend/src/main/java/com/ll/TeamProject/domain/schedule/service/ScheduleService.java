@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -98,6 +99,36 @@ public class ScheduleService {
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
         return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, startOfDay, endOfDay)
+                .stream().map(this::mapToDto).toList();
+    }
+
+    //일주일 일정 조회 (일요일 기준)
+    public List<ScheduleResponseDto> getWeeklySchedules(Long calendarId, LocalDate date, SiteUser user){
+        validateCalendarOwner(calendarId, user);
+
+        // 기준 날짜가 포함된 주의 일요일 및 토요일 계산
+        LocalDate startOfWeek = date.with(DayOfWeek.SUNDAY);
+        LocalDate endOfWeek = date.with(DayOfWeek.SATURDAY);
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+        return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, startDateTime, endDateTime)
+                .stream().map(this::mapToDto).toList();
+    }
+
+    // 한 달 일정 조회 (1일부터 말일까지)
+    public List<ScheduleResponseDto> getMonthlySchedules(Long calendarId, LocalDate date, SiteUser user) {
+        validateCalendarOwner(calendarId, user);
+
+        // 기준 날짜의 월의 첫째 날과 마지막 날 계산
+        LocalDate firstDayOfMonth = date.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = date.withDayOfMonth(date.lengthOfMonth());
+
+        LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
+
+        return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, startDateTime, endDateTime)
                 .stream().map(this::mapToDto).toList();
     }
 

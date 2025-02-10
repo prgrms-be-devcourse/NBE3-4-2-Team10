@@ -53,6 +53,30 @@ export const scheduleApi = {
     },
 
 
+    async getWeeklySchedules(calendarId: number, date: string): Promise<Schedule[]> {
+        try {
+            const response = await axios.get<Schedule[]>(`${BASE_URL}/${calendarId}/schedules/weekly`, {
+                params: { date }, withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error("📛 주별 일정 조회 실패:", error);
+            throw error;
+        }
+    },
+
+    async getMonthlySchedules(calendarId: number, date: string): Promise<Schedule[]> {
+        try {
+            const response = await axios.get<Schedule[]>(`${BASE_URL}/${calendarId}/schedules/monthly`, {
+                params: { date }, withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error("📛 월별 일정 조회 실패:", error);
+            throw error;
+        }
+    },
+
 
     async getScheduleById(calendarId: number, scheduleId: number): Promise<Schedule> {
         try {
