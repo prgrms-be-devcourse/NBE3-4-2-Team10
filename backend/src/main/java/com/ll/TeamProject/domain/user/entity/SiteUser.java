@@ -107,11 +107,6 @@ public class SiteUser extends BaseTime {
         this.deletedDate = LocalDateTime.now();
     }
 
-    public String getNickname() {
-        if(this.nickname.contains("탈퇴한 사용자")) return "탈퇴한 사용자";
-        return this.nickname;
-    }
-
     public boolean isLocked() {
         return this.locked;
     }
