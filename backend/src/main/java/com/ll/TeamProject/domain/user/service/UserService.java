@@ -225,7 +225,7 @@ public class UserService {
         AuthType authType = AuthType.valueOf(providerTypeCode);
         Authentication authentication = Authentication
                 .builder()
-                .userId(user.getId())
+                .user(user)
                 .authType(authType)
                 .failedAttempts(0)
                 .build();

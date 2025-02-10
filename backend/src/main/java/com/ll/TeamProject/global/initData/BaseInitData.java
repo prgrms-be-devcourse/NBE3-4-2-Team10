@@ -17,6 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,6 +46,8 @@ public class BaseInitData {
             self.makeSampleUsers();
             self.makeSampleCalenders();
             self.makeForbiddenNicknames();
+            self.makeDormantUsers();
+            self.makeDeletedUsers();
         };
     }
     @Transactional
@@ -56,15 +60,15 @@ public class BaseInitData {
                     .nickname("관리자")
                     .password(passwordEncoder.encode("admin"))
                     .role(ADMIN)
-                    .email("mix264@naver.com")
+                    .email("test@test.com")
                     .apiKey(UUID.randomUUID().toString())
-                    .locked(true)
+                    .locked(false)
                     .build();
             admin = userRepository.save(admin);
 
             Authentication authentication = Authentication
                     .builder()
-                    .userId(admin.getId())
+                    .user(admin)
                     .authType(LOCAL)
                     .failedAttempts(0)
                     .build();
@@ -85,7 +89,7 @@ public class BaseInitData {
 
                 Authentication userAuthentication = Authentication
                         .builder()
-                        .userId(user.getId())
+                        .user(user)
                         .authType(LOCAL)
                         .failedAttempts(0)
                         .build();
@@ -139,6 +143,64 @@ public class BaseInitData {
             for (String name : forbiddenNames) {
                 ForbiddenNickname forbiddenNickname = new ForbiddenNickname(name);
                 forbiddenRepository.save(forbiddenNickname);
+            }
+        }
+    }
+
+    @Transactional
+    public void makeDormantUsers() {
+        if (userRepository.count() < 15) {
+            List<Integer> loginMonths = List.of(11, 12, 17, 18);
+
+            for (int monthsAgo : loginMonths) {
+                String username = "login_" + monthsAgo + "_months_ago";
+                String nickname = monthsAgo + "개월전";
+
+                SiteUser siteUser = SiteUser.builder()
+                        .username(username)
+                        .nickname(nickname)
+                        .password(passwordEncoder.encode("1234"))
+                        .role(USER)
+                        .email(username + "@test.com")
+                        .apiKey(UUID.randomUUID().toString())
+                        .locked(false)
+                        .build();
+                userRepository.save(siteUser);
+
+                Authentication authentication = Authentication.builder()
+                        .user(siteUser)
+                        .authType(LOCAL)
+                        .lastLogin(LocalDateTime.now().minusMonths(monthsAgo))
+                        .failedAttempts(0)
+                        .build();
+                authenticationRepository.save(authentication);
+            }
+        }
+    }
+
+    @Transactional
+    public void makeDeletedUsers() {
+        if (userRepository.count() < 20) {
+            for (int i = 1; i <= 3; i++) {
+                SiteUser siteUser = SiteUser.builder()
+                        .username("deleted_" + UUID.randomUUID())
+                        .nickname("탈퇴한 사용자"+ i)
+                        .password(passwordEncoder.encode("1234"))
+                        .role(USER)
+                        .email("deleted_" + i + "@test.com")
+                        .apiKey(UUID.randomUUID().toString())
+                        .isDeleted(true)
+                        .deletedDate(LocalDateTime.now())
+                        .build();
+                userRepository.save(siteUser);
+
+                Authentication authentication = Authentication.builder()
+                        .user(siteUser)
+                        .authType(LOCAL)
+                        .lastLogin(LocalDateTime.now().minusMonths(12))
+                        .failedAttempts(0)
+                        .build();
+                authenticationRepository.save(authentication);
             }
         }
     }

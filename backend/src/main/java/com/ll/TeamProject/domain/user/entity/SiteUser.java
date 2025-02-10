@@ -116,6 +116,10 @@ public class SiteUser extends BaseTime {
         this.password = randomPassword;
     }
 
+    public void lockAccount() {
+        this.locked = true;
+    }
+
     public void unlockAccount() {
         this.locked = false;
     }
