@@ -102,9 +102,14 @@ public class SiteUser extends BaseTime {
     public void delete() {
         this.username = "deleted_" + UUID.randomUUID();
         this.email = username + "@deleted.com";
-        changeNickname("탈퇴한 사용자");
+        changeNickname("탈퇴한 사용자_" + username);
         this.isDeleted = true;
         this.deletedDate = LocalDateTime.now();
+    }
+
+    public String getNickname() {
+        if(this.nickname.contains("탈퇴한 사용자")) return "탈퇴한 사용자";
+        return this.nickname;
     }
 
     public boolean isLocked() {

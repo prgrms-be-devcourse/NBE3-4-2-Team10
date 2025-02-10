@@ -70,11 +70,15 @@ public class UserService {
     public void logout(HttpServletRequest request) {
         request.getSession().invalidate();
 
+        deleteLoginCookie();
+
+        SecurityContextHolder.clearContext();
+    }
+
+    private void deleteLoginCookie() {
         userContext.deleteCookie("accessToken");
         userContext.deleteCookie("apiKey");
         userContext.deleteCookie("JSESSIONID");
-
-        SecurityContextHolder.clearContext();
     }
 
     public void processVerification(String username, String email) {
@@ -199,9 +203,10 @@ public class UserService {
 
         long id = (long) payload.get("id");
         String username = (String) payload.get("username");
+        String nickname = (String) payload.get("nickname");
         Role role = (Role) payload.get("role");
 
-        return new SiteUser(id, username, role);
+        return new SiteUser(id, username, nickname, role);
     }
 
     public SiteUser findOrRegisterUser(String username, String email, String providerTypeCode) {
@@ -262,6 +267,7 @@ public class UserService {
         userToDelete.delete();
         userRepository.save(userToDelete);
 
+        deleteLoginCookie();
         return new UserDto(userToDelete);
     }
 
