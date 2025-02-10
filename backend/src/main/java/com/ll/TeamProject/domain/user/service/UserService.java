@@ -70,15 +70,11 @@ public class UserService {
     public void logout(HttpServletRequest request) {
         request.getSession().invalidate();
 
-        deleteLoginCookie();
-
-        SecurityContextHolder.clearContext();
-    }
-
-    private void deleteLoginCookie() {
         userContext.deleteCookie("accessToken");
         userContext.deleteCookie("apiKey");
         userContext.deleteCookie("JSESSIONID");
+
+        SecurityContextHolder.clearContext();
     }
 
     public void processVerification(String username, String email) {
@@ -255,7 +251,7 @@ public class UserService {
         userContext.makeAuthCookies(actor);
     }
 
-    public UserDto delete(long id) {
+    public UserDto delete(long id, HttpServletRequest request) {
         Optional<SiteUser> userOptional = findById(id);
         if (userOptional.isEmpty()) {
             throw new ServiceException("401-1", "존재하지 않는 사용자입니다.");
@@ -267,7 +263,7 @@ public class UserService {
         userToDelete.delete();
         userRepository.save(userToDelete);
 
-        deleteLoginCookie();
+        logout(request);
         return new UserDto(userToDelete);
     }
 
