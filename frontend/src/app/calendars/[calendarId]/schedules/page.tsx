@@ -106,7 +106,7 @@ export default function SchedulePage() {
                         setIsFormVisible(true);
                         setSelectedSchedule(undefined); // 새 일정 추가 시 초기화
                     }}
-                    className="p-2 bg-black text-white rounded-lg"
+                    className="p-2 bg-black text-white font-semibold rounded transition duration-200 hover:bg-gray-700"
                 >
                     새 일정 추가
                 </button>

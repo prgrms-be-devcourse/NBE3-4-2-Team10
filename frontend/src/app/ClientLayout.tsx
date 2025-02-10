@@ -34,10 +34,10 @@ export default function ClientLayout({
   useEffect(() => {
     setIsHydrated(true);
 
-    // ✅ 로그인한 사용자는 /calendars로 자동 이동
-    if (isLogin) {
-      router.push("/calendars");
-    }
+    // 로그인한 사용자는 /calendars로 자동 이동
+    // if (isLogin) {
+    //   router.push("/calendars");
+    // }
   }, [isLogin, router]);
 
   if (!isHydrated) {

@@ -111,7 +111,7 @@ export default function ScheduleForm({ initialData, onSubmit, onCancel, isNew }:
                         {isNew ? '저장' : '수정'}
                     </button>
                     <button type="button" onClick={onCancel}
-                            className="p-2 bg-gray-500 text-white font-bold rounded hover:bg-gray-400">
+                            className="p-2 bg-black text-white font-bold rounded hover:bg-gray-700">
                         취소
                     </button>
                 </div>
