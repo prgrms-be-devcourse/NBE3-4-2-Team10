@@ -39,14 +39,16 @@ export default function SchedulePage() {
         const fetchSchedules = async () => {
             try {
                 const data = await scheduleApi.getSchedules(calendarId, selectedDate);
-                setSchedules(data);
+                setSchedules(data ?? []); // null 또는 undefined일 경우 빈 배열로 대체
             } catch (error) {
-                console.error("Error fetching schedules:", error);
+                console.error("📛 일정 조회 실패:", error);
+                setSchedules([]); // 오류 발생 시 빈 배열로 초기화
             }
         };
 
         fetchSchedules();
     }, [calendarId, selectedDate]);
+
 
     const handleCreateOrUpdateSchedule = async (formData: ScheduleFormData) => {
         if (calendarId === null) return;

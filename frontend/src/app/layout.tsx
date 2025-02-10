@@ -1,29 +1,20 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
-import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
 import { parseAccessToken } from "@/lib/auth/token";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
-config.autoAddCss = false;
-import NaverMapLoader from "@/components/schedule/NaverMapLoader"; // ✅ 추가
+import NaverMapLoader from "@/components/schedule/NaverMapLoader";
 
+config.autoAddCss = false;
 
 // ✅ 폰트 설정 유지
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
-
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist({ variable: "--font-geist-mono", subsets: ["latin"] });
 const pretendard = localFont({
     src: [
         {
@@ -35,35 +26,48 @@ const pretendard = localFont({
     variable: "--font-pretendard",
 });
 
-// ✅ 기존 메타데이터 유지하며, 제목 변경
+// ✅ 메타데이터 설정 (SEO 및 브라우저 제목 적용)
 export const metadata: Metadata = {
     title: "Naver Map Schedule App",
     description: "Naver Map 연동 일정 관리 앱",
 };
 
-export default async function RootLayout({
-                                             children,
-                                         }: {
-    children: React.ReactNode;
-}) {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+    let me: {
+        id?: number;
+        username?: string;
+        nickname?: string;
+        email?: string;
+        createDate?: string;
+        modifyDate?: string;
+    } = {};  // 빈 객체로 초기화 (null 방지)
 
-    const { me, isLogin, isAdmin } = parseAccessToken(accessToken);
+    let isLogin = false;
+    let isAdmin = false;
+
+    try {
+        const cookieStore = await cookies();
+        const accessToken = cookieStore.get("accessToken")?.value ?? null;
+
+        if (accessToken) {
+            const parsedToken = parseAccessToken(accessToken);
+            me = parsedToken.me;
+            isLogin = parsedToken.isLogin;
+            isAdmin = parsedToken.isAdmin;
+        }
+    } catch (error) {
+        console.error("❌ JWT 파싱 오류:", error);
+    }
 
     return (
-        <html lang="en">
+        <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${pretendard.variable}`}>
         <head>
             <meta charSet="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Naver Map Schedule App</title>
         </head>
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        <div
-            className={`${pretendard.className} antialiased flex flex-col min-h-[100dvh]`}
-        >
-            {/* ✅ 네이버 지도 로더 추가 */}
+        <body className="antialiased">
+        <div className="antialiased flex flex-col min-h-[100dvh]">
             <NaverMapLoader>
                 <ClientLayout me={me} isLogin={isLogin} isAdmin={isAdmin}>
                     {children}
