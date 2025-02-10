@@ -2,6 +2,7 @@ package com.ll.TeamProject.domain.schedule.entity;
 
 
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
+import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import com.ll.TeamProject.global.jpa.entity.Location;
 import jakarta.persistence.*;
@@ -15,8 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Schedule extends BaseTime {
-    // BaseTime : id (BaseEntity, no setter), 생성/수정일
+public class Schedule extends BaseTime {  // BaseTime : id (BaseEntity, no setter), 생성/수정일
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id", nullable = false)
@@ -27,6 +27,10 @@ public class Schedule extends BaseTime {
 
     @Column(columnDefinition = "TEXT")
     private String description; // 일정 설명 (메모)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private SiteUser user;
 
     private LocalDateTime startTime; // 일정 시작 시간
 
