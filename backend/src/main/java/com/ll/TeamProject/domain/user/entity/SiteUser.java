@@ -102,7 +102,7 @@ public class SiteUser extends BaseTime {
     public void delete() {
         this.username = "deleted_" + UUID.randomUUID();
         this.email = username + "@deleted.com";
-        changeNickname("탈퇴한 사용자");
+        changeNickname("탈퇴한 사용자_" + username);
         this.isDeleted = true;
         this.deletedDate = LocalDateTime.now();
     }
@@ -114,6 +114,10 @@ public class SiteUser extends BaseTime {
     public void lockAccountAndResetPassword(String randomPassword) {
         this.locked = true;
         this.password = randomPassword;
+    }
+
+    public void lockAccount() {
+        this.locked = true;
     }
 
     public void unlockAccount() {

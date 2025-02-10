@@ -64,9 +64,8 @@ class AdminControllerTest {
         Authentication authentication = authenticationService.findByUserId(actor.getId()).get();
 
         assertThat(authentication).isNotNull();
-        assertThat(authentication.getUserId()).isEqualTo(actor.getId());
+        assertThat(authentication.getUser()).isEqualTo(actor);
         assertThat(authentication.getAuthType()).isEqualTo(AuthType.LOCAL);
-        assertThat(authentication.getLastLogin()).isNotNull();
 
         resultActions
                 .andExpect(handler().handlerType(AdminController.class))

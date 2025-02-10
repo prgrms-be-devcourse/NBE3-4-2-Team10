@@ -37,6 +37,18 @@ public class UserContext {
         resp.addHeader("Set-Cookie", cookie.toString());
     }
 
+    // 쿠기 생성
+    public void setLongCookie(String name, String value) {
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .path("/")
+                .domain("localhost")
+                .httpOnly(true)
+                .maxAge(31536000)
+                .build();
+
+        resp.addHeader("Set-Cookie", cookie.toString());
+    }
+
     // 요청에서 헤더 얻어오기
     public String getHeader(String name) {
         return req.getHeader(name);

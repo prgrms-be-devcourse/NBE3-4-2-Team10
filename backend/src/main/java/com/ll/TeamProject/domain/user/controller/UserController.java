@@ -8,6 +8,7 @@ import com.ll.TeamProject.global.userContext.UserContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,8 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "회원 탈퇴 (soft)")
-    public RsData<UserDto> deleteUser(@PathVariable("id") long id) {
-        UserDto userToDelete = userService.delete(id);
+    public RsData<UserDto> deleteUser(@PathVariable("id") long id, HttpServletRequest request) {
+        UserDto userToDelete = userService.delete(id, request);
 
         return new RsData<>(
                 "200-1", "회원정보가 삭제되었습니다.", userToDelete

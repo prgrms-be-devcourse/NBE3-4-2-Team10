@@ -2,10 +2,7 @@ package com.ll.TeamProject.domain.user.entity;
 
 import com.ll.TeamProject.domain.user.enums.AuthType;
 import com.ll.TeamProject.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,8 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Authentication extends BaseEntity {
     // BaseEntity : id (no setter)
-    @Column
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private SiteUser user;
 
     @Enumerated(EnumType.STRING)
     private AuthType authType;

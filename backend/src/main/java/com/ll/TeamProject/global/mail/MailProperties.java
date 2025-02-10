@@ -3,11 +3,10 @@ package com.ll.TeamProject.global.mail;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
-@Component
+//@Component
 @ConfigurationProperties(prefix = "spring.mail")
 @Getter
 @Setter

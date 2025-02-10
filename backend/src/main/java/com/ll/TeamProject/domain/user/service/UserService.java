@@ -199,9 +199,10 @@ public class UserService {
 
         long id = (long) payload.get("id");
         String username = (String) payload.get("username");
+        String nickname = (String) payload.get("nickname");
         Role role = (Role) payload.get("role");
 
-        return new SiteUser(id, username, role);
+        return new SiteUser(id, username, nickname, role);
     }
 
     public SiteUser findOrRegisterUser(String username, String email, String providerTypeCode) {
@@ -224,7 +225,7 @@ public class UserService {
         AuthType authType = AuthType.valueOf(providerTypeCode);
         Authentication authentication = Authentication
                 .builder()
-                .userId(user.getId())
+                .user(user)
                 .authType(authType)
                 .failedAttempts(0)
                 .build();
@@ -250,7 +251,7 @@ public class UserService {
         userContext.makeAuthCookies(actor);
     }
 
-    public UserDto delete(long id) {
+    public UserDto delete(long id, HttpServletRequest request) {
         Optional<SiteUser> userOptional = findById(id);
         if (userOptional.isEmpty()) {
             throw new ServiceException("401-1", "존재하지 않는 사용자입니다.");
@@ -262,6 +263,7 @@ public class UserService {
         userToDelete.delete();
         userRepository.save(userToDelete);
 
+        logout(request);
         return new UserDto(userToDelete);
     }
 
