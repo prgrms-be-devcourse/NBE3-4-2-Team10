@@ -80,7 +80,7 @@ export const scheduleApi = {
 
     async getScheduleById(calendarId: number, scheduleId: number): Promise<Schedule> {
         try {
-            const response = await axios.get<Schedule>(`${BASE_URL}/${calendarId}/schedules/${scheduleId}`);
+            const response = await axios.get<Schedule>(`${BASE_URL}/${calendarId}/schedules/${scheduleId}`, {withCredentials: true});
             return response.data;
 
         } catch (error) {
