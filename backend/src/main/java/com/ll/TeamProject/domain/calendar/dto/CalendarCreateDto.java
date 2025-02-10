@@ -15,4 +15,8 @@ public class CalendarCreateDto {
         this.name = name;
         this.description = description;
     }
+
+    public CalendarCreateDto() {
+
+    }
 }
