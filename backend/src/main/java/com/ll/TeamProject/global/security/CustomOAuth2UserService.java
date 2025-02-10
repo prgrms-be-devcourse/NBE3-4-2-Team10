@@ -58,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         SiteUser user = userService.findOrRegisterUser(username, email, providerTypeCode);
 
         authenticationService.modifyLastLogin(user);
-        userContext.setCookie("lastLogin", providerTypeCode);
+        userContext.setLongCookie("lastLogin", providerTypeCode);
 
         return new SecurityUser(
                 user.getId(),
