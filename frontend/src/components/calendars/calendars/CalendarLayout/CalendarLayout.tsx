@@ -1,5 +1,3 @@
-// src/components/calendar/calendar/CalendarLayout/CalendarLayout.tsx
-"use client";
 import React, { useState, useEffect } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { CalendarSidebar } from '../CalendarSidebar';
@@ -7,6 +5,7 @@ import { RightSidebar } from '../CalendarRightSidebar';
 import { CalendarView } from '../CalendarView';
 import { useCalendar } from '@/lib/calendars/hooks/useCalendar';
 import type { Calendar } from '@/lib/calendars/types/calendarTypes';
+import './CalendarLayout.css';
 
 export const CalendarLayout = () => {
   const { calendars, loading, error, createCalendar, updateCalendar, deleteCalendar, fetchCalendars } = useCalendar();
@@ -20,7 +19,7 @@ export const CalendarLayout = () => {
 
     try {
       const newCalendar = await createCalendar({ name, description });
-      await fetchCalendars(); // 목록 새로고침
+      await fetchCalendars();
       setSelectedCalendar(newCalendar);
       alert('캘린더가 생성되었습니다.');
     } catch (error) {
@@ -45,7 +44,7 @@ export const CalendarLayout = () => {
         name,
         description: description || ''
       });
-      await fetchCalendars(); // 목록 새로고침
+      await fetchCalendars();
       setSelectedCalendar(updatedCalendar);
       alert('캘린더가 수정되었습니다.');
     } catch (error) {
@@ -64,7 +63,7 @@ export const CalendarLayout = () => {
 
     try {
       await deleteCalendar(selectedCalendar.id);
-      await fetchCalendars(); // 목록 새로고침
+      await fetchCalendars();
       setSelectedCalendar(null);
       alert('캘린더가 삭제되었습니다.');
     } catch (error) {
@@ -78,13 +77,11 @@ export const CalendarLayout = () => {
       alert('먼저 캘린더를 만들어보세요!');
       return;
     }
-    // 현재 선택된 캘린더가 없다면 첫 번째 캘린더 선택
     if (!selectedCalendar && calendars.length > 0) {
       setSelectedCalendar(calendars[0]);
     }
   };
 
-  // 컴포넌트 마운트 시 캘린더 목록 새로고침
   useEffect(() => {
     fetchCalendars();
   }, []);
@@ -98,38 +95,40 @@ export const CalendarLayout = () => {
   }
 
   return (
-      <PanelGroup direction="horizontal" className="min-h-screen">
-        <Panel defaultSize={15} minSize={10} maxSize={30}>
-          <CalendarSidebar
-              onCreateClick={handleCreateCalendar}
-              onUpdateClick={handleUpdateCalendar}
-              onDeleteClick={handleDeleteCalendar}
-              onViewClick={handleViewCalendar}
-              selectedCalendar={selectedCalendar}
-              calendars={calendars}
-              onCalendarSelect={setSelectedCalendar}
-          />
-        </Panel>
+      <div className="calendar-layout">
+        <PanelGroup direction="horizontal">
+          <Panel className="left-panel" defaultSize={15} minSize={10} maxSize={30}>
+            <CalendarSidebar
+                onCreateClick={handleCreateCalendar}
+                onUpdateClick={handleUpdateCalendar}
+                onDeleteClick={handleDeleteCalendar}
+                onViewClick={handleViewCalendar}
+                selectedCalendar={selectedCalendar}
+                calendars={calendars}
+                onCalendarSelect={setSelectedCalendar}
+            />
+          </Panel>
 
-        <PanelResizeHandle className="w-1.5 hover:bg-blue-200 transition-colors">
-          <div className="w-full h-full bg-gray-300" />
-        </PanelResizeHandle>
+          <PanelResizeHandle className="resize-handle">
+            <div className="handle-bar" />
+          </PanelResizeHandle>
 
-        <Panel>
-          <CalendarView
-              calendars={calendars}
-              selectedCalendar={selectedCalendar}
-              onCalendarSelect={setSelectedCalendar}
-          />
-        </Panel>
+          <Panel className="main-panel">
+            <CalendarView
+                calendars={calendars}
+                selectedCalendar={selectedCalendar}
+                onCalendarSelect={setSelectedCalendar}
+            />
+          </Panel>
 
-        <PanelResizeHandle className="w-1.5 hover:bg-blue-200 transition-colors">
-          <div className="w-full h-full bg-gray-300" />
-        </PanelResizeHandle>
+          <PanelResizeHandle className="resize-handle">
+            <div className="handle-bar" />
+          </PanelResizeHandle>
 
-        <Panel defaultSize={15} minSize={10} maxSize={30}>
-          <RightSidebar />
-        </Panel>
-      </PanelGroup>
+          <Panel className="right-panel" defaultSize={15} minSize={10} maxSize={30}>
+            <RightSidebar />
+          </Panel>
+        </PanelGroup>
+      </div>
   );
 };

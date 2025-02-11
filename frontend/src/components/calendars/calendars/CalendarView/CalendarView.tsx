@@ -8,6 +8,7 @@ import { EventClickArg } from "@fullcalendar/core";
 import { scheduleApi } from "@/lib/schedule/api/scheduleApi";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
+import './CalendarView.css';
 
 interface CalendarViewProps {
     calendars: Calendar[];
@@ -34,17 +35,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     today
                 );
 
-                const formattedEvents = fetchedSchedules
-                    .map(schedule => ({
-                        id: String(schedule.id),
-                        title: schedule.title,
-                        start: schedule.startTime,
-                        end: schedule.endTime,
-                        description: schedule.description,
-                        allDay: false // ✅ 시간을 유지하면서 정렬 가능하도록 설정
-                    }));
+                const formattedEvents = fetchedSchedules.map(schedule => ({
+                    id: String(schedule.id),
+                    title: schedule.title,
+                    start: schedule.startTime,
+                    end: schedule.endTime,
+                    description: schedule.description,
+                    allDay: false,
+                }));
 
-                formattedEvents.sort((a, b) => dayjs(b.start).valueOf() - dayjs(a.start).valueOf()); // ⏳ 가장 늦은 일정이 위로 정렬됨
+                formattedEvents.sort((a, b) => dayjs(b.start).valueOf() - dayjs(a.start).valueOf());
 
                 setEvents(formattedEvents);
             } catch (error) {
@@ -56,11 +56,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }, [selectedCalendar]);
 
     const handleEventClick = (clickInfo: EventClickArg) => {
-        const calendar = calendars.find(cal => String(cal.id) === clickInfo.event.id);
-        if (calendar) {
-            onCalendarSelect(calendar);
+        if (selectedCalendar) {
+            router.push(`/calendars/${selectedCalendar.id}/schedules/${clickInfo.event.id}`);
+        } else {
+            console.error("📛 선택된 캘린더가 없습니다.");
         }
     };
+
+    if (!selectedCalendar) {
+        return (
+            <div className="empty-state">
+                <p className="empty-state-title">새로운 캘린더를 만들어보세요!</p>
+                <p className="empty-state-description">
+                    좌측 메뉴에서 + NEW CALENDAR을 통해 새로운 캘린더를 만들어보세요!
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full h-full bg-white relative">
@@ -73,7 +85,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         center: "title",
                         right: "dayGridMonth,dayGridWeek",
                     }}
-                    events={events} // ✅ 백엔드에서 불러온 일정 표시
+                    events={events}
                     eventClick={handleEventClick}
                     selectable={true}
                     handleWindowResize={true}
@@ -84,10 +96,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     dayMaxEventRows={true}
                     fixedWeekCount={false}
                     dayCellClassNames="min-h-[100px] p-2"
-                    eventDisplay="block" // ✅ 일정에 시간 숨기기
+                    eventDisplay="block"
                     eventContent={(eventInfo) => (
-                        <div className="truncate font-medium text-sm">{eventInfo.event.title}</div>
-                    )} // ✅ 제목만 보이도록 설정
+                        <div className="truncate font-bold text-sm cursor-pointer text-blue-100 hover:bg-blue-400 p-1 rounded">
+                            {eventInfo.event.title}
+                        </div>
+                    )}
                     buttonText={{
                         today: 'TODAY',
                         month: 'M',
@@ -108,19 +122,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     }}
                 />
             </div>
-            <button
-                onClick={() => {
-                    if (selectedCalendar) {
-                        router.push(`/calendars/${selectedCalendar.id}/schedules`);
-                    } else {
-                        console.error("📛 선택된 캘린더가 없습니다.");
-                    }
-                }}
-                className="absolute bottom-4 right-4 bg-black text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700"
-            >
-                일정 페이지 이동
-            </button>
-
+            <div className="px-4" style={{ marginBottom: '110px'}}>
+                <button
+                    onClick={() => {
+                        if (selectedCalendar) {
+                            router.push(`/calendars/${selectedCalendar.id}/schedules`);
+                        } else {
+                            console.error("📛 선택된 캘린더가 없습니다.");
+                        }
+                    }}
+                    className="absolute bottom-40 right-4 bg-white text-black py-2 px-4 rounded-lg shadow-md hover:bg-blue-100"
+                >
+                    MAKE SCHEDULE
+                </button>
+            </div>
         </div>
     );
 };
