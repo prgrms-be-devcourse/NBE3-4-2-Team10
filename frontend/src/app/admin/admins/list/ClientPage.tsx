@@ -26,7 +26,7 @@ export default function ClientPage({
   const handleUnlock = async (id: number) => {
     if (!confirm("관리자 잠금을 해제하겠습니까?")) return;
 
-    const response = await client.PATCH(`/admin/admins/{id}`, {
+    const response = await client.PATCH(`/api/admin/admins/{id}`, {
       params: { path: { id: id!! } },
     });
 

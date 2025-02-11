@@ -45,7 +45,7 @@ export default function ClientLayout({
   }
 
   const logout = async () => {
-    const response = await client.DELETE("/admin/logout");
+    const response = await client.DELETE("/api/admin/logout");
 
     if (response.error) {
       alert(response.error.msg);

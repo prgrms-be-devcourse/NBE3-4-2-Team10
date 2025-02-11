@@ -48,7 +48,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user": {
+    "/api/user": {
         parameters: {
             query?: never;
             header?: never;
@@ -105,7 +105,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/verification-codes": {
+    "/api/admin/verification-codes": {
         parameters: {
             query?: never;
             header?: never;
@@ -122,7 +122,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/verification-codes/verify": {
+    "/api/admin/verification-codes/verify": {
         parameters: {
             query?: never;
             header?: never;
@@ -139,7 +139,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/login": {
+    "/api/admin/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -156,7 +156,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/{username}/password": {
+    "/api/admin/{username}/password": {
         parameters: {
             query?: never;
             header?: never;
@@ -173,7 +173,7 @@ export interface paths {
         patch: operations["changePassword"];
         trace?: never;
     };
-    "/admin/admins/{id}": {
+    "/api/admin/admins/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -190,7 +190,7 @@ export interface paths {
         patch: operations["unlockAdmins"];
         trace?: never;
     };
-    "/user/me": {
+    "/api/user/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -267,7 +267,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/users": {
+    "/api/admin/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -284,7 +284,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/admins": {
+    "/api/admin/admins": {
         parameters: {
             query?: never;
             header?: never;
@@ -301,7 +301,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/{id}": {
+    "/api/user/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -318,7 +318,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/logout": {
+    "/api/admin/logout": {
         parameters: {
             query?: never;
             header?: never;
