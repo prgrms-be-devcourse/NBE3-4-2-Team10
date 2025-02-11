@@ -1,10 +1,13 @@
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import type { Calendar } from '@/lib/calendars/types/calendarTypes';
-import { DateSelectArg, EventClickArg } from '@fullcalendar/core';
+"use client";
+import React, { useEffect, useState } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import type { Calendar } from "@/lib/calendars/types/calendarTypes";
+import { EventClickArg } from "@fullcalendar/core";
+import { scheduleApi } from "@/lib/schedule/api/scheduleApi";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import './CalendarView.css';
 
 interface CalendarViewProps {
@@ -18,33 +21,46 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                                               selectedCalendar,
                                                               onCalendarSelect,
                                                           }) => {
+    const [events, setEvents] = useState<any[]>([]);
     const router = useRouter();
 
-    const handleEventClick = (clickInfo: EventClickArg) => {
-        const calendar = calendars.find(cal => String(cal.id) === clickInfo.event.id);
-        if (calendar) {
-            onCalendarSelect(calendar);
-        }
-    };
+    useEffect(() => {
+        if (!selectedCalendar) return;
 
-    const handleDateSelect = async (selectInfo: DateSelectArg) => {
-        if (!selectedCalendar) {
-            alert('먼저 캘린더를 선택해주세요.');
-            return;
-        }
+        const fetchSchedules = async () => {
+            try {
+                const today = dayjs().format("YYYY-MM-DD");
+                const fetchedSchedules = await scheduleApi.getMonthlySchedules(
+                    selectedCalendar.id,
+                    today
+                );
 
-        const title = prompt('일정 제목을 입력해주세요!');
-        if (!title) return;
+                const formattedEvents = fetchedSchedules.map(schedule => ({
+                    id: String(schedule.id),
+                    title: schedule.title,
+                    start: schedule.startTime,
+                    end: schedule.endTime,
+                    description: schedule.description,
+                    allDay: false,
+                }));
 
-        let calendarApi = selectInfo.view.calendar;
-        let newEvent = {
-            id: String(new Date().getTime()),
-            title: title,
-            start: selectInfo.startStr,
-            allDay: true,
+                formattedEvents.sort((a, b) => dayjs(b.start).valueOf() - dayjs(a.start).valueOf());
+
+                setEvents(formattedEvents);
+            } catch (error) {
+                console.error("📛 일정 불러오기 실패:", error);
+            }
         };
 
-        calendarApi.addEvent(newEvent);
+        fetchSchedules();
+    }, [selectedCalendar]);
+
+    const handleEventClick = (clickInfo: EventClickArg) => {
+        if (selectedCalendar) {
+            router.push(`/calendars/${selectedCalendar.id}/schedules/${clickInfo.event.id}`);
+        } else {
+            console.error("📛 선택된 캘린더가 없습니다.");
+        }
     };
 
     if (!selectedCalendar) {
@@ -59,8 +75,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
 
     return (
-        <div className="calendar-view flex flex-col h-full">
-            <div className="relative flex-grow" style={{ marginBottom: '0px' }}>
+        <div className="w-full h-full bg-white relative">
+            <div className="h-full p-4">
                 <FullCalendar
                     plugins={[dayGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
@@ -69,15 +85,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         center: "title",
                         right: "dayGridMonth,dayGridWeek",
                     }}
-                    events={[{
-                        id: String(selectedCalendar.id),
-                        title: selectedCalendar.name,
-                        description: selectedCalendar.description,
-                        allDay: true
-                    }]}
-                    selectable={true}
-                    select={handleDateSelect}
+                    events={events}
                     eventClick={handleEventClick}
+                    selectable={true}
                     handleWindowResize={true}
                     dayCellContent={(e) => e.dayNumberText}
                     height="100%"
@@ -86,6 +96,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     dayMaxEventRows={true}
                     fixedWeekCount={false}
                     dayCellClassNames="min-h-[100px] p-2"
+                    eventDisplay="block"
+                    eventContent={(eventInfo) => (
+                        <div className="truncate font-medium text-sm cursor-pointer text-white hover:bg-gray-500 p-1 rounded">
+                            {eventInfo.event.title}
+                        </div>
+                    )}
                     buttonText={{
                         today: 'TODAY',
                         month: 'M',
@@ -106,7 +122,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     }}
                 />
             </div>
-            <div className="px-4" style={{ marginBottom: '310px'}}>
+            <div className="px-4" style={{ marginBottom: '110px'}}>
                 <button
                     onClick={() => {
                         if (selectedCalendar) {
@@ -115,9 +131,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                             console.error("📛 선택된 캘린더가 없습니다.");
                         }
                     }}
-                    className="float-right bg-black text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700"
+                    className="absolute bottom-40 right-4 bg-white text-black py-2 px-4 rounded-lg shadow-md hover:bg-blue-100"
                 >
-                    일정 페이지 이동
+                    MAKE SCHEDULE
                 </button>
             </div>
         </div>
