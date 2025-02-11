@@ -5,14 +5,15 @@
 }
 
 .resize-handle {
-    width: 4px;
+    width: 2px;
     background-color: #f1f3f4;
     cursor: col-resize;
     transition: background-color 0.2s;
 }
 
 .resize-handle:hover {
-    background-color: #e8eaed;
+    width: 4px;
+    background-color: rgba(31, 32, 35, 0.11);
 }
 
 .panel-container {
