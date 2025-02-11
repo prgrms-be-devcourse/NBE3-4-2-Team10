@@ -54,26 +54,28 @@ public class BaseInitData {
     public void makeSampleUsers() {
         // 관리자 계정 만들기
         if (userRepository.count() == 0) {
-            SiteUser admin = SiteUser
-                    .builder()
-                    .username("admin")
-                    .nickname("관리자")
-                    .password(passwordEncoder.encode("admin"))
-                    .role(ADMIN)
-                    .email("test@test.com")
-                    .apiKey(UUID.randomUUID().toString())
-                    .locked(false)
-                    .build();
-            admin = userRepository.save(admin);
+            for(int i = 1 ; i <= 2 ; i++) {
+                SiteUser admin = SiteUser
+                        .builder()
+                        .username("admin" + i)
+                        .nickname("관리자" + i)
+                        .password(passwordEncoder.encode("admin" + i))
+                        .role(ADMIN)
+                        .email("test"  + i + "@test.com")
+                        .apiKey(UUID.randomUUID().toString())
+                        .locked(false)
+                        .build();
+                admin = userRepository.save(admin);
 
-            Authentication authentication = Authentication
-                    .builder()
-                    .user(admin)
-                    .authType(LOCAL)
-                    .failedAttempts(0)
-                    .build();
+                Authentication authentication = Authentication
+                        .builder()
+                        .user(admin)
+                        .authType(LOCAL)
+                        .failedAttempts(0)
+                        .build();
 
-            authenticationRepository.save(authentication);
+                authenticationRepository.save(authentication);
+            }
 
             for (int i = 1; i <= 13; i++) {
                 SiteUser user = SiteUser.builder()
@@ -149,7 +151,7 @@ public class BaseInitData {
 
     @Transactional
     public void makeDormantUsers() {
-        if (userRepository.count() < 15) {
+        if (userRepository.count() < 16) {
             List<Integer> loginMonths = List.of(11, 12, 17, 18);
 
             for (int monthsAgo : loginMonths) {

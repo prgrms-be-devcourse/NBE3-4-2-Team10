@@ -47,7 +47,7 @@ function parseAccessToken(accessToken: string | undefined) {
 }
 
 async function refreshTokens(cookieStore: ReadonlyRequestCookies) {
-  const meResponse = await client.GET("/user/me", {
+  const meResponse = await client.GET("/api/user/me", {
     headers: {
       cookie: cookieStore.toString(),
     },

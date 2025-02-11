@@ -116,7 +116,7 @@ export default function MapPopup({ onSelectLocation, onClose }: MapPopupProps) {
                     >
                         저장
                     </button>
-                    <button onClick={onClose} className="p-2 bg-gray-500 text-white rounded hover:bg-gray-700">
+                    <button onClick={onClose} className="p-2 bg-black text-white rounded hover:bg-gray-800">
                         닫기
                     </button>
                 </div>

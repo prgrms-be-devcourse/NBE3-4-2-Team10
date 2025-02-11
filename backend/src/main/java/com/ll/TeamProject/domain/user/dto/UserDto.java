@@ -10,7 +10,8 @@ public record UserDto(
         String nickname,
         String email,
         LocalDateTime createDate,
-        LocalDateTime modifyDate
+        LocalDateTime modifyDate,
+        boolean locked
 ) {
     public UserDto(SiteUser user) {
         this(
@@ -19,7 +20,8 @@ public record UserDto(
                 user.getNickname(),
                 user.getEmail(),
                 user.getCreateDate(),
-                user.getModifyDate()
+                user.getModifyDate(),
+                user.isLocked()
         );
     }
 }

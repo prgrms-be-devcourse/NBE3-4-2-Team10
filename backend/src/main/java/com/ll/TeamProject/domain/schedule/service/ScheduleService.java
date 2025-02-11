@@ -31,7 +31,7 @@ public class ScheduleService {
     // 일정 생성
     public ScheduleResponseDto createSchedule(Long calendarId, ScheduleRequestDto scheduleRequestDto, SiteUser user) {
         Calendar calendar = validateCalendarOwner(calendarId, user);
-        validateScheduleForCreation(calendarId, scheduleRequestDto.startTime(), scheduleRequestDto.endTime());
+//        validateScheduleForCreation(calendarId, scheduleRequestDto.startTime(), scheduleRequestDto.endTime());
 
         Schedule schedule = new Schedule(
                 calendar,
@@ -59,7 +59,7 @@ public class ScheduleService {
             throw new ServiceException("403", "일정을 수정할 권한이 없습니다.");
         }
 
-        validateScheduleForUpdate(calendarId, scheduleRequestDto.startTime(), scheduleRequestDto.endTime(), scheduleId);
+//        validateScheduleForUpdate(calendarId, scheduleRequestDto.startTime(), scheduleRequestDto.endTime(), scheduleId);
         schedule.update(scheduleRequestDto.title(), scheduleRequestDto.description(), scheduleRequestDto.startTime(), scheduleRequestDto.endTime(), scheduleRequestDto.location());
         return mapToDto(schedule);
     }
@@ -156,24 +156,24 @@ public class ScheduleService {
                 .orElseThrow(() -> new ServiceException("404", "해당 일정을 찾을 수 없습니다."));
     }
 
-    // 일정 생성 시 충돌 검사
-    private void validateScheduleForCreation(Long calendarId, LocalDateTime startTime, LocalDateTime endTime) {
-        List<Schedule> overlappingSchedules = scheduleRepository.findOverlappingSchedules(calendarId, startTime, endTime);
-        if (!overlappingSchedules.isEmpty()) {
-            throw new ServiceException("400", "해당 시간에 이미 일정이 존재합니다.");
-        }
-    }
-
-    // 일정 수정 시 충돌 검사
-    private void validateScheduleForUpdate(Long calendarId, LocalDateTime startTime, LocalDateTime endTime, Long scheduleId) {
-        List<Schedule> overlappingSchedules = scheduleRepository.findOverlappingSchedules(calendarId, startTime, endTime);
-        boolean hasConflict = overlappingSchedules.stream()
-                .anyMatch(schedule -> !schedule.getId().equals(scheduleId));
-
-        if (hasConflict) {
-            throw new ServiceException("400", "해당 시간에 이미 일정이 존재합니다.");
-        }
-    }
+//    // 일정 생성 시 충돌 검사
+//    private void validateScheduleForCreation(Long calendarId, LocalDateTime startTime, LocalDateTime endTime) {
+//        List<Schedule> overlappingSchedules = scheduleRepository.findOverlappingSchedules(calendarId, startTime, endTime);
+//        if (!overlappingSchedules.isEmpty()) {
+//            throw new ServiceException("400", "해당 시간에 이미 일정이 존재합니다.");
+//        }
+//    }
+//
+//    // 일정 수정 시 충돌 검사
+//    private void validateScheduleForUpdate(Long calendarId, LocalDateTime startTime, LocalDateTime endTime, Long scheduleId) {
+//        List<Schedule> overlappingSchedules = scheduleRepository.findOverlappingSchedules(calendarId, startTime, endTime);
+//        boolean hasConflict = overlappingSchedules.stream()
+//                .anyMatch(schedule -> !schedule.getId().equals(scheduleId));
+//
+//        if (hasConflict) {
+//            throw new ServiceException("400", "해당 시간에 이미 일정이 존재합니다.");
+//        }
+//    }
 
     // DTO 변환
     private ScheduleResponseDto mapToDto(Schedule schedule) {

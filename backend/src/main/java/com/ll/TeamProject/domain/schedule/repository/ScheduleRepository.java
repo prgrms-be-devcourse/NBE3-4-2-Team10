@@ -21,9 +21,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                                             @Param("endTime") LocalDateTime endTime);
 
 
-    // 특정 캘린더 내 일정 조회 (기존 쿼리에서 calendarId 추가)
+    // 특정 캘린더 내 일정 조회
     @Query("SELECT s FROM Schedule s WHERE s.calendar.id = :calendarId AND " +
-            "s.startTime >= :startDate AND s.endTime <= :endDate")
+            "(s.startTime < :endDate AND s.endTime > :startDate)")
     List<Schedule> findSchedulesByCalendarAndDateRange(@Param("calendarId") Long calendarId,
                                                        @Param("startDate") LocalDateTime startDate,
                                                        @Param("endDate") LocalDateTime endDate);
