@@ -24,7 +24,7 @@ export default function ClientPage() {
       return;
     }
 
-    const response = await client.POST("/admin/login", {
+    const response = await client.POST("/api/admin/login", {
       body: {
         username: form.username.value,
         password: form.password.value,
@@ -33,8 +33,11 @@ export default function ClientPage() {
 
     if (response.error) {
       alert(response.error.msg);
-      if (response.error.resultCode === "403-2" && response.error.msg === "계정이 잠겨있습니다.") {
-        window.location.replace("/login/adminVerification");  // 인증번호 페이지로 이동
+      if (
+        response.error.resultCode === "403-2" &&
+        response.error.msg === "계정이 잠겨있습니다."
+      ) {
+        window.location.replace("/login/adminVerification"); // 인증번호 페이지로 이동
         return;
       }
       return;

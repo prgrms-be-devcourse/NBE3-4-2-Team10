@@ -126,6 +126,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void unlockAccount(Long id) {
+        SiteUser user = findById(id).get();
+        user.unlockAccount();
+        userRepository.save(user);
+    }
+
     private boolean isVerificationCodeValid(String verificationCode) {
         String code = redisTemplate.opsForValue().get("verificationCode:");
         return code.equals(verificationCode);
@@ -163,24 +169,23 @@ public class UserService {
             String searchKeywordType,
             String searchKeyword,
             int page,
-            int pageSize
+            int pageSize,
+            Role role
     ) {
-
         if (page < 1) throw new ServiceException("400-1", "페이지 번호는 1 이상이어야 합니다.");
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
-        if (searchKeyword.isBlank()) return findUsersNoKeyword(page, pageSize);
+        if (searchKeyword.isBlank()) return findUsersNoKeyword(pageRequest, role);
         searchKeyword = "%" + searchKeyword + "%";
 
         return switch (searchKeywordType) {
             case "email" ->
-                    userRepository.findByRoleAndEmailLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
-            default -> userRepository.findByRoleAndUsernameLikeAndIsDeletedFalse(Role.USER, searchKeyword, pageRequest);
+                    userRepository.findByRoleAndEmailLikeAndIsDeletedFalse(role, searchKeyword, pageRequest);
+            default -> userRepository.findByRoleAndUsernameLikeAndIsDeletedFalse(role, searchKeyword, pageRequest);
         };
     }
 
-    public Page<SiteUser> findUsersNoKeyword(int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
-        return userRepository.findByRoleNot(Role.ADMIN, pageRequest);
+    public Page<SiteUser> findUsersNoKeyword(PageRequest pageRequest, Role role) {
+        return userRepository.findByRoleAndIsDeletedFalse(role, pageRequest);
     }
 
     public String genAccessToken(SiteUser user) {

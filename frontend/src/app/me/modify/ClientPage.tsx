@@ -21,7 +21,7 @@ export default function ClientPage({
       return;
     }
 
-    const response = await client.POST("/user", {
+    const response = await client.POST("/api/user", {
       body: {
         nickname: form.nickname.value,
       },

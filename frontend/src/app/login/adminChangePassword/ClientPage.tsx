@@ -9,7 +9,7 @@ export default function ChangePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
-  const username = searchParams.get("username");
+  const username = searchParams!!.get("username");
 
   useEffect(() => {
     if (!username) {
@@ -32,9 +32,9 @@ export default function ChangePasswordPage() {
     }
 
     try {
-      // 경로에 username 파라미터를 직접 삽입
-      const response = await client.PATCH(`/admin/${username}/password`, {
+      const response = await client.PATCH(`/api/admin/{username}/password`, {
         body: { password },
+        params: { path: { username: username!! } },
       });
 
       if (response.error) {

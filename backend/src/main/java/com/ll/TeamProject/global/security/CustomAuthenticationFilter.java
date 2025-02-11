@@ -29,13 +29,12 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (!request.getRequestURI().startsWith("/admin") && !request.getRequestURI().startsWith("/user")&&
-                !request.getRequestURI().startsWith("/api")) {
+        if (!request.getRequestURI().startsWith("/api")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (List.of("/admin/login", "/admin/logout").contains(request.getRequestURI())) {
+        if (List.of("/api/admin/login", "/api/admin/logout").contains(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }

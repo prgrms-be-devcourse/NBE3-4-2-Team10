@@ -92,15 +92,16 @@ class UserServiceTest {
         String searchKeyword = "";
         int page = 1;
         int pageSize = 10;
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
 
         UserService spyService = spy(userService);
-        doReturn(mockPage).when(spyService).findUsersNoKeyword(page, pageSize);
+        doReturn(mockPage).when(spyService).findUsersNoKeyword(pageRequest, Role.USER);
 
         // when
-        spyService.findUsers(searchKeywordType, searchKeyword, page, pageSize);
+        spyService.findUsers(searchKeywordType, searchKeyword, page, pageSize, Role.USER);
 
         // then
-        verify(spyService).findUsersNoKeyword(page, pageSize);
+        verify(spyService).findUsersNoKeyword(pageRequest, Role.USER);
     }
 
     @Test
@@ -117,7 +118,7 @@ class UserServiceTest {
                 .thenReturn(mockPage);
 
         // when
-        userService.findUsers(searchKeywordType, searchKeyword, page, pageSize);
+        userService.findUsers(searchKeywordType, searchKeyword, page, pageSize, Role.USER);
 
         // then
         verify(userRepository)
@@ -138,7 +139,7 @@ class UserServiceTest {
                 .thenReturn(mockPage);
 
         // when
-        userService.findUsers(searchKeywordType, searchKeyword, page, pageSize);
+        userService.findUsers(searchKeywordType, searchKeyword, page, pageSize, Role.USER);
 
         // then
         verify(userRepository)
@@ -156,7 +157,7 @@ class UserServiceTest {
 
         // when & then
         ServiceException exception = assertThrows(ServiceException.class,
-                () -> userService.findUsers(searchKeywordType, searchKeyword, page, pageSize));
+                () -> userService.findUsers(searchKeywordType, searchKeyword, page, pageSize, Role.USER));
 
         assertEquals("400-1", exception.getResultCode());
         assertEquals("페이지 번호는 1 이상이어야 합니다.", exception.getMsg());

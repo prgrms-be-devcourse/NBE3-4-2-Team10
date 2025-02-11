@@ -45,7 +45,7 @@ export default function ClientLayout({
   }
 
   const logout = async () => {
-    const response = await client.DELETE("/admin/logout");
+    const response = await client.DELETE("/api/admin/logout");
 
     if (response.error) {
       alert(response.error.msg);
@@ -76,12 +76,20 @@ export default function ClientLayout({
             </button>
           )}
           {isAdmin && (
-            <Link href="/admin/list">
+            <Link href="/admin/users/list">
               <FontAwesomeIcon icon={faList} className="px-2" />
-              관리자
+              회원 명단
             </Link>
           )}
+          {isAdmin && (
+            <Link href="/admin/admins/list">
+              <FontAwesomeIcon icon={faList} className="px-2" />
+              관리자 명단
+            </Link>
+          )}
+
           <div className="flex-grow"></div>
+
           {isLogin && (
             <Link href="/calendars">
               <FontAwesomeIcon icon={faCalendar} className="px-2" />

@@ -24,7 +24,7 @@ export default function ClientPage({
       return;
     }
 
-    const response = await client.DELETE("/user/{id}", {
+    const response = await client.DELETE("/api/user/{id}", {
       params: { path: { id: me.id!! } },
     });
 
