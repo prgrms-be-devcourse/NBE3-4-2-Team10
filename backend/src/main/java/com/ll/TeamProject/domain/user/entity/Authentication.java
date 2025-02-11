@@ -2,10 +2,7 @@ package com.ll.TeamProject.domain.user.entity;
 
 import com.ll.TeamProject.domain.user.enums.AuthType;
 import com.ll.TeamProject.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,32 +17,29 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Authentication extends BaseEntity {
     // BaseEntity : id (no setter)
-    @Column
-    private Long userId; // 사용자 ID
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private SiteUser user;
 
     @Enumerated(EnumType.STRING)
-    private AuthType authType; // 인증 유형
+    private AuthType authType;
 
     @Column
-    private LocalDateTime lastLogin; // 마지막 로그인 시간
+    private LocalDateTime lastLogin;
 
     @Column
-    private int failedAttempts; // 실패한 로그인 시도 횟수
+    private int failedAttempts;
 
     @Column
-    private boolean isLocked; // 계정 잠금 여부
+    private boolean isLocked;
 
     public void setLastLogin() {
         this.lastLogin = LocalDateTime.now();
     }
 
-    public int failedLogin(int attempts) {
-        this.failedAttempts = attempts;
+    public int failedLogin() {
+        this.failedAttempts = this.failedAttempts + 1;
         return failedAttempts;
-    }
-
-    public void lockAccount() {
-        this.isLocked = true;
     }
 
     public void resetFailedAttempts() {

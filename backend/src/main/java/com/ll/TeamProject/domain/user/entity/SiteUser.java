@@ -28,27 +28,32 @@ public class SiteUser extends BaseTime {
     // BaseTime : id (BaseEntity, no setter), 생성/수정일
 
     @Column(unique = true)
-    private String username; // 사용자 이름
+    private String username;
 
     @Column(unique = true)
     private String nickname;
 
     @Column
-    private String password; // 암호화된 비밀번호
+    private String password;
 
     @Column(unique = true)
-    private String email; // 이메일 주소
+    private String email;
 
     @Column
     @Enumerated(EnumType.STRING)
-    private Role role; // 사용자 역할 (관리자/일반 사용자)
+    private Role role;
 
     @Column(unique = true)
     private String apiKey;
 
+    @Column
     private boolean isDeleted;
 
+    @Column
     private LocalDateTime deletedDate;
+
+    @Column
+    private boolean locked;
 
     public SiteUser(long id, String username, String nickname, Role role) {
         super();
@@ -94,13 +99,32 @@ public class SiteUser extends BaseTime {
         this.nickname = newNickname;
     }
 
-    public void deleteUsernameEmail() {
+    public void delete() {
         this.username = "deleted_" + UUID.randomUUID();
         this.email = username + "@deleted.com";
+        changeNickname("탈퇴한 사용자_" + username);
+        this.isDeleted = true;
+        this.deletedDate = LocalDateTime.now();
     }
 
-    public void delete(boolean changed) {
-        this.isDeleted = changed;
-        this.deletedDate = LocalDateTime.now();
+    public boolean isLocked() {
+        return this.locked;
+    }
+
+    public void lockAccountAndResetPassword(String randomPassword) {
+        this.locked = true;
+        this.password = randomPassword;
+    }
+
+    public void lockAccount() {
+        this.locked = true;
+    }
+
+    public void unlockAccount() {
+        this.locked = false;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
     }
 }
