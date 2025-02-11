@@ -9,6 +9,7 @@ import { scheduleApi } from "@/lib/schedule/api/scheduleApi";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import './CalendarView.css';
+import {PlusIcon} from "@heroicons/react/24/outline";
 
 interface CalendarViewProps {
     calendars: Calendar[];
@@ -17,9 +18,7 @@ interface CalendarViewProps {
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
-                                                              calendars,
                                                               selectedCalendar,
-                                                              onCalendarSelect,
                                                           }) => {
     const [events, setEvents] = useState<any[]>([]);
     const router = useRouter();
@@ -77,6 +76,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     return (
         <div className="w-full h-full bg-white relative">
             <div className="h-full p-4">
+                <div className="flex">
+                    <div className="flex-grow"></div>
+                    <button
+                        onClick={() => {
+                            if (selectedCalendar) {
+                                router.push(`/calendars/${selectedCalendar.id}/schedules`);
+                            } else {
+                                console.error("📛 선택된 캘린더가 없습니다.");
+                            }
+                        }}
+                        className="flex items-center gap-2 bg-white text-gray-700 py-3 px-3 transition-all hover:bg-[#f6fafe] hover:shadow-[0_1px_3px_0_rgba(60,64,67,0.302)]"
+                    >
+                        <PlusIcon className="w-5 h-5"/>
+                        <span className="text-sm font-semibold tracking-wide">NEW SCHEDULE</span>
+                    </button>
+                </div>
                 <FullCalendar
                     plugins={[dayGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
@@ -98,7 +113,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     dayCellClassNames="min-h-[100px] p-2"
                     eventDisplay="block"
                     eventContent={(eventInfo) => (
-                        <div className="truncate font-bold text-sm cursor-pointer text-blue-100 hover:bg-blue-400 p-1 rounded">
+                        <div
+                            className="truncate font-bold text-sm cursor-pointer text-white hover:bg-blue-400 p-1 rounded">
                             {eventInfo.event.title}
                         </div>
                     )}
@@ -113,29 +129,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     }}
                     views={{
                         dayGridMonth: {
-                            titleFormat: { year: 'numeric', month: 'long' },
-                            dayHeaderFormat: { weekday: 'short' },
+                            titleFormat: {year: 'numeric', month: 'long'},
+                            dayHeaderFormat: {weekday: 'short'},
                         },
                         dayGridWeek: {
-                            titleFormat: { year: 'numeric', month: 'long' },
+                            titleFormat: {year: 'numeric', month: 'long'},
                         },
                     }}
                 />
             </div>
-            <div className="px-4" style={{ marginBottom: '110px'}}>
-                <button
-                    onClick={() => {
-                        if (selectedCalendar) {
-                            router.push(`/calendars/${selectedCalendar.id}/schedules`);
-                        } else {
-                            console.error("📛 선택된 캘린더가 없습니다.");
-                        }
-                    }}
-                    className="absolute bottom-40 right-4 bg-white text-black py-2 px-4 rounded-lg shadow-md hover:bg-blue-100"
-                >
-                    MAKE SCHEDULE
-                </button>
-            </div>
+
         </div>
     );
 };
