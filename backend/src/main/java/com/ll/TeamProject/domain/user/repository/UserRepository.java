@@ -13,11 +13,11 @@ public interface UserRepository extends JpaRepository<SiteUser, Long> {
 
     Optional<SiteUser> findByApiKey(String apiKey);
 
-    Page<SiteUser> findByRoleNot(Role role, PageRequest pageRequest);
-
     Page<SiteUser> findByRoleAndEmailLikeAndIsDeletedFalse(Role role, String emailLike, PageRequest pageRequest);
 
     Page<SiteUser> findByRoleAndUsernameLikeAndIsDeletedFalse(Role role, String usernameLike, PageRequest pageRequest);
 
     Optional<SiteUser> findByUsernameAndEmail(String username, String email);
+
+    Page<SiteUser> findByRoleAndIsDeletedFalse(Role role, PageRequest pageRequest);
 }

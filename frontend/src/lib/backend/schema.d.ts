@@ -131,7 +131,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 관리자 계정 잠김 해제 */
+        /** 관리자 계정 잠김 이메일 인증 */
         post: operations["verificationAdminAccount"];
         delete?: never;
         options?: never;
@@ -173,6 +173,23 @@ export interface paths {
         patch: operations["changePassword"];
         trace?: never;
     };
+    "/admin/admins/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 관리자 잠김 풀기 */
+        patch: operations["unlockAdmins"];
+        trace?: never;
+    };
     "/user/me": {
         parameters: {
             query?: never;
@@ -182,6 +199,46 @@ export interface paths {
         };
         /** 내 정보 */
         get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/calendars/{calendarId}/schedules/weekly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 주별 일정 조회
+         * @description 지정된 날짜가 속한 주의 일정을 조회합니다.
+         */
+        get: operations["getWeeklySchedules"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/calendars/{calendarId}/schedules/monthly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 월별 일정 조회
+         * @description 지정된 날짜가 속한 월의 일정을 조회합니다.
+         */
+        get: operations["getMonthlySchedules"];
         put?: never;
         post?: never;
         delete?: never;
@@ -210,7 +267,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin": {
+    "/admin/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -219,6 +276,23 @@ export interface paths {
         };
         /** 회원 명단 조회 (페이징, 검색) */
         get: operations["users"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/admins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 회원 명단 조회 (페이징, 검색) */
+        get: operations["admins"];
         put?: never;
         post?: never;
         delete?: never;
@@ -378,16 +452,16 @@ export interface components {
             deleted?: boolean;
         };
         VerificationCodeRequest: {
-            username: string;
-            email: string;
+            username?: string;
+            email?: string;
         };
         VerificationCodeVerifyRequest: {
-            username: string;
-            verificationCode: string;
+            username?: string;
+            verificationCode?: string;
         };
         UserLoginReqBody: {
-            username: string;
-            password: string;
+            username?: string;
+            password?: string;
         };
         LoginDto: {
             item?: components["schemas"]["UserDto"];
@@ -409,9 +483,10 @@ export interface components {
             createDate?: string;
             /** Format: date-time */
             modifyDate?: string;
+            locked?: boolean;
         };
         PasswordChangeRequest: {
-            password: string;
+            password?: string;
         };
         PageDtoUserDto: {
             /** Format: int32 */
@@ -447,9 +522,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -478,9 +551,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
@@ -513,9 +584,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -544,10 +613,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                calendarId: number;
-                scheduleId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -568,6 +634,15 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
                 };
             };
             /** @description 일정이 존재하지 않음 */
@@ -594,10 +669,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                calendarId: number;
-                scheduleId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
@@ -624,6 +696,15 @@ export interface operations {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
+            /** @description 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"];
+                };
+            };
             /** @description 일정이 존재하지 않음 */
             404: {
                 headers: {
@@ -648,10 +729,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                calendarId: number;
-                scheduleId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -671,6 +749,13 @@ export interface operations {
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
+            };
+            /** @description 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description 일정이 존재하지 않음 */
             404: {
@@ -790,9 +875,7 @@ export interface operations {
                 endDate: string;
             };
             header?: never;
-            path: {
-                calendarId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -815,6 +898,15 @@ export interface operations {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
+            /** @description 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
             /** @description 서버 오류 */
             500: {
                 headers: {
@@ -830,9 +922,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                calendarId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
@@ -921,7 +1011,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
             };
             /** @description Bad Request */
             400: {
@@ -1002,6 +1094,37 @@ export interface operations {
             };
         };
     };
+    unlockAdmins: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     me: {
         parameters: {
             query?: never;
@@ -1031,15 +1154,111 @@ export interface operations {
             };
         };
     };
+    getWeeklySchedules: {
+        parameters: {
+            query: {
+                date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 주별 일정 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+            /** @description 잘못된 날짜 형식 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+        };
+    };
+    getMonthlySchedules: {
+        parameters: {
+            query: {
+                date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 월별 일정 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+            /** @description 잘못된 날짜 형식 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
+        };
+    };
     getDailySchedules: {
         parameters: {
             query: {
                 date: string;
             };
             header?: never;
-            path: {
-                calendarId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -1062,6 +1281,15 @@ export interface operations {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
+            /** @description 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["ScheduleResponseDto"][];
+                };
+            };
             /** @description 서버 오류 */
             500: {
                 headers: {
@@ -1074,6 +1302,40 @@ export interface operations {
         };
     };
     users: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+                searchKeywordType?: string;
+                searchKeyword?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoUserDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    admins: {
         parameters: {
             query?: {
                 page?: number;

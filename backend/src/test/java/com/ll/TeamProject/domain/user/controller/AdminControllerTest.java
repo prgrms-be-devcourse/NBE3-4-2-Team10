@@ -3,6 +3,7 @@ package com.ll.TeamProject.domain.user.controller;
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.AuthType;
+import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.service.AuthenticationService;
 import com.ll.TeamProject.domain.user.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -49,8 +50,8 @@ class AdminControllerTest {
                         post("/admin/login")
                                 .content("""
                                             {
-                                                "username": "admin",
-                                                "password": "admin"
+                                                "username": "admin1",
+                                                "password": "admin1"
                                             }
                                             """.stripIndent()
                                 )
@@ -60,7 +61,7 @@ class AdminControllerTest {
                 )
                 .andDo(print());
 
-        SiteUser actor = userService.findByUsername("admin").get();
+        SiteUser actor = userService.findByUsername("admin1").get();
         Authentication authentication = authenticationService.findByUserId(actor.getId()).get();
 
         assertThat(authentication).isNotNull();
@@ -104,13 +105,13 @@ class AdminControllerTest {
     void userList() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        get("/admin")
+                        get("/admin/users")
                                 .param("page", "1")
                                 .param("pageSize", "3")
                 )
                 .andDo(print());
 
-        Page<SiteUser> userPage = userService.findUsers("", "", 1, 3);
+        Page<SiteUser> userPage = userService.findUsers("", "", 1, 3, Role.USER);
 
         resultActions
                 .andExpect(handler().handlerType(AdminController.class))
@@ -139,7 +140,7 @@ class AdminControllerTest {
     void t5() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        get("/admin")
+                        get("/admin/users")
                 )
                 .andDo(print());
 
@@ -147,6 +148,27 @@ class AdminControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.resultCode").value("403-1"))
                 .andExpect(jsonPath("$.msg").value("접근 권한이 없습니다."));
+    }
+
+    @Test
+    @DisplayName("관리자 잠금 해제")
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void unlockAdmin() throws Exception {
+        SiteUser admin1 = userService.findByUsername("admin1").get();
+        admin1.lockAccount();
+
+        ResultActions resultActions = mvc
+                .perform(
+                        patch("/admin/admins/%d".formatted(admin1.getId()))
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(AdminController.class))
+                .andExpect(handler().methodName("unlockAdmins"))
+                .andExpect(status().isOk());
+
+        assertThat(admin1.isLocked()).isFalse();
     }
 
     @Test
@@ -185,7 +207,7 @@ class AdminControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        delete("/user/2")
+                        delete("/user/%d".formatted(actor.getId()))
                                 .header("Authorization", "Bearer " + actorAuthToken)
                 )
                 .andDo(print());
@@ -198,7 +220,7 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.data.id").value(actor.getId()))
                 .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.nickname").value("탈퇴한 사용자"));
+                .andExpect(jsonPath("$.data.nickname").value(Matchers.startsWith("탈퇴한 사용자")));
     }
 
     @Test

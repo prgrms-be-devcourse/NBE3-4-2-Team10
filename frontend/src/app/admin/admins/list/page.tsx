@@ -1,4 +1,4 @@
-// 회원 리스트 페이지 (서버)
+// 관리자 리스트 페이지 (서버)
 
 import client from "@/lib/backend/client";
 import ClientPage from "./ClientPage";
@@ -20,7 +20,7 @@ export default async function Page({
     pageSize = 10,
     page = 1,
   } = await searchParams;
-  const response = await client.GET("/admin", {
+  const response = await client.GET("/admin/admins", {
     params: {
       query: {
         searchKeyword,
