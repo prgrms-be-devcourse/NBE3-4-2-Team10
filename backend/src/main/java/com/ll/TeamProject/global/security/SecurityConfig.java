@@ -41,28 +41,24 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 // 관리자 로그인 로그아웃 인증 요청 허용
-                                .requestMatchers("/admin/login", "/admin/logout", "/admin/verification-codes", "/admin/verification-codes/verify", "/admin/{username}/password")
+                                .requestMatchers("/api/admin/login", "/api/admin/logout", "/api/admin/verification-codes", "/admin/verification-codes/verify", "/admin/{username}/password")
                                 .permitAll()
 
                                 // 관리자 작업 권한 필요
-                                .requestMatchers("/admin/**")
+                                .requestMatchers("/api/admin/**")
                                 .hasAuthority("ROLE_ADMIN")
 
                                 // 로그인 요청 허용
                                 .requestMatchers("/login")
                                 .permitAll()
 
-                                // user 관련 인증 필요
-                                .requestMatchers("/user/**")
+                                // 모든 api 요청 인증 필요
+                                .requestMatchers("/api/**")
                                 .authenticated()
 
                                 // 정적자원 허용
                                 .requestMatchers("/static/**", "/images/**", "/css/**", "/js/**") // 정적 자원 예외 추가
                                 .permitAll()
-
-                                // 캘린더 API에 대한 인증 요구
-                                .requestMatchers("/api/calendars/**")
-                                .authenticated() // 캘린더 API에 대한 인증 요구
 
                                 // 나머지 요청은 허용
                                 // SpringDoc 관련 작업 하면서 임시로 (swagger 허용 필요)

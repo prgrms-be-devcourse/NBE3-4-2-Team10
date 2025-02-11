@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @Tag(name = "UserController", description = "사용자 컨트롤러")
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
