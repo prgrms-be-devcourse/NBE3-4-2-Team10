@@ -98,7 +98,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     dayCellClassNames="min-h-[100px] p-2"
                     eventDisplay="block"
                     eventContent={(eventInfo) => (
-                        <div className="truncate font-medium text-sm cursor-pointer text-white hover:bg-gray-500 p-1 rounded">
+                        <div className="truncate font-bold text-sm cursor-pointer text-blue-100 hover:bg-blue-400 p-1 rounded">
                             {eventInfo.event.title}
                         </div>
                     )}
