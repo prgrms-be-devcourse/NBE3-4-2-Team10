@@ -41,7 +41,7 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 // 관리자 로그인 로그아웃 인증 요청 허용
-                                .requestMatchers("/api/admin/login", "/api/admin/logout", "/api/admin/verification-codes", "/admin/verification-codes/verify", "/admin/{username}/password")
+                                .requestMatchers("/api/admin/login", "/api/admin/logout", "/api/admin/verification-codes", "/api/admin/verification-codes/verify", "/api/admin/{username}/password")
                                 .permitAll()
 
                                 // 관리자 작업 권한 필요
