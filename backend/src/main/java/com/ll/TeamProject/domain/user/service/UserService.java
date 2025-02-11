@@ -32,6 +32,8 @@ import static com.ll.TeamProject.domain.user.enums.Role.USER;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private static final String VERIFICATION_CODE_KEY = "verificationCode:";
+    private static final String PASSWORD_RESET_KEY = "password-reset:";
 
     private final UserRepository userRepository;
     private final AuthTokenService authTokenService;
@@ -82,7 +84,7 @@ public class UserService {
 
         String code = generateVerificationCode();
 
-        redisTemplate.opsForValue().set("verificationCode:", code, 180, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(VERIFICATION_CODE_KEY, code, 180, TimeUnit.SECONDS);
 
         sendVerificationEmail(user.getNickname(), user.getEmail(), code);
     }
@@ -95,8 +97,8 @@ public class UserService {
             throw new ServiceException("401-3", "인증번호가 유효하지 않거나 만료되었습니다.");
         }
 
-        redisTemplate.delete("verificationCode");
-        redisTemplate.opsForValue().set("password-reset", user.getUsername(), 300, TimeUnit.SECONDS);
+        redisTemplate.delete(VERIFICATION_CODE_KEY);
+        redisTemplate.opsForValue().set(PASSWORD_RESET_KEY, user.getUsername(), 300, TimeUnit.SECONDS);
     }
 
     private SiteUser validateUsernameAndEmail(String username, String email) {
@@ -133,15 +135,15 @@ public class UserService {
     }
 
     private boolean isVerificationCodeValid(String verificationCode) {
-        String code = redisTemplate.opsForValue().get("verificationCode:");
+        String code = redisTemplate.opsForValue().get(VERIFICATION_CODE_KEY);
         return code.equals(verificationCode);
     }
 
     public void changePassword(String username, String password) {
-        String code = redisTemplate.opsForValue().get("password-reset");
+        String code = redisTemplate.opsForValue().get(PASSWORD_RESET_KEY);
 
         if (code == null || !code.equals(username)) {
-            redisTemplate.delete("password-reset");
+            redisTemplate.delete(PASSWORD_RESET_KEY);
             throw new ServiceException("401-3", "올바른 요청이 아닙니다.");
         }
 
@@ -150,7 +152,7 @@ public class UserService {
         user.changePassword(passwordEncoder.encode(password));
         unlockAccount(user);
         userRepository.save(user);
-        redisTemplate.delete("password-reset");
+        redisTemplate.delete(PASSWORD_RESET_KEY);
     }
 
     public Optional<SiteUser> findByUsername(String username) {

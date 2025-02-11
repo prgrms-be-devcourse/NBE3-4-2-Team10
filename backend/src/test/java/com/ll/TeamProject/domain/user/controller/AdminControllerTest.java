@@ -47,7 +47,7 @@ class AdminControllerTest {
     void adminLogin() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        post("/admin/login")
+                        post("/api/admin/login")
                                 .content("""
                                             {
                                                 "username": "admin1",
@@ -105,7 +105,7 @@ class AdminControllerTest {
     void userList() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        get("/admin/users")
+                        get("/api/admin/users")
                                 .param("page", "1")
                                 .param("pageSize", "3")
                 )
@@ -140,7 +140,7 @@ class AdminControllerTest {
     void t5() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        get("/admin/users")
+                        get("/api/admin/users")
                 )
                 .andDo(print());
 
@@ -159,7 +159,7 @@ class AdminControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        patch("/admin/admins/%d".formatted(admin1.getId()))
+                        patch("/api/admin/admins/%d".formatted(admin1.getId()))
                 )
                 .andDo(print());
 
@@ -176,7 +176,7 @@ class AdminControllerTest {
     void logout() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        delete("/admin/logout")
+                        delete("/api/admin/logout")
                 )
                 .andDo(print());
 
@@ -207,7 +207,7 @@ class AdminControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        delete("/user/%d".formatted(actor.getId()))
+                        delete("/api/user/%d".formatted(actor.getId()))
                                 .header("Authorization", "Bearer " + actorAuthToken)
                 )
                 .andDo(print());
@@ -231,7 +231,7 @@ class AdminControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        post("/user")
+                        post("/api/user")
                                 .header("Authorization", "Bearer " + actorAuthToken)
                                 .content("""
                                             {

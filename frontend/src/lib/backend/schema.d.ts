@@ -448,8 +448,8 @@ export interface components {
             /** Format: date-time */
             deletedDate?: string;
             locked?: boolean;
-            authorities?: components["schemas"]["GrantedAuthority"][];
             deleted?: boolean;
+            authorities?: components["schemas"]["GrantedAuthority"][];
         };
         VerificationCodeRequest: {
             username?: string;
@@ -522,7 +522,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -551,7 +553,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -584,7 +588,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -613,7 +619,10 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+                scheduleId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -669,7 +678,10 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+                scheduleId: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -729,7 +741,10 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+                scheduleId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -875,7 +890,9 @@ export interface operations {
                 endDate: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -922,7 +939,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -1160,7 +1179,9 @@ export interface operations {
                 date: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1209,7 +1230,9 @@ export interface operations {
                 date: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1258,7 +1281,9 @@ export interface operations {
                 date: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                calendarId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
