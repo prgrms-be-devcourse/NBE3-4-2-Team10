@@ -1,6 +1,8 @@
 package com.ll.TeamProject.domain.calendar.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
+import com.ll.TeamProject.domain.schedule.entity.Schedule;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
@@ -56,4 +58,7 @@ public class Calendar extends BaseTime {
         this.description = updateDto.getDescription();  // description도 업데이트
         return this;
     }
+    @JsonManagedReference
+    @OneToMany(mappedBy = "calendar", cascade = CascadeType.REMOVE)
+    private List<Schedule> schedules = new ArrayList<>();
 }

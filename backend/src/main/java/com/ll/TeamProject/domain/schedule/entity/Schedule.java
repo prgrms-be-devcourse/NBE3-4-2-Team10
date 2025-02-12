@@ -1,6 +1,7 @@
 package com.ll.TeamProject.domain.schedule.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Schedule extends BaseTime {  // BaseTime : id (BaseEntity, no setter), 생성/수정일
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id", nullable = false)
     private Calendar calendar; // 일정이 속한 캘린더

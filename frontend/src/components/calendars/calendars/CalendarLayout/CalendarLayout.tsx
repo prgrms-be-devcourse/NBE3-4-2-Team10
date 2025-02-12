@@ -10,6 +10,7 @@ import './CalendarLayout.css';
 export const CalendarLayout = () => {
   const { calendars, loading, error, createCalendar, updateCalendar, deleteCalendar, fetchCalendars } = useCalendar();
   const [selectedCalendar, setSelectedCalendar] = useState<Calendar | null>(null);
+  console.log('Calendars in Layout:', calendars);
 
   const handleCreateCalendar = async () => {
     const name = prompt('캘린더 제목을 알려주세요!');

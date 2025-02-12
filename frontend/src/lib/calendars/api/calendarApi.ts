@@ -34,7 +34,7 @@ client.interceptors.request.use((config) => {
 
 export const calendarApi = {
   getAllCalendars: () =>
-      client.get<Calendar[]>('/calendars'),
+      client.get<Calendar[] | string>('/calendars'),
 
   getCalendarById: (id: number) =>
       client.get<Calendar>(`/calendars/${id}`),

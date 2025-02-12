@@ -27,6 +27,10 @@ export const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
                                                                     calendars = [],
                                                                     onCalendarSelect,
                                                                 }) => {
+    const calendarItems = Array.isArray(calendars) ? calendars : [];
+
+    console.log('Calendar items:', calendarItems); // 데이터 확인용
+
     return (
         <div className="calendar-sidebar">
             <button
@@ -43,43 +47,49 @@ export const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
                     <ChevronDownIcon className="w-4 h-4" />
                 </div>
 
-                <div className="calendar-items">
-                    {calendars.map((calendar) => (
-                        <div
-                            key={calendar.id}
-                            onClick={() => onCalendarSelect?.(calendar)}
-                            className={`calendar-item ${
-                                selectedCalendar?.id === calendar.id ? 'selected' : ''
-                            }`}
-                        >
-                            <CalendarIcon className="w-4 h-4" />
-                            <span className="calendar-item-name">{calendar.name}</span>
+                {calendarItems.length > 0 ? (
+                    <div className="calendar-items">
+                        {calendarItems.map((calendar) => (
+                            <div
+                                key={calendar.id}
+                                onClick={() => onCalendarSelect?.(calendar)}
+                                className={`calendar-item ${
+                                    selectedCalendar?.id === calendar.id ? 'selected' : ''
+                                }`}
+                            >
+                                <CalendarIcon className="w-4 h-4" />
+                                <span className="calendar-item-name">{calendar.name}</span>
 
-                            {selectedCalendar?.id === calendar.id && (
-                                <div className="calendar-actions">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onUpdateClick();
-                                        }}
-                                        className="action-button"
-                                    >
-                                        <PencilIcon className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onDeleteClick();
-                                        }}
-                                        className="action-button"
-                                    >
-                                        <TrashIcon className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
+                                {selectedCalendar?.id === calendar.id && (
+                                    <div className="calendar-actions">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onUpdateClick();
+                                            }}
+                                            className="action-button"
+                                        >
+                                            <PencilIcon className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onDeleteClick();
+                                            }}
+                                            className="action-button"
+                                        >
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="p-3 text-gray-500 text-sm">
+                        캘린더가 없습니다.
+                    </div>
+                )}
             </div>
         </div>
     );

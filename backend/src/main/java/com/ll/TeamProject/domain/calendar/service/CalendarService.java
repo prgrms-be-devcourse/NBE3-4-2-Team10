@@ -7,6 +7,7 @@ import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Slf4j
 //로그 체크
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class CalendarService {
