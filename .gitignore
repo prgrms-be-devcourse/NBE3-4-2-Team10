@@ -42,3 +42,9 @@ out/
 ### Custom ###
 db_dev.mv.db
 db_dev.trace.db
+node_modules/
+api-docs.json
+**/application-secret.yml
+
+### package-lock.json ###
+package-lock.json
