@@ -1,4 +1,3 @@
-//src/lib/calendar/hooks/useCalendar.ts
 import { useState, useEffect } from 'react';
 import { calendarApi } from '../api/calendarApi';
 import type { Calendar, CalendarCreateDto, CalendarUpdateDto } from '../types/calendarTypes';
@@ -11,12 +10,33 @@ export const useCalendar = () => {
   const fetchCalendars = async () => {
     try {
       setLoading(true);
-      const { data } = await calendarApi.getAllCalendars();
-      setCalendars(data);
+      const response = await calendarApi.getAllCalendars();
+      console.log('Raw response:', response); // 원본 응답 확인
+
+      if (response?.data) {
+        // response.data가 이미 객체/배열인 경우
+        if (Array.isArray(response.data)) {
+          setCalendars(response.data);
+        }
+        // response.data가 문자열인 경우
+        else if (typeof response.data === 'string') {
+          try {
+            setCalendars(JSON.parse(response.data));
+          } catch (parseError) {
+            console.error('JSON 파싱 에러:', parseError);
+            setCalendars([]);
+          }
+        } else {
+          setCalendars([]);
+        }
+      } else {
+        setCalendars([]);
+      }
       setError(null);
     } catch (err) {
       setError(err as Error);
       console.error('Failed to fetch calendars:', err);
+      setCalendars([]);
     } finally {
       setLoading(false);
     }
@@ -28,7 +48,8 @@ export const useCalendar = () => {
 
   const createCalendar = async (calendarData: CalendarCreateDto) => {
     try {
-      const { data: newCalendar } = await calendarApi.createCalendar(calendarData);
+      const response = await calendarApi.createCalendar(calendarData);
+      const newCalendar = response.data;
       setCalendars(prev => [...prev, newCalendar]);
       return newCalendar;
     } catch (err) {
@@ -39,7 +60,8 @@ export const useCalendar = () => {
 
   const updateCalendar = async (id: number, calendarData: CalendarUpdateDto) => {
     try {
-      const { data: updatedCalendar } = await calendarApi.updateCalendar(id, calendarData);
+      const response = await calendarApi.updateCalendar(id, calendarData);
+      const updatedCalendar = response.data;
       setCalendars(prev =>
           prev.map(calendar => (calendar.id === id ? updatedCalendar : calendar))
       );
