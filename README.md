@@ -90,7 +90,7 @@ CANBEJ 프로젝트는 **일정 관리와 장소 공유를 한 번에 해결**�
 ### 프로젝트 관리 및 문서화
 - [프로젝트 관리 Notion](https://www.notion.so/10-5d52f2cbeb374740874572de5fea184b?pvs=4)
 - [CANBEJ_발표 ppt](https://github.com/user-attachments/files/18776426/CANBEJ_._.MAX.pdf)
-- [CANBEJ_시연 영상]((https://youtu.be/d9QJ5sefXTc))
+- [CANBEJ_시연 영상](https://youtu.be/d9QJ5sefXTc)
 
 
 ## 📄 Git Commit Convention
