@@ -36,9 +36,4 @@ public class AdminAccountController {
         userService.unlockAccount(id);
         return ResponseEntity.ok(new RsData<>("200-1", "관리자 잠금이 해제되었습니다."));
     }
-
-
-
-
-
 }
