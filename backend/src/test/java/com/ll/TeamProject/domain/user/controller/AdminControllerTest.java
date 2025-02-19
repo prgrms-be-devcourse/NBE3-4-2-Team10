@@ -69,7 +69,7 @@ class AdminControllerTest {
         assertThat(authentication.getAuthType()).isEqualTo(AuthType.LOCAL);
 
         resultActions
-                .andExpect(handler().handlerType(AdminController.class))
+                .andExpect(handler().handlerType(AdminAccountController.class))
                 .andExpect(handler().methodName("login"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
@@ -114,7 +114,7 @@ class AdminControllerTest {
         Page<SiteUser> userPage = userService.findUsers("", "", 1, 3, Role.USER);
 
         resultActions
-                .andExpect(handler().handlerType(AdminController.class))
+                .andExpect(handler().handlerType(AdminAccountController.class))
                 .andExpect(handler().methodName("users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.currentPageNumber").value(1))
@@ -164,7 +164,7 @@ class AdminControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(handler().handlerType(AdminController.class))
+                .andExpect(handler().handlerType(AdminAccountController.class))
                 .andExpect(handler().methodName("unlockAdmins"))
                 .andExpect(status().isOk());
 
