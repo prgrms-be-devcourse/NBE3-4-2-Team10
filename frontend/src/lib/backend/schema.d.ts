@@ -169,11 +169,10 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** 관리자 비밀번호 변경 */
         patch: operations["changePassword"];
         trace?: never;
     };
-    "/api/admin/admins/{id}": {
+    "/api/admin/{id}/unlock": {
         parameters: {
             query?: never;
             header?: never;
@@ -186,8 +185,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** 관리자 잠김 풀기 */
-        patch: operations["unlockAdmins"];
+        patch: operations["unlockAdmin"];
         trace?: never;
     };
     "/api/user/me": {
@@ -284,14 +282,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/admins": {
+    "/api/admin/users/admins": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 회원 명단 조회 (페이징, 검색) */
+        /** 관리자 명단 조회 (페이징, 검색) */
         get: operations["admins"];
         put?: never;
         post?: never;
@@ -409,6 +407,7 @@ export interface components {
             description?: string;
             sharedUsers?: components["schemas"]["SharedCalendar"][];
             messageList?: components["schemas"]["Message"][];
+            schedules?: components["schemas"]["Schedule"][];
         };
         GrantedAuthority: {
             authority?: string;
@@ -424,6 +423,23 @@ export interface components {
             calendar?: components["schemas"]["Calendar"];
             content?: string;
             read?: boolean;
+        };
+        Schedule: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: date-time */
+            createDate?: string;
+            /** Format: date-time */
+            modifyDate?: string;
+            calendar?: components["schemas"]["Calendar"];
+            title?: string;
+            description?: string;
+            user?: components["schemas"]["SiteUser"];
+            /** Format: date-time */
+            startTime?: string;
+            /** Format: date-time */
+            endTime?: string;
+            location?: components["schemas"]["Location"];
         };
         SharedCalendar: {
             /** Format: int64 */
@@ -448,8 +464,8 @@ export interface components {
             /** Format: date-time */
             deletedDate?: string;
             locked?: boolean;
-            deleted?: boolean;
             authorities?: components["schemas"]["GrantedAuthority"][];
+            deleted?: boolean;
         };
         VerificationCodeRequest: {
             username?: string;
@@ -1113,7 +1129,7 @@ export interface operations {
             };
         };
     };
-    unlockAdmins: {
+    unlockAdmin: {
         parameters: {
             query?: never;
             header?: never;
