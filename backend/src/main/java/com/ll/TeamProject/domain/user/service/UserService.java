@@ -1,7 +1,7 @@
 package com.ll.TeamProject.domain.user.service;
 
-import com.ll.TeamProject.domain.user.dto.admin.LoginDto;
 import com.ll.TeamProject.domain.user.dto.UserDto;
+import com.ll.TeamProject.domain.user.dto.admin.LoginDto;
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.AuthType;
@@ -13,7 +13,6 @@ import com.ll.TeamProject.global.mail.EmailService;
 import com.ll.TeamProject.global.userContext.UserContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,18 +39,16 @@ public class UserService {
     private final AuthenticationRepository authenticationRepository;
     private final UserContext userContext;
     private final AuthenticationService authenticationService;
-    private final ApplicationContext applicationContext;
     private final ForbiddenService forbiddenService;
     private final EmailService emailService;
     private final StringRedisTemplate redisTemplate;
+    private final PasswordEncoder passwordEncoder;
 
     public LoginDto login(String username, String password) {
         SiteUser user = findByUsername(username)
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
 
         if (user.isLocked()) throw new ServiceException("403-2", "계정이 잠겨있습니다.");
-
-        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             authenticationService.handleLoginFailure(user);
@@ -148,7 +145,6 @@ public class UserService {
         }
 
         SiteUser user = userRepository.findByUsername(username).get();
-        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
         user.changePassword(passwordEncoder.encode(password));
         unlockAccount(user);
         userRepository.save(user);
