@@ -1,6 +1,9 @@
 package com.ll.TeamProject.domain.user.controller;
 
-import com.ll.TeamProject.domain.user.dto.LoginDto;
+import com.ll.TeamProject.domain.user.dto.admin.LoginDto;
+import com.ll.TeamProject.domain.user.dto.admin.UserLoginReqBody;
+import com.ll.TeamProject.domain.user.dto.admin.VerificationCodeRequest;
+import com.ll.TeamProject.domain.user.dto.admin.VerificationCodeVerifyRequest;
 import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,11 +11,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -23,27 +28,12 @@ public class AdminAuthController {
 
     private final UserService userService;
 
-    record UserLoginReqBody(
-            @NonNull String username,
-            @NonNull String password
-    ) { }
-
-    record VerificationCodeRequest(
-            @NonNull String username,
-            @NonNull String email
-    ) { }
-
-    record VerificationCodeVerifyRequest(
-            @NonNull String username,
-            @NonNull String verificationCode
-    ) { }
-
     @PostMapping("/login")
     @Transactional
     @Operation(summary = "관리자 로그인")
     public ResponseEntity<RsData<LoginDto>> login(@RequestBody @Valid UserLoginReqBody req) {
 
-        LoginDto loginDto = userService.login(req.username, req.password);
+        LoginDto loginDto = userService.login(req.username(), req.password());
 
         return ResponseEntity.ok(
                 new RsData<>(
@@ -72,7 +62,7 @@ public class AdminAuthController {
     @Operation(summary = "인증번호 발송")
     public ResponseEntity<RsData<Void>> sendVerification(@RequestBody @Valid VerificationCodeRequest req) {
 
-        userService.processVerification(req.username, req.email);
+        userService.processVerification(req.username(), req.email());
 
         return ResponseEntity.ok(new RsData<>("200-1", "인증번호가 발송되었습니다.")
         );
@@ -81,7 +71,7 @@ public class AdminAuthController {
     @PostMapping("/verification-codes/verify")
     @Operation(summary = "관리자 계정 잠김 이메일 인증")
     public ResponseEntity<RsData<Void>> verificationAdminAccount(@RequestBody @Valid VerificationCodeVerifyRequest req) {
-        userService.verifyAndUnlockAccount(req.username, req.verificationCode);
+        userService.verifyAndUnlockAccount(req.username(), req.verificationCode());
 
         return ResponseEntity.ok(new RsData<>("200-1", "인증이 완료되었습니다.")
         );

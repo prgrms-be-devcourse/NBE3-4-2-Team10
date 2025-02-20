@@ -1,6 +1,6 @@
 package com.ll.TeamProject.domain.user.service;
 
-import com.ll.TeamProject.domain.user.dto.LoginDto;
+import com.ll.TeamProject.domain.user.dto.admin.LoginDto;
 import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;

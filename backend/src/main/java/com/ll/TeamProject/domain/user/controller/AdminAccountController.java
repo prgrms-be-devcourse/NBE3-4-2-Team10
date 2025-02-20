@@ -1,11 +1,11 @@
 package com.ll.TeamProject.domain.user.controller;
 
+import com.ll.TeamProject.domain.user.dto.admin.PasswordChangeRequest;
 import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminAccountController {
 
     private final UserService userService;
-
-    record PasswordChangeRequest(
-            @NonNull String password
-    ) {}
 
     @PutMapping("/{username}/password")
     public ResponseEntity<RsData<Void>> changePassword(
