@@ -59,7 +59,7 @@ public class UserDormantService {
             String message = """
                     장기 미사용 이용자로 %s님 계정이 %s 휴면계정으로 전환될 예정입니다.
                     """.formatted(candidate.getNickname(), nextMonthDate.format(formatter));
-            emailService.sendEmail(candidate.getEmail(), "2ndProject 휴면계정 전환 안내", message);
+            emailService.sendMessage(candidate.getEmail(), "CanBeJ 휴면계정 전환 안내", message);
         });
     }
 

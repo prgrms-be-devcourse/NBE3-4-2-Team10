@@ -45,10 +45,7 @@ public class AccountVerificationService {
     }
 
     private void sendVerificationEmail(String nickname, String email, String verificationCode) {
-        String subject = "계정 인증번호";
-        String content = String.format("안녕하세요, %s님.\n\n인증번호: %s\n인증번호는 3분 동안 유효합니다.", nickname, verificationCode);
-
-        emailService.sendEmail(email, subject, content);
+        emailService.sendVerificationCode(nickname, email, verificationCode);
     }
 
     public void verifyAndUnlockAccount(String username, String verificationCode) {
