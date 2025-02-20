@@ -29,6 +29,9 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService; // 테스트할 클래스
 
+    @InjectMocks
+    private AuthService authService;
+
     @Mock
     private AuthenticationService authenticationService;
 
@@ -58,7 +61,7 @@ class UserServiceTest {
 
         // when & then
         ServiceException exception = assertThrows(ServiceException.class,
-                () -> userService.login(username, password));
+                () -> authService.login(username, password));
 
         assertEquals("401-1", exception.getResultCode());
         assertEquals("존재하지 않는 사용자입니다.", exception.getMsg());
@@ -73,11 +76,10 @@ class UserServiceTest {
         SiteUser user = SiteUser.builder().username(username).password(passwordEncoder.encode("123")).build();
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(applicationContext.getBean(PasswordEncoder.class)).thenReturn(passwordEncoder);
 
         // when & then
         ServiceException exception = assertThrows(ServiceException.class,
-                () -> userService.login(username, password));
+                () -> authService.login(username, password));
 
         assertEquals("401-2", exception.getResultCode());
         assertEquals("비밀번호가 일치하지 않습니다.", exception.getMsg());

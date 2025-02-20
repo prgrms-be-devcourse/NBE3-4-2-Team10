@@ -30,5 +30,4 @@ public interface AuthenticationRepository extends JpaRepository<Authentication, 
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
-
 }

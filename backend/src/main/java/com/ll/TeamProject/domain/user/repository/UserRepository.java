@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<SiteUser, Long> {
     Optional<SiteUser> findByUsernameAndEmail(String username, String email);
 
     Page<SiteUser> findByRoleAndIsDeletedFalse(Role role, PageRequest pageRequest);
+
+    Optional<SiteUser> findByEmail(String email);
 }
