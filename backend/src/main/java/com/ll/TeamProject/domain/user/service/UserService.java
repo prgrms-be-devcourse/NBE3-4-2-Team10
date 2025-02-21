@@ -6,7 +6,6 @@ import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.userContext.UserContext;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -78,7 +77,7 @@ public class UserService {
         userContext.makeAuthCookies(actor);
     }
 
-    public UserDto delete(long id, HttpServletRequest request) {
+    public UserDto delete(long id) {
         Optional<SiteUser> userOptional = findById(id);
         if (userOptional.isEmpty()) {
             throw new ServiceException("401-1", "존재하지 않는 사용자입니다.");

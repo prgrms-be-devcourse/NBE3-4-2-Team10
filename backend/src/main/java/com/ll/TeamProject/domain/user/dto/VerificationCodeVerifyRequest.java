@@ -1,4 +1,4 @@
-package com.ll.TeamProject.domain.user.dto.admin;
+package com.ll.TeamProject.domain.user.dto;
 
 import lombok.NonNull;
 

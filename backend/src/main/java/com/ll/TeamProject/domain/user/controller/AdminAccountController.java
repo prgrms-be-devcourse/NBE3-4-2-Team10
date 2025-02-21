@@ -1,6 +1,6 @@
 package com.ll.TeamProject.domain.user.controller;
 
-import com.ll.TeamProject.domain.user.dto.admin.PasswordChangeRequest;
+import com.ll.TeamProject.domain.user.dto.PasswordChangeRequest;
 import com.ll.TeamProject.domain.user.service.AccountVerificationService;
 import com.ll.TeamProject.domain.user.service.UserService;
 import com.ll.TeamProject.global.rsData.RsData;

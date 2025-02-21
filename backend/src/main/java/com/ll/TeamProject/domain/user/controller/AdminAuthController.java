@@ -1,9 +1,9 @@
 package com.ll.TeamProject.domain.user.controller;
 
-import com.ll.TeamProject.domain.user.dto.admin.LoginDto;
-import com.ll.TeamProject.domain.user.dto.admin.UserLoginReqBody;
-import com.ll.TeamProject.domain.user.dto.admin.VerificationCodeRequest;
-import com.ll.TeamProject.domain.user.dto.admin.VerificationCodeVerifyRequest;
+import com.ll.TeamProject.domain.user.dto.LoginDto;
+import com.ll.TeamProject.domain.user.dto.UserLoginReqBody;
+import com.ll.TeamProject.domain.user.dto.VerificationCodeRequest;
+import com.ll.TeamProject.domain.user.dto.VerificationCodeVerifyRequest;
 import com.ll.TeamProject.domain.user.service.AccountVerificationService;
 import com.ll.TeamProject.domain.user.service.AuthService;
 import com.ll.TeamProject.global.rsData.RsData;
@@ -11,7 +11,6 @@ import com.ll.TeamProject.global.userContext.UserContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +49,7 @@ public class AdminAuthController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃")
-    public ResponseEntity<RsData<Void>> logout(HttpServletRequest request) {
+    public ResponseEntity<RsData<Void>> logout() {
 
         // TODO: 로그아웃 추가 수정 필요
         userContext.deleteCookie("accessToken");
