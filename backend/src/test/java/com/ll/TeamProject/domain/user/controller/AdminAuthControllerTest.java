@@ -4,7 +4,6 @@ import com.ll.TeamProject.domain.user.TestUserHelper;
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.AuthType;
-import com.ll.TeamProject.domain.user.enums.Role;
 import com.ll.TeamProject.domain.user.service.AuthenticationService;
 import com.ll.TeamProject.domain.user.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -14,9 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,10 +21,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
-class AdminControllerTest {
+class AdminAuthControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -104,78 +100,6 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("회원 목록 조회")
-    @WithMockUser(username = "admin", roles = "ADMIN")
-    void userList() throws Exception {
-        ResultActions resultActions = mvc
-                .perform(
-                        get("/api/admin/users")
-                                .param("page", "1")
-                                .param("pageSize", "3")
-                )
-                .andDo(print());
-
-        Page<SiteUser> userPage = userService.findUsers("", "", 1, 3, Role.USER);
-
-        resultActions
-                .andExpect(handler().handlerType(AdminUserController.class))
-                .andExpect(handler().methodName("users"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.currentPageNumber").value(1))
-                .andExpect(jsonPath("$.data.pageSize").value(3))
-                .andExpect(jsonPath("$.data.totalPages").value(userPage.getTotalPages()))
-                .andExpect(jsonPath("$.data.totalItems").value(userPage.getTotalElements()));
-
-        List<SiteUser> users = userPage.getContent();
-
-        for (int i = 0; i < users.size(); i++) {
-            SiteUser user = users.get(i);
-            resultActions
-                    .andExpect(jsonPath("$.data.items[%d].id".formatted(i)).value(user.getId()))
-                    .andExpect(jsonPath("$.data.items[%d].username".formatted(i)).value(user.getUsername()))
-                    .andExpect(jsonPath("$.data.items[%d].email".formatted(i)).value(user.getEmail()))
-                    .andExpect(jsonPath("$.data.items[%d].nickname".formatted(i)).value(user.getNickname()));
-        }
-    }
-
-    @Test
-    @DisplayName("회원 목록 조회 - 일반 회원 접근")
-    @WithMockUser(username = "test", roles = "USER")
-    void t5() throws Exception {
-        ResultActions resultActions = mvc
-                .perform(
-                        get("/api/admin/users")
-                )
-                .andDo(print());
-
-        resultActions
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.resultCode").value("403-1"))
-                .andExpect(jsonPath("$.msg").value("접근 권한이 없습니다."));
-    }
-
-    @Test
-    @DisplayName("관리자 잠금 해제")
-    @WithMockUser(username = "admin", roles = "ADMIN")
-    void unlockAdmin() throws Exception {
-        SiteUser admin1 = userService.findByUsername("admin1").get();
-        admin1.lockAccount();
-
-        ResultActions resultActions = mvc
-                .perform(
-                        patch("/api/admin/%d/unlock".formatted(admin1.getId()))
-                )
-                .andDo(print());
-
-        resultActions
-                .andExpect(handler().handlerType(AdminAccountController.class))
-                .andExpect(handler().methodName("unlockAdmin"))
-                .andExpect(status().isOk());
-
-        assertThat(admin1.isLocked()).isFalse();
-    }
-
-    @Test
     @DisplayName("로그아웃")
     void logout() throws Exception {
         MockHttpServletRequestBuilder request = post("/api/admin/logout");
@@ -199,50 +123,6 @@ class AdminControllerTest {
                     assertThat(apiKeyCookie.getPath()).isEqualTo("/");
                     assertThat(apiKeyCookie.isHttpOnly()).isTrue();
                 });
-    }
-
-    @Test
-    @DisplayName("사용자 탈퇴")
-    void deleteUser() throws Exception {
-        SiteUser actor = userService.findByUsername("user1").get();
-        MockHttpServletRequestBuilder request = delete("/api/user/%d".formatted(actor.getId()));
-
-        ResultActions resultActions = testUserHelper.requestWithUserAuth("user1", request);
-
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("회원정보가 삭제되었습니다."))
-                .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data.id").value(actor.getId()))
-                .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.nickname").value(Matchers.startsWith("탈퇴한 사용자")));
-    }
-
-    @Test
-    @DisplayName("TestUserHelper 테스트")
-    void changeNicknameAndUserHelperTest() throws Exception {
-        // 요청 생성
-        MockHttpServletRequestBuilder request =
-                post("/api/user")
-                    .content("""
-                            {
-                                "nickname": "changedNickname"
-                            }
-                            """.stripIndent());
-
-        // 인증 원하는 username 과 요청으로 도우미 메서드 호출
-        ResultActions resultActions = testUserHelper.requestWithUserAuth("user1", request);
-
-        // 결과 확인
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("사용자 정보가 수정되었습니다."));
-
-        SiteUser actor = userService.findByUsername("user1").get();
-        assertThat(actor.getNickname()).isEqualTo("changedNickname");
     }
 
 }
