@@ -178,11 +178,9 @@ class AdminControllerTest {
     @Test
     @DisplayName("로그아웃")
     void logout() throws Exception {
-        ResultActions resultActions = mvc
-                .perform(
-                        post("/api/admin/logout")
-                )
-                .andDo(print());
+        MockHttpServletRequestBuilder request = post("/api/admin/logout");
+
+        ResultActions resultActions = testUserHelper.requestWithUserAuth("user1", request);
 
         resultActions
                 .andExpect(status().isOk())
@@ -207,14 +205,9 @@ class AdminControllerTest {
     @DisplayName("사용자 탈퇴")
     void deleteUser() throws Exception {
         SiteUser actor = userService.findByUsername("user1").get();
-        String actorAuthToken = userService.genAuthToken(actor);
+        MockHttpServletRequestBuilder request = delete("/api/user/%d".formatted(actor.getId()));
 
-        ResultActions resultActions = mvc
-                .perform(
-                        delete("/api/user/%d".formatted(actor.getId()))
-                                .header("Authorization", "Bearer " + actorAuthToken)
-                )
-                .andDo(print());
+        ResultActions resultActions = testUserHelper.requestWithUserAuth("user1", request);
 
         resultActions
                 .andExpect(status().isOk())
@@ -228,38 +221,8 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("닉네임 변경")
-    void changeNickname() throws Exception {
-        SiteUser actor = userService.findByUsername("user1").get();
-        String actorAuthToken = userService.genAuthToken(actor);
-
-        ResultActions resultActions = mvc
-                .perform(
-                        post("/api/user")
-                                .header("Authorization", "Bearer " + actorAuthToken)
-                                .content("""
-                                            {
-                                                "nickname": "changedNickname"
-                                            }
-                                            """.stripIndent()
-                                )
-                                .contentType(
-                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                                )
-                )
-                .andDo(print());
-
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("사용자 정보가 수정되었습니다."));
-
-        assertThat(actor.getNickname()).isEqualTo("changedNickname");
-    }
-
-    @Test
     @DisplayName("TestUserHelper 테스트")
-    void userHelperTest() throws Exception {
+    void changeNicknameAndUserHelperTest() throws Exception {
         // 요청 생성
         MockHttpServletRequestBuilder request =
                 post("/api/user")
