@@ -1,5 +1,6 @@
 package com.ll.TeamProject.domain.user.controller;
 
+import com.ll.TeamProject.domain.user.TestUserHelper;
 import com.ll.TeamProject.domain.user.entity.Authentication;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.AuthType;
@@ -19,6 +20,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
@@ -41,6 +43,8 @@ class AdminControllerTest {
     private UserService userService;
     @Autowired
     AuthenticationService authenticationService;
+    @Autowired
+    private TestUserHelper testUserHelper;
 
     @Test
     @DisplayName("관리자 로그인")
@@ -250,6 +254,31 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("사용자 정보가 수정되었습니다."));
 
+        assertThat(actor.getNickname()).isEqualTo("changedNickname");
+    }
+
+    @Test
+    @DisplayName("TestUserHelper 테스트")
+    void userHelperTest() throws Exception {
+        // 요청 생성
+        MockHttpServletRequestBuilder request =
+                post("/api/user")
+                    .content("""
+                            {
+                                "nickname": "changedNickname"
+                            }
+                            """.stripIndent());
+
+        // 인증 원하는 username 과 요청으로 도우미 메서드 호출
+        ResultActions resultActions = testUserHelper.requestWithUserAuth("user1", request);
+
+        // 결과 확인
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("사용자 정보가 수정되었습니다."));
+
+        SiteUser actor = userService.findByUsername("user1").get();
         assertThat(actor.getNickname()).isEqualTo("changedNickname");
     }
 
