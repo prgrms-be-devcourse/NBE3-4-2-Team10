@@ -3,13 +3,13 @@ package com.ll.TeamProject.domain.user.service;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
-import com.ll.TeamProject.global.mail.EmailService;
+import com.ll.TeamProject.global.mail.GoogleMailService;
 import com.ll.TeamProject.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class AccountVerificationService {
     private static final int PASSWORD_RESET_EXPIRATION = 300;
 
     private final UserRepository userRepository;
-    private final EmailService emailService;
+    private final GoogleMailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
 
@@ -41,7 +41,8 @@ public class AccountVerificationService {
     }
 
     private String generateVerificationCode() {
-        return UUID.randomUUID().toString().substring(0, 6); // TODO: UUID 방식은 보안 취약 대체 방법 생각해보기
+        SecureRandom random = new SecureRandom();
+        return String.format("%06d", random.nextInt(1000000));
     }
 
     private void sendVerificationEmail(String nickname, String email, String verificationCode) {
