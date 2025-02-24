@@ -10,7 +10,7 @@ public class CalendarCreateDto {
     private String name;
     private String description;
 
-    // 두 개의 String을 받는 생성자 추가
+    //생성자 추가
     public CalendarCreateDto(String name, String description) {
         this.name = name;
         this.description = description;
