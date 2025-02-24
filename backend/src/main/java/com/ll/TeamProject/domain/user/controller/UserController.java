@@ -26,13 +26,10 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "내 정보")
-    public ResponseEntity<ResponseDto<UserDto>> me() {
+    public ResponseEntity<UserDto> me() {
         SiteUser actor = userContext.findActor().get();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseDto.success("내 정보 조회 완료", new UserDto(actor))
-        );
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDto(actor));
     }
 
     @DeleteMapping("/{id}")
@@ -47,11 +44,11 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "내정보 수정")
-    public ResponseEntity<Void> modifyUser(@RequestBody @Valid ModifyUserReqBody reqbody) {
+    public ResponseEntity<ResponseDto<Void>> modifyUser(@RequestBody @Valid ModifyUserReqBody reqbody) {
         userService.modify(reqbody.nickname());
 
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
+                .status(HttpStatus.OK)
+                .body(ResponseDto.success("사용자 정보가 수정되었습니다."));
     }
 }

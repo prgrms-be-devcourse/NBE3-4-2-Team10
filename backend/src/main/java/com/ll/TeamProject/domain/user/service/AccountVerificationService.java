@@ -1,8 +1,9 @@
 package com.ll.TeamProject.domain.user.service;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
-import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.global.exceptions.CustomException;
 import com.ll.TeamProject.global.mail.GoogleMailService;
 import com.ll.TeamProject.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class AccountVerificationService {
     private SiteUser validateUsernameAndEmail(String username, String email) {
         return userRepository.findByUsername(username)
                 .filter(user -> user.getEmail().equals(email))
-                .orElseThrow(() -> new ServiceException("404-1", "아이디 또는 이메일이 일치하지 않습니다."));
+                .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_USERNAME_OR_EMAIL));
     }
 
     private String generateVerificationCode() {
@@ -56,29 +57,29 @@ public class AccountVerificationService {
                 .ifPresentOrElse(storedCode -> {
 
                     if (!verificationCode.equals(storedCode)) {
-                        throw new ServiceException("401-3", "인증번호가 일치하지 않습니다.");
+                        throw new CustomException(UserErrorCode.VERIFICATION_CODE_MISMATCH);
                     }
 
                     redisService.deleteValue(redisKey);
                     redisService.setValue(getKey(PASSWORD_RESET_KEY, username), username, PASSWORD_RESET_EXPIRATION);
                 }, () -> {
 
-                    throw new ServiceException("401-3", "인증번호가 만료되었습니다.");
+                    throw new CustomException(UserErrorCode.VERIFICATION_CODE_EXPIRED);
                 });
     }
 
     public void changePassword(String username, String password) {
         String redisKey = getKey(PASSWORD_RESET_KEY, username);
         String storedUsername = redisService.getValue(redisKey)
-                .orElseThrow(() -> new ServiceException("401-3", "비밀번호 재설정 요청이 만료되었습니다."));
+                .orElseThrow(() -> new CustomException(UserErrorCode.VERIFICATION_CODE_EXPIRED));
 
         if (!username.equals(storedUsername)) {
             redisService.deleteValue(redisKey);
-            throw new ServiceException("403-1", "잘못된 요청입니다.");
+            throw new CustomException(UserErrorCode.INVALID_REQUEST);
         }
 
         SiteUser user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         user.changePassword(passwordEncoder.encode(password));
         unlockAccount(user);

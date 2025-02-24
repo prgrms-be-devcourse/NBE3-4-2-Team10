@@ -3,8 +3,9 @@ package com.ll.TeamProject.domain.user.service;
 import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.Role;
+import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
-import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.global.exceptions.CustomException;
 import com.ll.TeamProject.global.userContext.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,9 +45,12 @@ public class UserService {
             int pageSize,
             Role role
     ) {
-        if (page < 1) throw new ServiceException("400-1", "페이지 번호는 1 이상이어야 합니다.");
+        if (page < 1) throw new CustomException(UserErrorCode.INVALID_PAGE_NUMBER);
+
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
+
         if (searchKeyword.isBlank()) return findUsersNoKeyword(pageRequest, role);
+
         searchKeyword = "%" + searchKeyword + "%";
 
         return switch (searchKeywordType) {
@@ -62,25 +66,42 @@ public class UserService {
 
     public void modify(String nickname) {
         if (forbiddenService.isForbidden(nickname)) {
-            throw new ServiceException("400-1", "해당 닉네임은 사용할 수 없습니다.");
+            throw new CustomException(UserErrorCode.FORBIDDEN_NICKNAME);
         }
 
         SiteUser actor = userContext.findActor().get();
+
         try {
             actor.changeNickname(nickname);
             userRepository.save(actor);
         } catch (DataIntegrityViolationException exception) {
-            throw new ServiceException("409-1", "이미 사용중인 닉네임입니다.");
+            throw new CustomException(UserErrorCode.DUPLICATE_NICKNAME);
         }
 
         // 수정된 닉네임 바로 적용되도록 쿠키 수정
         userContext.makeAuthCookies(actor);
     }
+//public void modify(String nickname) {
+//    if (forbiddenService.isForbidden(nickname)) {
+//        throw new ServiceException("400-1", "해당 닉네임은 사용할 수 없습니다.");
+//    }
+//
+//    SiteUser actor = userContext.findActor().get();
+//    try {
+//        actor.changeNickname(nickname);
+//        userRepository.save(actor);
+//    } catch (DataIntegrityViolationException exception) {
+//        throw new ServiceException("409-1", "이미 사용중인 닉네임입니다.");
+//    }
+//
+//    // 수정된 닉네임 바로 적용되도록 쿠키 수정
+//    userContext.makeAuthCookies(actor);
+//}
 
     public UserDto delete(long id) {
         Optional<SiteUser> userOptional = findById(id);
         if (userOptional.isEmpty()) {
-            throw new ServiceException("401-1", "존재하지 않는 사용자입니다.");
+            throw new CustomException(UserErrorCode.USER_NOT_FOUND);
         }
         SiteUser userToDelete = userOptional.get();
 
@@ -103,7 +124,7 @@ public class UserService {
         if (actor.getUsername().equals("admin")) return;
 
         if (!userToDelete.getUsername().equals(actor.getUsername())) {
-            throw new ServiceException("403-1", "접근 권한이 없습니다.");
+            throw new CustomException(UserErrorCode.PERMISSION_DENIED);
         }
     }
 

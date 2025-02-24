@@ -1,12 +1,11 @@
 package com.ll.TeamProject.domain.user.service;
 
-import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.dto.LoginDto;
+import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
+import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.CustomException;
-import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
-import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.userContext.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,11 +25,11 @@ public class AuthService {
         SiteUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_CREDENTIALS));
 
-        if (user.isLocked()) throw new ServiceException("403-2", "계정이 잠겨있습니다.");
+        if (user.isLocked()) throw new CustomException(UserErrorCode.ACCOUNT_LOCKED);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             authenticationService.handleLoginFailure(user);
-            throw new ServiceException("401-2", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            throw new CustomException(UserErrorCode.INVALID_CREDENTIALS);
         }
 
         return createLoginResponse(user);
