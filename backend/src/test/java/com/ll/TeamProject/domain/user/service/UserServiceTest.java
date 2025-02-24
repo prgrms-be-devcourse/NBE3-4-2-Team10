@@ -82,7 +82,7 @@ class UserServiceTest {
                 () -> authService.login(username, password));
 
         assertEquals("401-2", exception.getResultCode());
-        assertEquals("비밀번호가 일치하지 않습니다.", exception.getMsg());
+        assertEquals("아이디 또는 비밀번호가 일치하지 않습니다.", exception.getMsg());
 
         verify(authenticationService).handleLoginFailure(user); // 로그인 실패 처리 실행 확인
     }

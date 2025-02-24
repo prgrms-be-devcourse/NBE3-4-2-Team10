@@ -4,6 +4,8 @@ import com.ll.TeamProject.domain.user.dto.UserDto;
 import com.ll.TeamProject.domain.user.dto.LoginDto;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
+import com.ll.TeamProject.global.exceptions.CustomException;
+import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.userContext.UserContext;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class AuthService {
     public LoginDto login(String username, String password) {
 
         SiteUser user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_CREDENTIALS));
 
         if (user.isLocked()) throw new ServiceException("403-2", "계정이 잠겨있습니다.");
 

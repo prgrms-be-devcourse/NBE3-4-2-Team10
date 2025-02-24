@@ -1,6 +1,9 @@
 package com.ll.TeamProject.global.globalExceptionHandler;
 
+import com.ll.TeamProject.global.exceptions.CustomException;
+import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
 import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.global.rsData.ResponseDto;
 import com.ll.TeamProject.global.rsData.RsData;
 import com.ll.TeamProject.standard.base.Empty;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +21,10 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<RsData<Empty>> handle(NoSuchElementException ex) {
+    public ResponseEntity<ResponseDto<Empty>> handle(NoSuchElementException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new RsData<>(
+                .body(ResponseDto.failure(
                         "404-1",
                         "해당 데이터가 존재하지 않습니다."
                 ));
@@ -35,5 +38,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(rsData.getStatusCode())
                 .body(rsData);
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
+        UserErrorCode errorCode = ex.getErrorCode();
+
+        log.error(errorCode.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                errorCode.getCode(),
+                errorCode.getMessage()
+        );
+
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
     }
 }

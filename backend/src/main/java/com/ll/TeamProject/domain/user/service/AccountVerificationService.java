@@ -37,7 +37,7 @@ public class AccountVerificationService {
     private SiteUser validateUsernameAndEmail(String username, String email) {
         return userRepository.findByUsername(username)
                 .filter(user -> user.getEmail().equals(email))
-                .orElseThrow(() -> new ServiceException("401-1", "사용자가 존재하지 않거나 이메일이 일치하지 않습니다."));
+                .orElseThrow(() -> new ServiceException("404-1", "아이디 또는 이메일이 일치하지 않습니다."));
     }
 
     private String generateVerificationCode() {
