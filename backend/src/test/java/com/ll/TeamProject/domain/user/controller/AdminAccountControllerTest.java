@@ -46,7 +46,7 @@ class AdminAccountControllerTest {
         resultActions
                 .andExpect(handler().handlerType(AdminAccountController.class))
                 .andExpect(handler().methodName("unlockAdmin"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         assertThat(admin1.isLocked()).isFalse();
     }

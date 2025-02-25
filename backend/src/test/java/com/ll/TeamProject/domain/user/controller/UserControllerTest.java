@@ -3,7 +3,6 @@ package com.ll.TeamProject.domain.user.controller;
 import com.ll.TeamProject.domain.user.TestUserHelper;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.service.UserService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +39,14 @@ class UserControllerTest {
 
         ResultActions resultActions = testUserHelper.requestWithUserAuth(username, request);
 
+        SiteUser deletedUser = userService.findById(actor.getId()).get();
+
+        assertThat(deletedUser.getNickname()).startsWith("탈퇴한 사용자");
+        assertThat(deletedUser.getCreateDate().toString()).startsWith(actor.getCreateDate().toString().substring(0, 25));
+        assertThat(deletedUser.getModifyDate().toString()).startsWith(actor.getModifyDate().toString().substring(0, 25));
+
         resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("회원정보가 삭제되었습니다."))
-                .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data.id").value(actor.getId()))
-                .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.nickname").value(Matchers.startsWith("탈퇴한 사용자")));
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -70,7 +68,8 @@ class UserControllerTest {
         // 결과 확인
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.code").value("SUCCESS"))
                 .andExpect(jsonPath("$.msg").value("사용자 정보가 수정되었습니다."));
 
         SiteUser actor = userService.findByUsername(username).get();
