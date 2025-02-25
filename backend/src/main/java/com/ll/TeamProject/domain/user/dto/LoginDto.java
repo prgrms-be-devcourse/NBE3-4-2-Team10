@@ -1,6 +1,4 @@
-package com.ll.TeamProject.domain.user.dto.admin;
-
-import com.ll.TeamProject.domain.user.dto.UserDto;
+package com.ll.TeamProject.domain.user.dto;
 
 public record LoginDto(
         UserDto item,
