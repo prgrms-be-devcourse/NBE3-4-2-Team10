@@ -72,9 +72,6 @@ public class ScheduleControllerTest {
     private ScheduleRequestDto meetingScheduleDto;
     private ScheduleRequestDto workoutScheduleDto;
 
-    /**
-     * 테스트 전 ObjectMapper 설정 및 기본 데이터 준비
-     */
     @BeforeEach
     void setUp() {
         // ObjectMapper 설정
@@ -117,9 +114,7 @@ public class ScheduleControllerTest {
         );
     }
 
-    /**
-     * 테스트 전 사용자 정보 및 기본 일정 데이터 설정
-     */
+
     @BeforeEach
     void setUpTestData() throws Exception {
         // 사용자 정보 조회
@@ -130,12 +125,7 @@ public class ScheduleControllerTest {
         scheduleId2 = createSchedule(workoutScheduleDto);
     }
 
-    /**
-     * 캘린더에 일정을 생성하고 생성된 일정의 ID를 반환
-     *
-     * @param dto 생성할 일정 정보
-     * @return 생성된 일정의 ID
-     */
+
     private Long createSchedule(ScheduleRequestDto dto) throws Exception {
         String requestBody = OBJECT_MAPPER.writeValueAsString(dto);
 
@@ -153,14 +143,7 @@ public class ScheduleControllerTest {
         return OBJECT_MAPPER.readTree(responseJson).get("id").asLong();
     }
 
-    /**
-     * 테스트 실행 후 검증을 위한 유틸리티 메서드
-     *
-     * @param resultActions 실행 결과
-     * @param dto 검증할 일정 정보
-     * @param startTime 포맷팅된 시작 시간
-     * @param endTime 포맷팅된 종료 시간
-     */
+
     private void assertScheduleResponse(ResultActions resultActions,
                                         ScheduleRequestDto dto,
                                         String startTime,
