@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
         UserErrorCode errorCode = ex.getErrorCode();
 
-        log.error(errorCode.getMessage());
+        log.error(errorCode.getCode()+ " : " +errorCode.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 errorCode.getCode(),

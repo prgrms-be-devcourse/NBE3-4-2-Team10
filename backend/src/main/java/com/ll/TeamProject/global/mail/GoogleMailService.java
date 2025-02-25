@@ -1,6 +1,7 @@
 package com.ll.TeamProject.global.mail;
 
-import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
+import com.ll.TeamProject.global.exceptions.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,7 +24,7 @@ public class GoogleMailService implements MailService {
         try {
             mailSender.send(message);
         } catch (MailException e) {
-            throw new ServiceException("500", "메일 전송에 실패했습니다.");
+            throw new CustomException(UserErrorCode.EMAIL_SEND_FAILURE);
         }
     }
 

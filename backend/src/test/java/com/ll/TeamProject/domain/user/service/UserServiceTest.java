@@ -2,8 +2,9 @@ package com.ll.TeamProject.domain.user.service;
 
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.enums.Role;
+import com.ll.TeamProject.domain.user.exceptions.UserErrorCode;
 import com.ll.TeamProject.domain.user.repository.UserRepository;
-import com.ll.TeamProject.global.exceptions.ServiceException;
+import com.ll.TeamProject.global.exceptions.CustomException;
 import com.ll.TeamProject.global.userContext.UserContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,11 +61,11 @@ class UserServiceTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         // when & then
-        ServiceException exception = assertThrows(ServiceException.class,
+        CustomException exception = assertThrows(CustomException.class,
                 () -> authService.login(username, password));
 
-        assertEquals("401-1", exception.getResultCode());
-        assertEquals("존재하지 않는 사용자입니다.", exception.getMsg());
+        assertEquals(UserErrorCode.INVALID_CREDENTIALS, exception.getErrorCode());
+        assertEquals(UserErrorCode.INVALID_CREDENTIALS.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -78,11 +79,11 @@ class UserServiceTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
         // when & then
-        ServiceException exception = assertThrows(ServiceException.class,
+        CustomException exception = assertThrows(CustomException.class,
                 () -> authService.login(username, password));
 
-        assertEquals("401-2", exception.getResultCode());
-        assertEquals("아이디 또는 비밀번호가 일치하지 않습니다.", exception.getMsg());
+        assertEquals(UserErrorCode.INVALID_CREDENTIALS, exception.getErrorCode());
+        assertEquals(UserErrorCode.INVALID_CREDENTIALS.getMessage(), exception.getMessage());
 
         verify(authenticationService).handleLoginFailure(user); // 로그인 실패 처리 실행 확인
     }
@@ -158,11 +159,11 @@ class UserServiceTest {
         int pageSize = 10;
 
         // when & then
-        ServiceException exception = assertThrows(ServiceException.class,
+        CustomException exception = assertThrows(CustomException.class,
                 () -> userService.findUsers(searchKeywordType, searchKeyword, page, pageSize, Role.USER));
 
-        assertEquals("400-1", exception.getResultCode());
-        assertEquals("페이지 번호는 1 이상이어야 합니다.", exception.getMsg());
+        assertEquals(UserErrorCode.INVALID_PAGE_NUMBER, exception.getErrorCode());
+        assertEquals(UserErrorCode.INVALID_PAGE_NUMBER.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -175,10 +176,10 @@ class UserServiceTest {
         when(userContext.getActor())
                 .thenReturn(actor);
 
-        ServiceException exception = assertThrows(ServiceException.class,
+        CustomException exception = assertThrows(CustomException.class,
                 () -> userService.validatePermission(userToDelete));
 
-        assertEquals("403-1", exception.getResultCode());
-        assertEquals("접근 권한이 없습니다.", exception.getMsg());
+        assertEquals(UserErrorCode.PERMISSION_DENIED, exception.getErrorCode());
+        assertEquals(UserErrorCode.PERMISSION_DENIED.getMessage(), exception.getMessage());
     }
 }
