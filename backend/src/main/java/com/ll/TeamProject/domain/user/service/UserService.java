@@ -81,22 +81,6 @@ public class UserService {
         // 수정된 닉네임 바로 적용되도록 쿠키 수정
         userContext.makeAuthCookies(actor);
     }
-//public void modify(String nickname) {
-//    if (forbiddenService.isForbidden(nickname)) {
-//        throw new ServiceException("400-1", "해당 닉네임은 사용할 수 없습니다.");
-//    }
-//
-//    SiteUser actor = userContext.findActor().get();
-//    try {
-//        actor.changeNickname(nickname);
-//        userRepository.save(actor);
-//    } catch (DataIntegrityViolationException exception) {
-//        throw new ServiceException("409-1", "이미 사용중인 닉네임입니다.");
-//    }
-//
-//    // 수정된 닉네임 바로 적용되도록 쿠키 수정
-//    userContext.makeAuthCookies(actor);
-//}
 
     public UserDto delete(long id) {
         Optional<SiteUser> userOptional = findById(id);
