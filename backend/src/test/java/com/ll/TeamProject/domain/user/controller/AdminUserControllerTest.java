@@ -79,7 +79,7 @@ class AdminUserControllerTest {
 
         resultActions
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.resultCode").value("403-1"))
+                .andExpect(jsonPath("$.errorCode").value("USER_005"))
                 .andExpect(jsonPath("$.msg").value("접근 권한이 없습니다."));
     }
 }

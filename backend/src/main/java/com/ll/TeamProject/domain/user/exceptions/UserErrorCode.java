@@ -22,6 +22,7 @@ public enum UserErrorCode implements ErrorCode {
     VERIFICATION_CODE_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH_002", "인증번호가 일치하지 않습니다."),
     VERIFICATION_CODE_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_003", "인증이 만료되었습니다."),
     INVALID_REQUEST(HttpStatus.FORBIDDEN, "AUTH_004", "잘못된 요청입니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH_005", "사용자 인증정보가 올바르지 않습니다."),
 
     EMAIL_SEND_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다.");
 
