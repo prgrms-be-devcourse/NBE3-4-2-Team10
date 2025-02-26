@@ -1,8 +1,8 @@
 package com.ll.TeamProject.global.security;
 
 import com.ll.TeamProject.global.app.AppConfig;
-import com.ll.TeamProject.global.rsData.RsData;
-import com.ll.TeamProject.standard.util.Json;
+import com.ll.TeamProject.global.exceptions.CustomAccessDeniedHandler;
+import com.ll.TeamProject.global.exceptions.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +21,8 @@ public class SecurityConfig {
 
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain baseSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -37,7 +39,7 @@ public class SecurityConfig {
 
                                 // 관리자 작업 권한 필요
                                 .requestMatchers("/api/admin/**")
-                                .hasAuthority("ROLE_ADMIN")
+                                .hasRole("ADMIN")
 
                                 // 로그인 요청 허용
                                 .requestMatchers("/login")
@@ -77,30 +79,8 @@ public class SecurityConfig {
                 .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(
                         exceptionHandling -> exceptionHandling
-                                .authenticationEntryPoint(
-                                        (request, response, authException) -> {
-                                            response.setContentType("application/json;charset=UTF-8");
-
-                                            response.setStatus(401);
-                                            response.getWriter().write(
-                                                    Json.toString(
-                                                            new RsData("401-1", "사용자 인증정보가 올바르지 않습니다.")
-                                                    )
-                                            );
-                                        }
-                                )
-                                .accessDeniedHandler(
-                                        (request, response, accessDeniedException) -> {
-                                            response.setContentType("application/json;charset=UTF-8");
-
-                                            response.setStatus(403);
-                                            response.getWriter().write(
-                                                    Json.toString(
-                                                            new RsData("403-1", "접근 권한이 없습니다.")
-                                                    )
-                                            );
-                                        }
-                                )
+                                .authenticationEntryPoint(authenticationEntryPoint) // 401 예외 던지기
+                                .accessDeniedHandler(accessDeniedHandler) // 403 예외 던지기
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -1,6 +1,8 @@
 package com.ll.TeamProject.global.redis;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -8,12 +10,11 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
+@ConfigurationProperties(prefix = "spring.data.redis")
+@Getter
+@Setter
 public class RedisConfig {
-
-    @Value("${spring.data.redis.host}")
     private String host;
-
-    @Value("${spring.data.redis.port}")
     private int port;
 
     @Bean
@@ -25,5 +26,4 @@ public class RedisConfig {
     public StringRedisTemplate redisTemplate(RedisConnectionFactory connectionFactory) {
         return new StringRedisTemplate(connectionFactory);
     }
-
 }

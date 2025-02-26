@@ -3,7 +3,7 @@ package com.ll.TeamProject.domain.user.service;
 import com.ll.TeamProject.domain.user.dto.DormantAccountProjection;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
-import com.ll.TeamProject.global.mail.EmailService;
+import com.ll.TeamProject.global.mail.GoogleMailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.util.List;
 public class UserDormantService {
 
     private final AuthenticationRepository authenticationRepository;
-    private final EmailService emailService;
+    private final GoogleMailService emailService;
     private final UserService userService;
 
     @Transactional
@@ -59,7 +59,7 @@ public class UserDormantService {
             String message = """
                     장기 미사용 이용자로 %s님 계정이 %s 휴면계정으로 전환될 예정입니다.
                     """.formatted(candidate.getNickname(), nextMonthDate.format(formatter));
-            emailService.sendMessage(candidate.getEmail(), "CanBeJ 휴면계정 전환 안내", message);
+            emailService.sendMail(candidate.getEmail(), "CanBeJ 휴면계정 전환 안내", message);
         });
     }
 

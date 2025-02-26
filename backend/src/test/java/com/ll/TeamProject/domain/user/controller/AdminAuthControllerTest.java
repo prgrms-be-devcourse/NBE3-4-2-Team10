@@ -72,7 +72,8 @@ class AdminAuthControllerTest {
                 .andExpect(handler().handlerType(AdminAuthController.class))
                 .andExpect(handler().methodName("login"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.code").value("SUCCESS"))
                 .andExpect(jsonPath("$.msg").value("%s님 환영합니다.".formatted(actor.getNickname())))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.item").exists())
@@ -107,9 +108,7 @@ class AdminAuthControllerTest {
         ResultActions resultActions = testUserHelper.requestWithUserAuth("user1", request);
 
         resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("로그아웃 되었습니다."))
+                .andExpect(status().isNoContent())
                 .andExpect(result -> {
                     Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
                     assertThat(accessTokenCookie.getValue()).isEmpty();
