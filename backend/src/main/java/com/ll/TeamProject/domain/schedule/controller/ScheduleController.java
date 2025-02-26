@@ -38,8 +38,8 @@ public class ScheduleController {
             @PathVariable Long calendarId,
             @RequestBody @Valid ScheduleRequestDto scheduleRequestDto) {
 
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        ScheduleResponseDto responseDto = scheduleService.createSchedule(calendarId, scheduleRequestDto, authenticatedUser);
+
+        ScheduleResponseDto responseDto = scheduleService.createSchedule(calendarId, scheduleRequestDto);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -56,8 +56,8 @@ public class ScheduleController {
             @PathVariable Long scheduleId,
             @RequestBody @Valid ScheduleRequestDto scheduleRequestDto) {
 
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        ScheduleResponseDto responseDto = scheduleService.updateSchedule(calendarId, scheduleId, scheduleRequestDto, authenticatedUser);
+
+        ScheduleResponseDto responseDto = scheduleService.updateSchedule(calendarId, scheduleId, scheduleRequestDto);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -73,8 +73,8 @@ public class ScheduleController {
             @PathVariable Long calendarId,
             @PathVariable Long scheduleId) {
 
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        scheduleService.deleteSchedule(calendarId, scheduleId, authenticatedUser);
+
+        scheduleService.deleteSchedule(calendarId, scheduleId);
         return ResponseEntity.noContent().build();
     }
 
@@ -90,8 +90,7 @@ public class ScheduleController {
             @PathVariable Long calendarId,
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        List<ScheduleResponseDto> schedules = scheduleService.getSchedules(calendarId, startDate, endDate, authenticatedUser);
+        List<ScheduleResponseDto> schedules = scheduleService.getSchedules(calendarId, startDate, endDate);
         return ResponseEntity.ok(schedules);
     }
 
@@ -106,8 +105,7 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleResponseDto>> getDailySchedules(
             @PathVariable Long calendarId,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        List<ScheduleResponseDto> schedules = scheduleService.getDailySchedules(calendarId, date, authenticatedUser);
+        List<ScheduleResponseDto> schedules = scheduleService.getDailySchedules(calendarId, date);
         return ResponseEntity.ok(schedules);
     }
 
@@ -122,8 +120,7 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleResponseDto>> getWeeklySchedules(
             @PathVariable Long calendarId,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        List<ScheduleResponseDto> schedules = scheduleService.getWeeklySchedules(calendarId, date, authenticatedUser);
+        List<ScheduleResponseDto> schedules = scheduleService.getWeeklySchedules(calendarId, date);
         return ResponseEntity.ok(schedules);
     }
 
@@ -138,8 +135,7 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleResponseDto>> getMonthlySchedules(
             @PathVariable Long calendarId,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        List<ScheduleResponseDto> schedules = scheduleService.getMonthlySchedules(calendarId, date, authenticatedUser);
+        List<ScheduleResponseDto> schedules = scheduleService.getMonthlySchedules(calendarId, date);
         return ResponseEntity.ok(schedules);
     }
 
@@ -155,8 +151,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleResponseDto> getSchedule(
             @PathVariable Long calendarId,
             @PathVariable Long scheduleId) {
-        SiteUser authenticatedUser = scheduleService.getAuthenticatedUser();
-        ScheduleResponseDto responseDto = scheduleService.getScheduleById(calendarId, scheduleId, authenticatedUser);
+        ScheduleResponseDto responseDto = scheduleService.getScheduleById(calendarId, scheduleId);
         return ResponseEntity.ok(responseDto);
     }
 }
