@@ -64,7 +64,7 @@
 - ### **DevOps**
 <img src="https://skillicons.dev/icons?i=gradle,github" />
 
-- ### **collaborative tool**
+- ### **Collaborative tool**
 <img src="https://skillicons.dev/icons?i=notion,figma" /> <img src="https://zep.us/favicon.ico" width="48" height="48" />
 
 
