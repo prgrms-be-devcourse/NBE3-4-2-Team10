@@ -83,10 +83,6 @@ export const CalendarLayout = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCalendars();
-  }, []);
-
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">로딩 중...</div>;
   }
