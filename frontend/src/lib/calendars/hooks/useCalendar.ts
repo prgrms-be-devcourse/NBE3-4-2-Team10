@@ -41,7 +41,6 @@ export const useCalendar = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchCalendars();
   }, []);

@@ -6,13 +6,16 @@ import com.ll.TeamProject.domain.schedule.entity.Schedule;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Calendar extends BaseTime {
 
    //캘린더 소유 사용자
@@ -40,9 +43,6 @@ public class Calendar extends BaseTime {
     @OneToMany(mappedBy = "calendar", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Schedule> schedules = new ArrayList<>();
-
-    //기본 생성자 (JPA용)
-    protected Calendar() {}
 
     //비즈니스 생성자
     public Calendar(SiteUser user, String name, String description) {
