@@ -1,8 +1,8 @@
 package com.ll.TeamProject.domain.user.service;
 
 import com.ll.TeamProject.domain.user.dto.DormantAccountProjection;
-import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.domain.user.repository.AuthenticationRepository;
+import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.mail.GoogleMailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -22,33 +23,42 @@ public class UserDormantService {
     private final AuthenticationRepository authenticationRepository;
     private final GoogleMailService emailService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional
     public void processDormant() {
         // 기준 날짜 설정 (매월 1일 실행)
         YearMonth currentMonth = YearMonth.now();
 
-        // 각 대상의 범위 조회 및 처리
+        // 1. 휴면 안내 메일 전송 (닉네임과 이메일만 조회)
         List<DormantAccountProjection> notifyCandidates = findCandidatesByMonthsAgo(11);
-        List<DormantAccountProjection> lockCandidates = findCandidatesByMonthsAgo(12);
-        List<DormantAccountProjection> deleteCandidates = findCandidatesByMonthsAgo(18);
-
-        // 1. 휴면 안내 메일 전송
         sendDormantNotificationEmail(notifyCandidates, currentMonth.plusMonths(1));
 
-        // 2. 계정 잠금 처리
-        processUserAction(lockCandidates, SiteUser::lockAccount);
+        // 2. 계정 잠금 (id 만 조회 후 한번에 100명씩 처리)
+        List<Long> lockIds = findUserIdsByMonthsAgo(12);
+        processInBatches(lockIds, 100, userRepository::bulkLockAccounts);
 
-        // 3. 계정 소프트 삭제 처리
-        processUserAction(deleteCandidates, SiteUser::delete);
+        // 3. 삭제 처리 (id 만 조회 후 한번에 100명씩 처리)
+        List<Long> deleteIds = findUserIdsByMonthsAgo(18);
+        processInBatches(deleteIds, 100,
+                ids -> userRepository.bulkDeleteAccounts(ids, LocalDateTime.now()));
     }
 
     private List<DormantAccountProjection> findCandidatesByMonthsAgo(int monthsAgo) {
+        LocalDateTime[] dateRange = calculateDateRange(monthsAgo);
+        return authenticationRepository.findDormantAccountsInDateRange(dateRange[0], dateRange[1]);
+    }
+
+    private List<Long> findUserIdsByMonthsAgo(int monthsAgo) {
+        LocalDateTime[] dateRange = calculateDateRange(monthsAgo);
+        return userRepository.findUserIdsInDateRange(dateRange[0], dateRange[1]);
+    }
+
+    private LocalDateTime[] calculateDateRange(int monthsAgo) {
         YearMonth targetMonth = YearMonth.now().minusMonths(monthsAgo);
         LocalDateTime startDate = targetMonth.atDay(1).atStartOfDay();
         LocalDateTime endDate = targetMonth.atEndOfMonth().atTime(LocalTime.MAX);
-
-        return authenticationRepository.findDormantAccountsInDateRange(startDate, endDate);
+        return new LocalDateTime[] { startDate, endDate };
     }
 
     private void sendDormantNotificationEmail(List<DormantAccountProjection> candidates, YearMonth nextMonth) {
@@ -63,9 +73,11 @@ public class UserDormantService {
         });
     }
 
-    private void processUserAction(List<DormantAccountProjection> candidates, java.util.function.Consumer<SiteUser> action) {
-        candidates.forEach(candidate -> {
-            userService.findById(candidate.getId()).ifPresent(action);
-        });
+    private <T> void processInBatches(List<T> ids, int batchSize, Consumer<List<T>> processor) {
+        for (int i = 0; i < ids.size(); i += batchSize) {
+            int end = Math.min(i + batchSize, ids.size());
+            List<T> batch = ids.subList(i, end);
+            processor.accept(batch);
+        }
     }
 }
