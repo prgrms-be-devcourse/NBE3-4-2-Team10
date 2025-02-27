@@ -55,9 +55,6 @@ public class CalendarControllerTest {
         username = "user3";
         SiteUser testUser = userService.findByUsername(username).orElseThrow();
 
-        // JWT 토큰 생성
-        accessToken = "Bearer " + userService.genAuthToken(testUser);
-
         // 테스트 캘린더 생성
         Calendar testCalendar = Calendar.builder()
                 .name("테스트 캘린더")
