@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<SiteUser, Long> {
     @Query("""
         SELECT a.user.id
         FROM Authentication a
-        JOIN FETCH a.user u
+        JOIN a.user u
         WHERE a.lastLogin BETWEEN :startDate AND :endDate
         AND u.isDeleted = false
     """)
