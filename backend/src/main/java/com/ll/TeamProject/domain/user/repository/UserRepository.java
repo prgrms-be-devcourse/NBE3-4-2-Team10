@@ -29,11 +29,10 @@ public interface UserRepository extends JpaRepository<SiteUser, Long> {
     Optional<SiteUser> findByEmail(String email);
 
     @Query("""
-            SELECT u.id
-            FROM SiteUser u
-            JOIN u.authentication a
-            WHERE a.lastLogin BETWEEN :startDate AND :endDate
-              AND u.isDeleted = false
+        SELECT a.user.id
+        FROM Authentication a
+        WHERE a.lastLogin BETWEEN :startDate AND :endDate
+        AND a.user.isDeleted = false
     """)
     List<Long> findUserIdsInDateRange(@Param("startDate") LocalDateTime startDate,
                                         @Param("endDate") LocalDateTime endDate);
