@@ -266,8 +266,8 @@ public class ScheduleControllerTest {
         ResultActions resultActions = testUserHelper.requestWithUserAuth(
                         username,
                         get(SCHEDULES_API_PATH, calendarId)
-                                .param("startDate", "2025-03-01")
-                                .param("endDate", "2025-03-02")
+                                .param("startDate", "2024-03-01")
+                                .param("endDate", "2024-03-02")
                 )
                 .andDo(print());
 
