@@ -5,7 +5,6 @@ import com.ll.TeamProject.domain.calendar.dto.CalendarUpdateDto;
 import com.ll.TeamProject.domain.calendar.entity.Calendar;
 import com.ll.TeamProject.domain.calendar.repository.CalendarRepository;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
-import com.ll.TeamProject.domain.user.repository.UserRepository;
 import com.ll.TeamProject.global.exceptions.ServiceException;
 import com.ll.TeamProject.global.userContext.UserContextService;
 import jakarta.transaction.Transactional;
@@ -22,16 +21,14 @@ import java.util.List;
 public class CalendarService {
 
     private final CalendarRepository calendarRepository;
-    private final UserRepository userRepository;
     private final UserContextService userContextService;
 
-    private static final String USER_NOT_FOUND = "사용자를 찾을 수 없습니다.";
     private static final String CALENDAR_NOT_FOUND = "캘린더를 찾을 수 없습니다.";
 
     // 캘린더 생성
     public Calendar createCalendar(CalendarCreateDto dto) {
         SiteUser user = userContextService.getAuthenticatedUser();
-        Calendar calendar = new Calendar(user, dto.getName(), dto.getDescription());
+        Calendar calendar = new Calendar(user, dto.name(), dto.description());
         Calendar savedCalendar = calendarRepository.save(calendar);
 
         log.info("캘린더 생성 완료 - ID: {}, Name: {}", savedCalendar.getId(), savedCalendar.getName());
@@ -60,8 +57,8 @@ public class CalendarService {
         Calendar calendar = getCalendarById(id);
         checkCalendarOwnership(calendar, user);
 
-        calendar.update(dto);
-        log.info("캘린더 수정 완료 - ID: {}, New Name: {}, New Description: {}", id, dto.getName(), dto.getDescription());
+        calendar.update(dto.name(), dto.description());
+        log.info("캘린더 수정 완료 - ID: {}, New Name: {}, New Description: {}", id, dto.name(), dto.description());
 
         return calendarRepository.save(calendar);
     }
