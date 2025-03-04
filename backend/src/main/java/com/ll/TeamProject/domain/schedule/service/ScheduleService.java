@@ -9,7 +9,7 @@ import com.ll.TeamProject.domain.schedule.mapper.ScheduleMapper;
 import com.ll.TeamProject.domain.schedule.repository.ScheduleRepository;
 import com.ll.TeamProject.domain.user.entity.SiteUser;
 import com.ll.TeamProject.global.exceptions.ServiceException;
-import com.ll.TeamProject.global.userContext.UserContext;
+import com.ll.TeamProject.global.userContext.UserContextService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,13 +27,14 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final CalendarRepository calendarRepository;
-    private final UserContext userContext;
     private final ScheduleMapper scheduleMapper;
+    private final UserContextService userContextService;
 
     // 일정 생성
     public ScheduleResponseDto createSchedule(Long calendarId, ScheduleRequestDto scheduleRequestDto) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         Calendar calendar = validateCalendarOwner(calendarId, user);
+
         Schedule schedule = new Schedule(
                 calendar,
                 scheduleRequestDto.title(),
@@ -48,8 +49,9 @@ public class ScheduleService {
 
     // 일정 수정
     public ScheduleResponseDto updateSchedule(Long calendarId, Long scheduleId, ScheduleRequestDto scheduleRequestDto) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         Schedule schedule = validateScheduleOwnership(calendarId, scheduleId, user, "수정");
+
         schedule.update(
                 scheduleRequestDto.title(),
                 scheduleRequestDto.description(),
@@ -57,22 +59,22 @@ public class ScheduleService {
                 scheduleRequestDto.endTime(),
                 scheduleRequestDto.location()
         );
-
-
         return scheduleMapper.toDto(schedule);
     }
 
     // 일정 삭제
     public void deleteSchedule(Long calendarId, Long scheduleId) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         validateScheduleOwnership(calendarId, scheduleId, user, "삭제");
+
         scheduleRepository.deleteById(scheduleId);
     }
 
-    // 지정 기간의 일정 목록 조회
+    // 일정 목록 조회
     public List<ScheduleResponseDto> getSchedules(Long calendarId, LocalDate startDate, LocalDate endDate) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         validateCalendarOwner(calendarId, user);
+
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
         return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, startDateTime, endDateTime)
@@ -81,41 +83,45 @@ public class ScheduleService {
 
     // 하루 일정 조회
     public List<ScheduleResponseDto> getDailySchedules(Long calendarId, LocalDate date) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         validateCalendarOwner(calendarId, user);
+
         LocalDateTime[] range = getDayRange(date);
         return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, range[0], range[1])
                 .stream().map(scheduleMapper::toDto).toList();
     }
 
-    // 주별 일정 조회 (일요일 ~ 토요일)
+    // 주별 일정 조회
     public List<ScheduleResponseDto> getWeeklySchedules(Long calendarId, LocalDate date) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         validateCalendarOwner(calendarId, user);
+
         LocalDateTime[] range = getWeekRange(date);
         return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, range[0], range[1])
                 .stream().map(scheduleMapper::toDto).toList();
     }
 
-    // 월별 일정 조회 (해당 월의 1일 ~ 말일)
+    // 월별 일정 조회
     public List<ScheduleResponseDto> getMonthlySchedules(Long calendarId, LocalDate date) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         validateCalendarOwner(calendarId, user);
+
         LocalDateTime[] range = getMonthRange(date);
         return scheduleRepository.findSchedulesByCalendarAndDateRange(calendarId, range[0], range[1])
                 .stream().map(scheduleMapper::toDto).toList();
     }
 
-    // 특정 일정 조회 (캘린더 소유자 검증 포함)
+    // 특정 일정 세부 조회
     public ScheduleResponseDto getScheduleById(Long calendarId, Long scheduleId) {
-        SiteUser user = getAuthenticatedUser();
+        SiteUser user = userContextService.getAuthenticatedUser();
         validateCalendarOwner(calendarId, user);
+
         Schedule schedule = getScheduleByIdOrThrow(scheduleId);
-        if (!schedule.getCalendar().getId().equals(calendarId)) {
-            throw new ServiceException("400", "해당 일정은 요청한 캘린더에 속하지 않습니다.");
-        }
+        validateScheduleBelongsToCalendar(schedule, calendarId);
+
         return scheduleMapper.toDto(schedule);
     }
+
 
     // --- 내부 헬퍼 메서드 ---
 
@@ -137,48 +143,50 @@ public class ScheduleService {
         return calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new ServiceException("404", "해당 캘린더를 찾을 수 없습니다."));
     }
-    // 캘린더 소유자 검증 (캘린더 존재 확인 후 호출)
+
+    // 캘린더 소유자 검증
     private void checkCalendarOwnership(Calendar calendar, SiteUser user) {
         if (!calendar.getUser().getId().equals(user.getId())) {
             throw new ServiceException("403", "캘린더 소유자만 접근할 수 있습니다.");
         }
     }
 
-    // 일정 수정/삭제 시 캘린더 및 일정 소유자 검증 (action: "수정" 또는 "삭제")
-    private Schedule validateScheduleOwnership(Long calendarId, Long scheduleId, SiteUser user, String action) {
-        validateCalendarOwner(calendarId, user);
-        Schedule schedule = getScheduleByIdOrThrow(scheduleId);
+    // 일정이 해당 calendarId에 속하는지 검증하는 메서드
+    private void validateScheduleBelongsToCalendar(Schedule schedule, Long calendarId) {
         if (!schedule.getCalendar().getId().equals(calendarId)) {
             throw new ServiceException("400", "해당 일정은 요청한 캘린더에 속하지 않습니다.");
         }
+    }
+
+    // 일정 수정/삭제 시 캘린더 및 일정 소유자 검증
+    private Schedule validateScheduleOwnership(Long calendarId, Long scheduleId, SiteUser user, String action) {
+        validateCalendarOwner(calendarId, user);
+        Schedule schedule = getScheduleByIdOrThrow(scheduleId);
+        validateScheduleBelongsToCalendar(schedule, calendarId);
+
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new ServiceException("403", "일정을 " + action + "할 권한이 없습니다.");
         }
         return schedule;
     }
 
-    // 하루 날짜 범위 계산 (시작: 00:00, 종료: 23:59:59.999)
+
+    // 하루 날짜 범위 계산
     private LocalDateTime[] getDayRange(LocalDate date) {
         return new LocalDateTime[]{date.atStartOfDay(), date.atTime(LocalTime.MAX)};
     }
 
-    // 주간 날짜 범위 계산 (일요일 ~ 토요일)
+    // 주간 날짜 범위 계산
     private LocalDateTime[] getWeekRange(LocalDate date) {
         LocalDate startOfWeek = date.with(DayOfWeek.SUNDAY);
         LocalDate endOfWeek = date.with(DayOfWeek.SATURDAY);
         return new LocalDateTime[]{startOfWeek.atStartOfDay(), endOfWeek.atTime(LocalTime.MAX)};
     }
 
-    // 월간 날짜 범위 계산 (해당 월의 1일 ~ 말일)
+    // 월간 날짜 범위 계산
     private LocalDateTime[] getMonthRange(LocalDate date) {
         LocalDate firstDay = date.withDayOfMonth(1);
         LocalDate lastDay = date.withDayOfMonth(date.lengthOfMonth());
         return new LocalDateTime[]{firstDay.atStartOfDay(), lastDay.atTime(LocalTime.MAX)};
-    }
-
-    // 현재 인증된 사용자 조회 (UserContext 통한 조회)
-    public SiteUser getAuthenticatedUser() {
-        return userContext.findActor()
-                .orElseThrow(() -> new ServiceException("401", "로그인을 먼저 해주세요!"));
     }
 }
