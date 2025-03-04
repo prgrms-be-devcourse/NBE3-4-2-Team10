@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class AuthenticationService {
             int failedLogin = authentication.failedLogin();
 
             if (failedLogin >= 5) {
-                user.lockAccountAndResetPassword(generateRandomPassword());
+                user.lockAccount();
                 userRepository.save(user);
             }
 
@@ -45,9 +44,5 @@ public class AuthenticationService {
 
     public Optional<Authentication> findByUserId(Long id) {
         return authenticationRepository.findByUserId(id);
-    }
-
-    public String generateRandomPassword() {
-        return UUID.randomUUID().toString();
     }
 }

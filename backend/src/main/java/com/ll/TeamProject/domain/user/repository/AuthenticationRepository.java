@@ -16,11 +16,9 @@ public interface AuthenticationRepository extends JpaRepository<Authentication, 
     Optional<Authentication> findByUserId(Long userId);
 
     @Query("""
-        SELECT 
-            u.id AS id, 
-            u.nickname AS nickname, 
-            u.email AS email, 
-            a.lastLogin AS lastLogin
+        SELECT
+            u.nickname AS nickname,
+            u.email AS email
         FROM Authentication a
         JOIN a.user u
         WHERE a.lastLogin BETWEEN :startDate AND :endDate
@@ -30,5 +28,4 @@ public interface AuthenticationRepository extends JpaRepository<Authentication, 
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
-
 }

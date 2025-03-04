@@ -32,18 +32,17 @@ export default function ChangePasswordPage() {
     }
 
     try {
-      const response = await client.PATCH(`/api/admin/{username}/password`, {
+      const response = await client.PUT(`/api/admin/{username}/password`, {
         body: { password },
         params: { path: { username: username!! } },
       });
 
       if (response.error) {
         alert(response.error.msg);
-        router.push("/login/adminLogin");
       } else {
         alert("비밀번호가 성공적으로 변경되었습니다.");
-        router.push("/login/adminLogin");
       }
+      router.push("/login/adminLogin");
     } catch (error) {
       alert("비밀번호 변경 실패: 다시 시도해주세요.");
     }
